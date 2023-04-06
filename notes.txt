@@ -30,3 +30,17 @@ items:
  consumables:
   energy drink	allows user to work again sooner
   sanity pill	helps a users sanity
+
+upgrades:
+ 57 Leaf Clover	increases luck (rerolls random events for better outcome)
+ Jackhammer	increases work output
+ Calm Thoughts	reduces sanity drain
+
+sanity
+ sanity now works based on a scale from -100 to 100
+ going below -100 sanity will cause the user to die with a penalty
+ sanity is capped at 100 and users with positive sanity recieve benefits
+ having less than 0 sanity starts causing debuffs
+
+commands
+ work: exactly like before, working normalizes you (moves sanity towards 0) has a 6 hour cool down
