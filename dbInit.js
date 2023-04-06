@@ -17,8 +17,9 @@ require('./models/User_Stats.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Upgrades.js')(sequelize, Sequelize.DataTypes);
 
 const force = process.argv.includes('--force') || process.argv.includes('-f');
+const alter = process.argv.includes('--alter') || process.argv.includes('-a');
 
-sequelize.sync({ force }).then(async () => {
+sequelize.sync({ force, alter }).then(async () => {
 	const inserts = [
 		Buildings.upsert({ name: 'House', cost: 100 }),
 		Buildings.upsert({ name: 'Apartment', cost: 250 }),
@@ -37,6 +38,12 @@ sequelize.sync({ force }).then(async () => {
 		Items.upsert({ name: 'Flower Crown', cost: 3000 }),
 		Items.upsert({ name: 'Energy Drink', cost: 20 }),
 		Items.upsert({ name: 'Sanity Pill', cost: 300 }),
+		Upgrades.upsert({ name: 'Jackhammer', cost: 1000 }),
+		Upgrades.upsert({ name: '57 Leaf Clover', cost: 4000 }),
+		Upgrades.upsert({ name: 'Muscle Tonic', cost: 3000 }),
+		Upgrades.upsert({ name: 'Speed Cola', cost: 3000 }),
+		Upgrades.upsert({ name: 'Thick Skin', cost: 3000 }),
+		Upgrades.upsert({ name: 'Calm Mind', cost: 2000 }),
 	];
 	await Promise.all(inserts);
 	console.log('Database synced');

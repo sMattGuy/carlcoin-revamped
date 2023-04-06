@@ -38,6 +38,15 @@ Reflect.defineProperty(Users.prototype, 'getUpgrades', {
 	}
 });
 
+Reflect.defineProperty(Users.prototype, 'getBuildings', {
+	value: (user) => {
+		return User_Buildings.findAll({
+			where: {user_id: user.user_id},
+			include: ['building'],
+		});
+	}
+});
+
 Reflect.defineProperty(User_Stats.prototype, 'giveXP', {
 	value: (xp, stats) => {
 		let leveled = false;

@@ -58,7 +58,7 @@ module.exports = {
 						{name: 'LCK', value: `${user_stats.luck}`, inline: true},
 						{name: 'SAN', value: `${user_stats.sanity}`, inline: true},
 					);
-					await interaction.followUp({embeds:[levelUpEmbed]});
+				await interaction.followUp({embeds:[levelUpEmbed]});
 			}
 			user.save();
 			user_stats.save();
