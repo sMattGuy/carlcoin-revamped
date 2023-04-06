@@ -1,0 +1,32 @@
+stats:
+ luck
+ strength
+ defense
+ evasion
+ intelligence
+ wisdom
+ constitution
+ sanity
+
+buildings:
+ house 	100 + 50 per owned
+ apartment 	250 + 125 per owned
+ mansion 	600 + 250 per owned
+ skyscraper 1250 + 500 per owned
+ city 	2550 + 1000 per owned
+ country 	5150 + 2000 per owned
+ satellite 	10200 + 4000 per owned
+
+items:
+ diamond pick	increases work yield
+ hard hat		increases defense
+ homerun bat	increases strength
+ fog machine	increases evade
+ nerd glasses	increases intelligence
+ ponder orb		increases wisdom
+ meditation orb	increases constitution
+ flower crown	helps control sanity
+ 
+ consumables:
+  energy drink	allows user to work again sooner
+  sanity pill	helps a users sanity
