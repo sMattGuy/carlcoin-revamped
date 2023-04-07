@@ -20,6 +20,27 @@ User_Items.belongsTo(Items, { foreignKey: 'item_id', as: 'item' });
 User_Buildings.belongsTo(Buildings, { foreignKey: 'building_id', as: 'building' });
 User_Upgrades.belongsTo(Upgrades, { foreignKey: 'upgrade_id', as: 'upgrade' });
 
+Reflect.defineProperty(Users.prototype, 'addItem', {
+	value: async (user, item) => {
+		const userItem = await User_Items.findOne({
+			where: {user_id: user.user_id, item_id: item.id},
+		});
+		if(userItem){
+			userItem.amount += 1;
+			return userItem.save();
+		}
+		return User_Items.create({user_id: user.user_id, item_id:item.id, amount:1});
+	}
+});
+
+Reflect.defineProperty(Users.prototype, 'getItem', {
+	value: (user, item) => {
+		return User_Items.findOne({
+			where: {user_id: user.user_id, item_id:item.id},
+		});
+	}
+});
+
 Reflect.defineProperty(Users.prototype, 'getItems', {
 	value: (user) => {
 		return User_Items.findAll({
@@ -38,11 +59,33 @@ Reflect.defineProperty(Users.prototype, 'getUpgrades', {
 	}
 });
 
+Reflect.defineProperty(Users.prototype, 'addBuilding', {
+	value: async (user, building) => {
+		const userBuilding = await User_Buildings.findOne({
+			where: {user_id: user.user_id, building_id: building.id},
+		});
+		if(userBuilding){
+			userBuilding.amount += 1;
+			return userBuilding.save();
+		}
+		return User_Buildings.create({user_id: user.user_id, building_id:building.id, amount:1});
+	}
+});
+
+Reflect.defineProperty(Users.prototype, 'getBuilding', {
+	value: (user, building) => {
+		return User_Buildings.findOne({
+			where: {user_id: user.user_id, building_id:building.id},
+		});
+	}
+});
+
 Reflect.defineProperty(Users.prototype, 'getBuildings', {
 	value: (user) => {
 		return User_Buildings.findAll({
 			where: {user_id: user.user_id},
 			include: ['building'],
+			order: [['building_id', 'ASC']]
 		});
 	}
 });

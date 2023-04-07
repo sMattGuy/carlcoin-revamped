@@ -32,13 +32,22 @@ module.exports = {
 			let sanityPercent = user_stats.sanity / 100;
 			upper_bound += Math.floor(10 * sanityPercent);
 			//roll the dice
-			let coinReward = Math.floor(Math.random()*upper_bound)+1
-			coinReward *= coin_increase;
+			let best = 0;
+			for(let i=0;i<=user_stats.luck;i++){
+				let coinReward = Math.floor(Math.random()*upper_bound)+1
+				if(coinReward > best)
+					best = coinReward;
+			}
+			best *= coin_increase;
 			//update user
-			let experience_gain = Math.floor(coinReward/2);
-			await interaction.reply(`You worked hard in the Carlcoin Mines and gor ${coinReward}CC! You also got ${experience_gain}XP!`);
+			let experience_gain = Math.floor(best/2);
+			const workEmbed = new EmbedBuilder()
+				.setColor(0xf5bf62)
+				.setTitle('Off to work!')
+				.setDescription(`You worked hard in the Carlcoin Mines and gor ${best}CC! You also got ${experience_gain}XP!`)
+			await interaction.reply({embeds:[workEmbed]});
 			user.last_worked = Date.now();
-			user.balance += coinReward;
+			user.balance += best;
 			if(user_stats.sanity != 0){
 				user_stats.sanity += (user_stats.sanity/-user_stats.sanity)*5;
 			}
@@ -68,7 +77,11 @@ module.exports = {
 			let returnToWork = user.last_worked + 21600000 - Date.now();
 			returnToWork = Math.floor(returnToWork / 1000); //seconds
 			returnToWork = Math.floor(returnToWork / 60); //mins
-			interaction.reply(`You cannot work yet! Come back in ${returnToWork} minutes!`);
+			const noWorkEmbed = new EmbedBuilder()
+				.setColor(0xeb3434)
+				.setTitle('Can\'t work yet!')
+				.setDescription(`You cannot work yet! Come back in ${returnToWork} minutes!`)
+			await interaction.reply({embeds:[noWorkEmbed]});
 		}
 	},
 };

@@ -7,7 +7,7 @@ async function get_user(userID){
 	if(!user){
 		//make new user if couldnt be found
 		user = await Users.create({user_id: userID});
-		user_stats = await User_Stats.create({user_id: userID});
+		let user_stats = await User_Stats.create({user_id: userID});
 	}
 	return user;
 }
