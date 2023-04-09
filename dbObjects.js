@@ -37,6 +37,7 @@ Reflect.defineProperty(Users.prototype, 'getItem', {
 	value: (user, item) => {
 		return User_Items.findOne({
 			where: {user_id: user.user_id, item_id:item.id},
+			include: ['item'],
 		});
 	}
 });
@@ -76,6 +77,7 @@ Reflect.defineProperty(Users.prototype, 'getBuilding', {
 	value: (user, building) => {
 		return User_Buildings.findOne({
 			where: {user_id: user.user_id, building_id:building.id},
+			include: ['building'],
 		});
 	}
 });

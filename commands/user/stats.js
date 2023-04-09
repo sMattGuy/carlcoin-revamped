@@ -30,9 +30,15 @@ module.exports = {
 		let user_buildings = await user_data.getBuildings(user_data);
 		
 		if(menu_option == 'general'){
-			let canwork = false;
+			let canWork = ``
 			if(user_data.last_worked + 21600000 <= Date.now()){
-				canwork = true;
+				canWork = `Yes`;
+			}
+			else{
+				let returnToWork = user_data.last_worked + 21600000 - Date.now();
+				returnToWork = Math.floor(returnToWork / 1000); //seconds
+				returnToWork = Math.floor(returnToWork / 60); //mins
+				canWork = `No, ${returnToWork} mins left`
 			}
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
@@ -42,7 +48,7 @@ module.exports = {
 					{name: 'Balance', value: `${user_data.balance}`, inline: true},
 					{name: 'Prestige Balance', value: `${user_data.prestigeBalance}`, inline: true},
 					{name: 'Current Life', value: `${user_data.life}`, inline: true},
-					{name: 'Can Work?', value: `${canwork}`, inline: true},
+					{name: 'Can Work?', value: `${canWork}`, inline: true},
 				);
 			await interaction.reply({embeds:[levelUpEmbed]});
 		}

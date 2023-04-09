@@ -1,9 +1,10 @@
 // Require the necessary discord.js classes
 const fs = require('node:fs');
 const path = require('node:path');
+const cron = require('cron');
 const { Op } = require('sequelize');
 const { Client, codeBlock, Collection, Events, GatewayIntentBits } = require('discord.js');
-require('./dbObjects.js');
+const { Users } = require('./dbObjects.js');
 const { token } = require('./config.json');
 
 // Create a new client instance
@@ -55,6 +56,21 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 	}
 });
+
+let dailyPayout = new cron.CronJob('0 18 * * *', async () => {
+	//get users buildings and pay out rent
+	let userList = await Users.findAll();
+	userList.forEach(async user => {
+		let userBuildings = await user.getBuildings(user);
+		let payout = 0;
+		for(let i=0;i<userBuildings.length;i++){
+			payout += (userBuildings[i].building.id * 10) * userBuildings[i].amount;
+		}
+		user.balance += payout;
+		user.save();
+	});
+});
+dailyPayout.start();
 
 // Log in to Discord with your client's token
 client.login(token);

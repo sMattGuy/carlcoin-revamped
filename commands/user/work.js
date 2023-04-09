@@ -44,13 +44,21 @@ module.exports = {
 			const workEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle('Off to work!')
-				.setDescription(`You worked hard in the Carlcoin Mines and gor ${best}CC! You also got ${experience_gain}XP!`)
+				.setDescription(`You worked hard in the Carlcoin Mines and got ${best}CC! You also got ${experience_gain}XP!`)
 			await interaction.reply({embeds:[workEmbed]});
 			user.last_worked = Date.now();
 			user.balance += best;
+			
 			if(user_stats.sanity != 0){
-				user_stats.sanity += (user_stats.sanity/-user_stats.sanity)*5;
+				let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*10;
+				if (newSanity < 0 && user_stats.sanity >= 0 || newSanity >= 0 && user_stats.sanity < 0) {
+					user_stats.sanity = 0;
+				}
+				else{
+					user_stats.sanity = newSanity;
+				}
 			}
+			
 			if(await user_stats.giveXP(experience_gain, user_stats)){
 				//user has leveled up, alert them and display new stats
 				const levelUpEmbed = new EmbedBuilder()
@@ -81,7 +89,7 @@ module.exports = {
 				.setColor(0xeb3434)
 				.setTitle('Can\'t work yet!')
 				.setDescription(`You cannot work yet! Come back in ${returnToWork} minutes!`)
-			await interaction.reply({embeds:[noWorkEmbed]});
+			await interaction.reply({embeds:[noWorkEmbed], ephemeral:true});
 		}
 	},
 };
