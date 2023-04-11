@@ -127,4 +127,24 @@ Reflect.defineProperty(User_Stats.prototype, 'giveXP', {
 		return leveled;
 	}
 });
+
+Reflect.defineProperty(Users.prototype, 'killUser', {
+	value: (user) => {
+		user.balance = 0;
+		user.life += 1;
+		const removals = [
+			User_Buildings.destroy({
+				where: {user_id: user.user_id}
+			}),
+			User_Items.destroy({
+				where: {user_id: user.user_id}
+			}),
+			User_Stats.destroy({
+				where: {user_id: user.user_id}
+			})
+		];
+		await Promise.all(removals);
+		user.save();
+	}
+});
 module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades };

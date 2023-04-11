@@ -52,6 +52,15 @@ module.exports = {
 			let selectedItem = await Items.findOne({where: {id: selected}})
 			user_items = await user_data.getItem(user_data, selectedItem);
 			
+			if(user_items.amount <= 0){
+				const cantEatEmbed = new EmbedBuilder()
+					.setColor(0xeb3434)
+					.setTitle('No consumables!')
+					.setDescription(`You don't have any consumables`);
+				await interaction.followUp({embeds:[cantEatEmbed], ephemeral:true});
+				return;
+			}
+		
 			if(user_items.item_id == 9){
 				//energy drink
 				user_data.last_worked -= 7200000;
