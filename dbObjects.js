@@ -129,7 +129,7 @@ Reflect.defineProperty(User_Stats.prototype, 'giveXP', {
 });
 
 Reflect.defineProperty(Users.prototype, 'killUser', {
-	value: (user) => {
+	value: async (user) => {
 		user.balance = 0;
 		user.life += 1;
 		const removals = [
