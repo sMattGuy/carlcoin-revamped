@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } = require('discord.js');
 const { get_user, get_user_stats } = require('../../helper.js');
 
 const blackjackCards = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
@@ -47,46 +47,38 @@ module.exports = {
 		usedCards[playerCard2] = true;
 		let dealerCards = [dealerCard1,dealerCard2];
 		let playerCards = [playerCard1,playerCard2];
-		
-		const drawEmbed = new EmbedBuilder()
-			.setColor(0xf5bf62)
-			.setTitle(`It's a draw!`)
-			.addFields(
-				{name: 'Dealer', value: `${dealerCards}`},
-				{name: 'You', value: `${playerCards}`},
-			);
-		const winEmbed = new EmbedBuilder()
-			.setColor(0x3bff29)
-			.setTitle(`You win!`)
-			.addFields(
-				{name: 'Dealer', value: `${dealerCards}`},
-				{name: 'You', value: `${playerCards}`},
-			);
-		const loseEmbed = new EmbedBuilder()
-			.setColor(0xff293b)
-			.setTitle(`You lost!`)
-			.addFields(
-				{name: 'Dealer', value: `${dealerCards}`},
-				{name: 'You', value: `${playerCards}`},
-			);
-			
+				
 		let dealerWin = false;
 		let playerWin = false;
 		//check instant win
-		if(((playerCard1%13 == 0)&&(playerCard2%13 == 9 || playerCard2%13 == 10 || playerCard2%13 == 11 || playerCard2%13 == 12))|| ((playerCard2%13 == 0)&&(playerCard1%13 == 9 || playerCard1%13 == 10 || playerCard1%13 == 11 || playerCard1%13 == 12))){
+		if(getCardValue(playerCards) == 21){
 			playerWin = true;
 		}
-		if(((dealerCard1%13 == 0)&&(dealerCard2%13 == 9 || dealerCard2%13 == 10 || dealerCard2%13 == 11 || dealerCard2%13 == 12)) || ((dealerCard2%13 == 0)&&(dealerCard1%13 == 9 || dealerCard1%13 == 10 || dealerCard1%13 == 11 || dealerCard1%13 == 12))){
+		if(getCardValue(dealerCards) == 21){
 			dealerWin = true;
 		}
 		
 		if(playerWin && dealerWin){
 			//draw
+			const drawEmbed = new EmbedBuilder()
+				.setColor(0xf5bf62)
+				.setTitle(`It's a draw!`)
+				.addFields(
+					{name: 'Dealer', value: `${getPrettyCards(dealerCards)}`},
+					{name: 'You', value: `${getPrettyCards(playerCards)}`},
+				);
 			interaction.reply({embeds:[drawEmbed]});
 			return;
 		}
 		else if(playerWin){
 			//player wins
+			const winEmbed = new EmbedBuilder()
+				.setColor(0x3bff29)
+				.setTitle(`You win!`)
+				.addFields(
+					{name: 'Dealer', value: `${getPrettyCards(dealerCards)}`},
+					{name: 'You', value: `${getPrettyCards(playerCards)}`},
+				);
 			await interaction.reply({embeds:[winEmbed]});
 			user_data.balance += betAmount;
 			if(user_stats.sanity != 0){
@@ -121,6 +113,13 @@ module.exports = {
 			return;
 		}
 		else if(dealerWin){
+			const loseEmbed = new EmbedBuilder()
+				.setColor(0xff293b)
+				.setTitle(`You lost!`)
+				.addFields(
+					{name: 'Dealer', value: `${getPrettyCards(dealerCards)}`},
+					{name: 'You', value: `${getPrettyCards(playerCards)}`},
+				);
 			//dealer wins
 			interaction.reply({embeds:[loseEmbed]});
 			user_data.balance -= betAmount;
@@ -128,10 +127,11 @@ module.exports = {
 			if(user_stats.sanity < -100){
 				//kill user
 				user_data.killUser(user_data);
-				const loseEmbed = new EmbedBuilder()
-				.setColor(0xff293b)
-				.setTitle(`You have died!`)
-				.setDescription(`Your mental health has dipped too low. You wander into the abyss and never return... You've lost everything!`);
+				const deathEmbed = new EmbedBuilder()
+					.setColor(0xff293b)
+					.setTitle(`You have died!`)
+					.setDescription(`Your mental health has dipped too low. You wander into the abyss and never return... You've lost everything!`);
+				interaction.followUp({embeds:[deathEmbed]});
 			}
 			else{
 				user_data.save();
@@ -141,7 +141,86 @@ module.exports = {
 		}
 		else{
 			//game didnt end right away, start running the main game
-			
+			const row = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('hit')
+						.setLabel('Hit')
+						.setStyle(ButtonStyle.Primary),
+					new ButtonBuilder()
+						.setCustomId('stand')
+						.setLabel('Stand')
+						.setStyle(ButtonStyle.Secondary),
+				);
+			let currentValue = 0;
+			const boardEmbed = new EmbedBuilder()
+				.setColor(0xf5bf62)
+				.setTitle(`Current Table`)
+				.addFields(
+					{name: 'Dealer', value: `${getPrettyCards(dealerCards)}`},
+					{name: 'You', value: `${getPrettyCards(playerCards)}`},
+				);
+			interaction.reply({embeds:[boardEmbed],components:[row]});
+			let collector = interaction.createMessageComponentCollector({ componentType: ComponentType.Button, time: 60000 });
+			collector.once('collect', i => {
+				if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id) return;
+				interaction.editReply({components:[]});
+				if(i.customId == 'hit'){
+					hit();
+				}
+				else if(i.customId == 'stand'){
+					stand();
+				}
+				else{
+					//something strange happened
+				}
+			});
+			collector.end('end', i=> {
+				interaction.editReply({components:[]});
+			});
+			//player functions
+			async function hit(){
+				let newCard = (Math.floor(Math.random() * 52));
+				while(usedCards[newCard]){
+					newCard = (Math.floor(Math.random() * 52));
+				}
+				usedCards[newCard] == true;
+				playerCards.push(newCard);
+				let cardValue = getCardValue(playerCards);
+				if(cardValue > 21){
+					//busted
+					
+				}
+			}
+			async function stand(){
+				
+			}
+			async function endGame(){
+				
+			}
+			//helper functions
+			function getPrettyCards(cardArray){
+				let prettyCards = [];
+				cardArray.forEach(item => {
+					prettyCards.push(blackjackCards[item]);
+				});
+				return prettyCards;
+			}
+			function getCardValue(cardArray){
+				let value = 0;
+				let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
+				let ace = false;
+				cardArray.forEach(item => {
+					if(1 == item%13){
+						ace = true;
+					}
+					value += cardValue[item%13];
+				});
+				if(ace && value+10 <= 21){
+					value += 10;
+				}
+				return value;
+			}
 		}
 	},
 };
