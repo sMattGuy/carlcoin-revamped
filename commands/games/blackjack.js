@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, killUser } = require('../../helper.js');
 
 const blackjackCards = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
 
@@ -29,11 +29,11 @@ module.exports = {
 		let dealerCards = [];
 		let playerCards = [];
 		//dealer
-		drawCard(dealerCards);
-		drawCard(dealerCards);
+		drawCard(dealerCards, 0);
+		drawCard(dealerCards, 0);
 		//player
-		drawCard(playerCards);
-		drawCard(playerCards);
+		drawCard(playerCards, user_stats.luck);
+		drawCard(playerCards, user_stats.luck);
 				
 		//check instant win
 		if(getCardValue(playerCards) == 21){
@@ -63,13 +63,41 @@ module.exports = {
 			}
 			let playerValue = getCardValue(playerCards);
 			
-			const boardEmbed = new EmbedBuilder()
-				.setColor(0xf5bf62)
-				.setTitle(`Current Table`)
-				.addFields(
-					{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-					{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
-				);
+			const boardEmbed = new EmbedBuilder();
+			//sanity check
+			if(user_stats.sanity <= -50){
+				//debuff user for being crazy
+				boardEmbed
+					.setColor(0xf5bf62)
+					.setTitle(`Current Table`)
+					.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
+					.addFields(
+						{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
+						{name: `You (${playerValue})`, value: `??, ??`},
+					);
+			}
+			//int check
+			else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .9){
+				boardEmbed
+					.setColor(0xf5bf62)
+					.setTitle(`Current Table`)
+					.setDescription(`Your INT helps you count the cards... You're sure the dealer has this hand!`)
+					.setDescription
+					.addFields(
+						{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
+						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+					);
+			}
+			else{
+				boardEmbed
+					.setColor(0xf5bf62)
+					.setTitle(`Current Table`)
+					.addFields(
+						{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
+						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+					);
+			}
+				
 			await interaction.reply({embeds:[boardEmbed],components:[row]});
 			let collector = new InteractionCollector(interaction.client,{time: 60000 });
 			collector.once('collect', async i => {
@@ -92,7 +120,7 @@ module.exports = {
 			
 			//player functions
 			async function hit(){
-				drawCard(playerCards);
+				drawCard(playerCards, user_stats.luck);
 				let cardValue = getCardValue(playerCards);
 				if(cardValue >= 21){
 					//busted or at 21
@@ -139,7 +167,7 @@ module.exports = {
 			async function stand(){
 				let dealerTotal = getCardValue(dealerCards);
 				while(dealerTotal < 17){
-					drawCard(dealerCards);
+					drawCard(dealerCards, 0);
 					dealerTotal = getCardValue(dealerCards);
 				}
 				endGame();
@@ -200,10 +228,25 @@ module.exports = {
 			}
 			return value;
 		}
-		function drawCard(cardArray){
+		function drawCard(cardArray, luck){
 			let newCard = (Math.floor(Math.random() * 52));
 			while(usedCards[newCard]){
 				newCard = (Math.floor(Math.random() * 52));
+			}
+			for(let i=0;i<luck;i++){
+				let luckCard = (Math.floor(Math.random() * 52));
+				while(usedCards[luckCard]){
+					luckCard = (Math.floor(Math.random() * 52));
+				}
+				let tempArray = [...cardArray];
+				tempArray.push(newCard);
+				let luckArray = [...cardArray];
+				luckArray.push(luckCard);
+				let currentValue = getCardValue(tempArray);
+				let luckValue = getCardValue(luckArray);
+				if(luckValue > currentValue && luckValue <= 21){
+					newCard = luckCard;
+				}
 			}
 			usedCards[newCard] == true;
 			cardArray.push(newCard);
@@ -221,16 +264,28 @@ module.exports = {
 				);
 			//dealer wins
 			await interaction.editReply({embeds:[loseEmbed],components:[]});
+			//attempt wisdom save
+			if(user_stats.wisdom != 0 && Math.random() + (user_stats.wisdom * 0.001) > .95){
+				const wisSaveEmbed = new EmbedBuilder()
+					.setColor(0xff293b)
+					.setTitle(`But it never happened!`)
+					.setDescription(`You had the WIS to know that this would have been a loss, so you never played in the first place!`);
+				await interaction.followUp({embeds:[wisSaveEmbed]});
+				return;
+			}
+			//attempt evade save
+			if(user_stats.evade != 0 && Math.random() + (user_stats.evade * 0.01) > .80){
+				const evdSaveEmbed = new EmbedBuilder()
+					.setColor(0xff293b)
+					.setTitle(`But you're quick!`)
+					.setDescription(`Using your EVD you quickly pocket half your bet back!`);
+				betAmount = Math.floor(betAmount/2);
+				await interaction.followUp({embeds:[evdSaveEmbed]});
+			}
 			user_data.balance -= betAmount;
 			user_stats.sanity -= betAmount;
 			if(user_stats.sanity < -100){
-				//kill user
-				user_data.killUser(user_data);
-				const deathEmbed = new EmbedBuilder()
-					.setColor(0xff293b)
-					.setTitle(`You have died!`)
-					.setDescription(`Your mental health has dipped too low. You wander into the abyss and never return... You've lost everything!`);
-				await interaction.followUp({embeds:[deathEmbed]});
+				killUser(user_data, user_stats, interaction);
 			}
 			else{
 				user_data.save();

@@ -34,11 +34,15 @@ Reflect.defineProperty(Users.prototype, 'addItem', {
 });
 
 Reflect.defineProperty(Users.prototype, 'getItem', {
-	value: (user, item) => {
-		return User_Items.findOne({
+	value: async (user, item) => {
+		const user_item = await User_Items.findOne({
 			where: {user_id: user.user_id, item_id:item.id},
 			include: ['item'],
 		});
+		if(user_item){
+			return user_item;
+		}
+		return User_Items.create({user_id: user.user_id, item_id:item.id, amount:0});
 	}
 });
 
@@ -51,6 +55,30 @@ Reflect.defineProperty(Users.prototype, 'getItems', {
 	}
 });
 
+Reflect.defineProperty(Users.prototype, 'addUpgrades', {
+	value: (user, upgrade) => {
+		const user_upgrade = User_Upgrades.findOne({
+			where: {user_id: user.user_id, upgrade_id: upgrade.id},
+		});
+		if(user_upgrade){
+			user_upgrade.amount += 1;
+			return user_upgrade.save();
+		}
+		return User_Upgrades.create({user_id: user.user_id, upgrade_id: upgrade.id, amount: 1});
+	}
+});
+Reflect.defineProperty(Users.prototype, 'getUpgrade', {
+	value: async (user, upgrade) => {
+		const user_upgrade = await User_Upgrades.findOne({
+			where: {user_id: user.user_id, upgrade_id: upgrade.id},
+			include: ['upgrade'],
+		});
+		if(user_upgrade){
+			return user_upgrade;
+		}
+		return User_Upgrades.create({user_id: user.user_id, upgrade_id: upgrade.id, amount: 0});
+	}
+});
 Reflect.defineProperty(Users.prototype, 'getUpgrades', {
 	value: (user) => {
 		return User_Upgrades.findAll({
@@ -74,11 +102,15 @@ Reflect.defineProperty(Users.prototype, 'addBuilding', {
 });
 
 Reflect.defineProperty(Users.prototype, 'getBuilding', {
-	value: (user, building) => {
-		return User_Buildings.findOne({
+	value: async (user, building) => {
+		const user_building = await User_Buildings.findOne({
 			where: {user_id: user.user_id, building_id:building.id},
 			include: ['building'],
 		});
+		if(user_building){
+			return user_building;
+		}
+		return User_Buildings.create({user_id: user.user_id, building_id:building.id, amount:0});
 	}
 });
 

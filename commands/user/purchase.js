@@ -67,7 +67,7 @@ module.exports = {
 					//purchase
 					user_data = await get_user(interaction.user.id);
 					user_data.balance -= cost;
-					user_data.addBuilding(user_data, selectedBuilding);
+					await user_data.addBuilding(user_data, selectedBuilding);
 					user_data.save();
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
@@ -123,7 +123,7 @@ module.exports = {
 					//purchase
 					user_data = await get_user(interaction.user.id);
 					user_data.balance -= cost;
-					user_data.addItem(user_data, selectedItem);
+					await user_data.addItem(user_data, selectedItem);
 					user_data.save();
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)

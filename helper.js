@@ -42,4 +42,26 @@ async function giveLevels(user_stats, experience_gain, interaction){
 		await interaction.followUp({embeds:[levelUpEmbed]});
 	}
 }
-module.exports = {get_user, get_user_stats, giveLevels}
+
+async function killUser(user_data, user_stats, interaction){
+	if(user_stats.constitution != 0 && Math.random() + (user_stats.constitution * 0.01) > 0.85){
+		const conSaveEmbed = new EmbedBuilder()
+			.setColor(0xf5bf62)
+			.setTitle(`You almost died!`)
+			.setDescription(`On the brink of insanity, your CON saves you! Now might be a good time to take a Sanity Pill!`);
+		user_stats.sanity = -95;
+		user_stats.save();
+		user_data.save();
+		await interaction.followUp({embeds:[conSaveEmbed]});
+	}
+	else{
+		//kill user
+		user_data.killUser(user_data);
+		const deathEmbed = new EmbedBuilder()
+			.setColor(0xff293b)
+			.setTitle(`You have died!`)
+			.setDescription(`Your mental health has dipped too low. You wander into the abyss and never return... You've lost everything!`);
+		await interaction.followUp({embeds:[deathEmbed]});
+	}
+}
+module.exports = {get_user, get_user_stats, giveLevels, killUser}
