@@ -99,9 +99,10 @@ module.exports = {
 			}
 				
 			await interaction.reply({embeds:[boardEmbed],components:[row],ephemeral:true});
-			let collector = new InteractionCollector(interaction.client,{time: 60000 });
+			let filter = i => i.message.interaction.id == interaction.id || i.user.id == interaction.user.id || i.isButton();
+			let collector = new InteractionCollector(interaction.client,{time: 60000, filter});
 			collector.once('collect', async i => {
-				if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
+				//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
 				collector.stop();
 				await i.update({components:[]});
 				if(i.customId == 'hit'){
@@ -145,9 +146,9 @@ module.exports = {
 						);
 					
 					await interaction.editReply({embeds:[hitEmbed],components:[row],ephemeral:true});
-					collector = new InteractionCollector(interaction.client, { time: 60000 });
+					collector = new InteractionCollector(interaction.client, { time: 60000, filter });
 					collector.on('collect', async i => {
-						if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
+						//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
 						collector.stop();
 						await i.update({components:[]});
 						if(i.customId == 'hit'){

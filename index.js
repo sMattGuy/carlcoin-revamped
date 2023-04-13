@@ -6,6 +6,7 @@ const { Op } = require('sequelize');
 const { Client, codeBlock, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { Users } = require('./dbObjects.js');
 const { token } = require('./config.json');
+const { get_user_stats } = require('../../helper.js');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -68,6 +69,22 @@ let dailyPayout = new cron.CronJob('0 18 * * *', async () => {
 		}
 		user.balance += payout;
 		user.save();
+	});
+});
+let hourlySanity = new cron.CronJob('0 * * * *', async () => {
+	let userList = await Users.findAll();
+	userList.forEach(async user => {
+		let user_stats = await get_user_stats(user.user_id);
+		if(user_stats.sanity != 0){
+			let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*10;
+			if (newSanity < 0 && user_stats.sanity >= 0 || newSanity >= 0 && user_stats.sanity < 0) {
+				user_stats.sanity = 0;
+			}
+			else{
+				user_stats.sanity = newSanity;
+			}
+		}
+		user_stats.save();
 	});
 });
 dailyPayout.start();
