@@ -98,9 +98,10 @@ module.exports = {
 					);
 			}
 				
-			await interaction.reply({embeds:[boardEmbed],components:[row],ephemeral:true});
-			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isButton();
-			let collector = new InteractionCollector(interaction.client,{time: 60000, filter});
+			await interaction.reply({embeds:[boardEmbed],components:[row]});
+			let filter = i => i.user.id == interaction.user.id && i.isButton();
+			let message = await interaction.fetchReply();
+			let collector = message.createMessageComponentCollector({time: 60000, filter});
 			collector.once('collect', async i => {
 				//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
 				collector.stop();
@@ -148,8 +149,8 @@ module.exports = {
 							{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 						);
 					
-					await interaction.editReply({embeds:[hitEmbed],components:[row],ephemeral:true});
-					collector = new InteractionCollector(interaction.client, { time: 60000, filter });
+					await interaction.editReply({embeds:[hitEmbed],components:[row]});
+					collector = message.createMessageComponentCollector({ time: 60000, filter });
 					collector.on('collect', async i => {
 						//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
 						collector.stop();
@@ -199,7 +200,7 @@ module.exports = {
 						{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 						{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 					);
-				await interaction.editReply({embeds:[drawEmbed],components:[],ephemeral:true});
+				await interaction.editReply({embeds:[drawEmbed],components:[]});
 			}
 			else if(playerCardValue > dealerCardValue){
 				//player wins
@@ -264,16 +265,17 @@ module.exports = {
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
 				.setTitle(`You lost!`)
+				.setDescription(`You now have ${user_data.balance - betAmount}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
 			//dealer wins
 			try{
-				await interaction.reply({embeds:[loseEmbed],components:[],ephemeral:true});
+				await interaction.reply({embeds:[loseEmbed],components:[]});
 			}
 			catch(e){
-				await interaction.editReply({embeds:[loseEmbed],components:[],ephemeral:true});
+				await interaction.editReply({embeds:[loseEmbed],components:[]});
 			}
 			//attempt wisdom save
 			if(user_stats.wisdom != 0 && Math.random() + (user_stats.wisdom * 0.001) > .95){
@@ -281,7 +283,7 @@ module.exports = {
 					.setColor(0xff293b)
 					.setTitle(`But it never happened!`)
 					.setDescription(`You had the WIS to know that this would have been a loss, so you never played in the first place!`);
-				await interaction.followUp({embeds:[wisSaveEmbed],ephemeral:true});
+				await interaction.followUp({embeds:[wisSaveEmbed]});
 				return;
 			}
 			//attempt evade save
@@ -289,9 +291,9 @@ module.exports = {
 				const evdSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But you're quick!`)
-					.setDescription(`Using your EVD you quickly pocket half your bet back!`);
+					.setDescription(`Using your EVD you quickly pocket half your bet back! You now have ${user_data.balance - Math.floor(betAmount/2)}CC`);
 				betAmount = Math.floor(betAmount/2);
-				await interaction.followUp({embeds:[evdSaveEmbed],ephemeral:true});
+				await interaction.followUp({embeds:[evdSaveEmbed]});
 			}
 			user_data.balance -= betAmount;
 			user_stats.sanity -= betAmount;
@@ -311,15 +313,16 @@ module.exports = {
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`You win!`)
+				.setDescription(`You now have ${user_data.balance + betAmount}`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
 			try{
-				await interaction.reply({embeds:[winEmbed],components:[],ephemeral:true});
+				await interaction.reply({embeds:[winEmbed],components:[]});
 			}
 			catch(e){
-				await interaction.editReply({embeds:[winEmbed],components:[],ephemeral:true});
+				await interaction.editReply({embeds:[winEmbed],components:[]});
 			}
 			user_data.balance += betAmount;
 			user_stats.sanity += betAmount
