@@ -99,7 +99,7 @@ module.exports = {
 			}
 				
 			await interaction.reply({embeds:[boardEmbed],components:[row],ephemeral:true});
-			let filter = i => i.message.interaction.id == interaction.id || i.user.id == interaction.user.id || i.isButton();
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isButton();
 			let collector = new InteractionCollector(interaction.client,{time: 60000, filter});
 			collector.once('collect', async i => {
 				//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;

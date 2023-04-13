@@ -33,10 +33,10 @@ module.exports = {
 			.setDescription(`Ascending means losing everything! Your mortal possessions will grant you ${prestigeGain} Prestige CC in the afterlife! Are you sure you want to ascend?`);
 			
 		await interaction.reply({embeds:[ascendEmbed],components:[row],ephemeral:true});
-		
-		let collector = new InteractionCollector(interaction.client,{time: 60000 });
+		let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isButton();
+		let collector = new InteractionCollector(interaction.client,{time: 60000, filter});
 		collector.once('collect', async i => {
-			if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
+			//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
 			collector.stop();
 			await i.update({components:[]});
 			if(i.customId == 'ascend'){
@@ -53,18 +53,28 @@ module.exports = {
 						cost += (upgrades[i].id * 50 * users_upgrade.amount)
 					selectMenu.addOptions({label: `${upgrades[i].name}`, description: `Costs ${cost}CC`, value: `${upgrades[i].id}`})
 				}
+				selectMenu.addOptions({label: `Cancel`, description: `Cancel the purchase`, value: `cancel`})
 				const upgradeRow = new ActionRowBuilder().addComponents(selectMenu);
 				const buyEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
 					.setTitle('Select what to purchase!')
 					.setDescription(`This is your only chance to buy an upgrade! You have ${user_data.prestigeBalance} Prestige CC!`)
 				await interaction.editReply({embeds:[buyEmbed],components:[upgradeRow],ephemeral:true});
-				const upgradeCollector = new InteractionCollector(interaction.client, {time: 15000})
+				let upFilter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+				const upgradeCollector = new InteractionCollector(interaction.client, {time: 15000,filter:upFilter})
 				upgradeCollector.on('collect', async menuInteraction => {
-					if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
+					//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
 					upgradeCollector.stop();
 					await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
 					const selected = menuInteraction.values[0];
+					if(selected == 'cancel'){
+						const cancelEmbed = new EmbedBuilder()
+							.setColor(0xf5bf62)
+							.setTitle(`You consumed nothing!`)
+							.setDescription(`See you next time!`);
+						await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
+						return;
+					}
 					//get selected upgrade
 					let selectedUpgrade = await Upgrades.findOne({where:{id: selected}});
 					let cost = selectedUpgrade.cost;

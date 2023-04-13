@@ -36,6 +36,7 @@ module.exports = {
 					cost += (buildings[i].id * 50 * users_building.amount)
 				selectMenu.addOptions({label: `${buildings[i].name}`, description: `Costs ${cost}CC`, value: `${buildings[i].id}`})
 			}
+			selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			const buyEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
@@ -43,12 +44,21 @@ module.exports = {
 				.setDescription(`Use the menu below to make a purchase!`)
 			await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
 			//wait for reply
-			const collector = new InteractionCollector(interaction.client, {time: 15000})
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = new InteractionCollector(interaction.client, {time: 15000, filter})
 			collector.on('collect', async menuInteraction => {
-				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
+				//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
 				collector.stop();
 				await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
 				const selected = menuInteraction.values[0];
+				if(selected == 'cancel'){
+					const cancelEmbed = new EmbedBuilder()
+						.setColor(0xf5bf62)
+						.setTitle(`You bought nothing!`)
+						.setDescription(`See you next time!`);
+					await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
+					return;
+				}
 				//get building based on ID
 				let selectedBuilding = await Buildings.findOne({where:{id: selected}});
 				let cost = selectedBuilding.cost;
@@ -93,6 +103,7 @@ module.exports = {
 					cost += (items[i].id * 50 * users_items.amount)
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
 			}
+			selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			const buyEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
@@ -100,12 +111,21 @@ module.exports = {
 				.setDescription(`Use the menu below to make a purchase!`)
 			await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
 			//wait for reply
-			const collector = new InteractionCollector(interaction.client, {time: 15000})
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = new InteractionCollector(interaction.client, {time: 15000, filter})
 			collector.on('collect', async menuInteraction => {
-				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
+				//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
 				collector.stop()
 				const selected = menuInteraction.values[0];
+				if(selected == 'cancel'){
+					const cancelEmbed = new EmbedBuilder()
+						.setColor(0xf5bf62)
+						.setTitle(`You bought nothing!`)
+						.setDescription(`See you next time!`);
+					await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
+					return;
+				}
 				//get building based on ID
 				let selectedItem = await Items.findOne({where:{id: selected}});
 				let cost = selectedItem.cost;
