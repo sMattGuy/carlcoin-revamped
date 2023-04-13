@@ -49,10 +49,12 @@ module.exports = {
 					{label:'PBalance',description:'Click me!',value:'prestigeBalance',},
 					{label:'Life',description:'Click me!',value:'life',},
 					{label:'Last Worked',description:'Click me!',value:'last_worked',},
+					{label:'Cancel',description:'Click me!',value:'cancel',},
 				);
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
-			const collector = new InteractionCollector(interaction.client, {time: 60000});
+			let message = await interaction.fetchReply();
+			const collector = message.createMessageComponentCollector({time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
@@ -93,10 +95,12 @@ module.exports = {
 					{label:'Wisdom',description:'Click me!',value:'wisdom',},
 					{label:'Constitution',description:'Click me!',value:'constitution',},
 					{label:'Sanity',description:'Click me!',value:'sanity',},
+					{label:'Cancel',description:'Click me!',value:'cancel',},
 				);
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
-			const collector = new InteractionCollector(interaction.client, {time: 60000});
+			let message = await interaction.fetchReply();
+			const collector = message.createMessageComponentCollector({time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
@@ -149,12 +153,18 @@ module.exports = {
 			for(let i=0;i<buildings.length;i++){
 				selectMenu.addOptions({label: `${buildings[i].name}`, description: `Click me!`, value: `${buildings[i].id}`})
 			}
+			selectMenu.addOptions({label:'Cancel',description:'Click me!',value:'cancel'})
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
-			const collector = new InteractionCollector(interaction.client, {time: 60000});
+			let message = await interaction.fetchReply();
+			const collector = message.createMessageComponentCollector({time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
+				if(selected == 'cancel'){
+					interaction.editReply({content:'done!'});
+					return;
+				}
 				let user_data = await get_user(interaction.user.id);
 				let building_data = await Buildings.findOne({where: {id:selected}});
 				let user_building = await user_data.getBuilding(user_data, building_data);
@@ -174,12 +184,18 @@ module.exports = {
 			for(let i=0;i<items.length;i++){
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Click me!`, value: `${items[i].id}`})
 			}
+			selectMenu.addOptions({label:'Cancel',description:'Click me!',value:'cancel'})
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
-			const collector = new InteractionCollector(interaction.client, {time: 60000});
+			let message = await interaction.fetchReply();
+			const collector = message.createMessageComponentCollector({time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
+				if(selected == 'cancel'){
+					interaction.editReply({content:'done!'});
+					return;
+				}
 				let user_data = await get_user(interaction.user.id);
 				let item_data = await Items.findOne({where: {id:selected}});
 				let user_item = await user_data.getItem(user_data, item_data);
@@ -199,12 +215,18 @@ module.exports = {
 			for(let i=0;i<upgrades.length;i++){
 				selectMenu.addOptions({label: `${upgrades[i].name}`, description: `Click me!`, value: `${upgrades[i].id}`})
 			}
+			selectMenu.addOptions({label:'Cancel',description:'Click me!',value:'cancel'})
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
-			const collector = new InteractionCollector(interaction.client, {time: 60000});
+			let message = await interaction.fetchReply();
+			const collector = message.createMessageComponentCollector({time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
+				if(selected == 'cancel'){
+					interaction.editReply({content:'done!'});
+					return;
+				}
 				let user_data = await get_user(interaction.user.id);
 				let upgrade_data = await Upgrades.findOne({where: {id:selected}});
 				let user_upgrade = await user_data.getUpgrade(user_data, upgrade_data);

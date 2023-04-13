@@ -39,6 +39,7 @@ module.exports = {
 					best = coinReward;
 			}
 			best *= coin_increase;
+			best += user_stats.strength;
 			//update user
 			let experience_gain = Math.floor(best/2);
 			const workEmbed = new EmbedBuilder()

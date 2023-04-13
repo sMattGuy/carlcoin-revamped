@@ -40,7 +40,8 @@ module.exports = {
 		await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
 		let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
 		//wait for reply
-		const collector = new InteractionCollector(interaction.client, {time: 15000, filter});
+		let message = await interaction.fetchReply();
+		const collector = message.createMessageComponentCollector({filter, time: 60000});
 		collector.on('collect', async menuInteraction => {
 			//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 			await interaction.editReply({ content: 'Validating purchase!',embeds:[], components: [], ephemeral:true });

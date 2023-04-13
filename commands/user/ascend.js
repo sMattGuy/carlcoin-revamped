@@ -34,7 +34,8 @@ module.exports = {
 			
 		await interaction.reply({embeds:[ascendEmbed],components:[row],ephemeral:true});
 		let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isButton();
-		let collector = new InteractionCollector(interaction.client,{time: 60000, filter});
+		let message = await interaction.fetchReply();
+		const collector = message.createMessageComponentCollector({filter, time: 60000});
 		collector.once('collect', async i => {
 			//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
 			collector.stop();
@@ -61,7 +62,8 @@ module.exports = {
 					.setDescription(`This is your only chance to buy an upgrade! You have ${user_data.prestigeBalance} Prestige CC!`)
 				await interaction.editReply({embeds:[buyEmbed],components:[upgradeRow],ephemeral:true});
 				let upFilter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
-				const upgradeCollector = new InteractionCollector(interaction.client, {time: 15000,filter:upFilter})
+				let message = await interaction.fetchReply();
+				const upgradeCollector = message.createMessageComponentCollector({filter:upFilter, time: 60000});
 				upgradeCollector.on('collect', async menuInteraction => {
 					//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
 					upgradeCollector.stop();
