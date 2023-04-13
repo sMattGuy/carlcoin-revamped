@@ -55,9 +55,9 @@ Reflect.defineProperty(Users.prototype, 'getItems', {
 	}
 });
 
-Reflect.defineProperty(Users.prototype, 'addUpgrades', {
-	value: (user, upgrade) => {
-		const user_upgrade = User_Upgrades.findOne({
+Reflect.defineProperty(Users.prototype, 'addUpgrade', {
+	value: async (user, upgrade) => {
+		const user_upgrade = await User_Upgrades.findOne({
 			where: {user_id: user.user_id, upgrade_id: upgrade.id},
 		});
 		if(user_upgrade){
@@ -177,6 +177,30 @@ Reflect.defineProperty(Users.prototype, 'killUser', {
 		];
 		await Promise.all(removals);
 		user.save();
+		let user_stats = await User_Stats.findOne({where: {user_id: user.user_id}});
+		if(!user_stats){
+			//make new user if couldnt be found
+			user_stats = await User_Stats.create({user_id: user.user_id});
+		}
+		let user_upgrades = await user.getUpgrades(user);
+		for(const currentUpgrade of user_upgrades){
+			if(currentUpgrade.upgrade.name == '57 Leaf Clover'){
+				user_stats.luck += 1 * currentUpgrade.amount;
+			}
+			else if(currentUpgrade.upgrade.name == 'Muscle Tonic'){
+				user_stats.strength += 3 * currentUpgrade.amount;
+			}
+			else if(currentUpgrade.upgrade.name == 'Speed Cola'){
+				user_stats.evade += 3 * currentUpgrade.amount;
+			}
+			else if(currentUpgrade.upgrade.name == 'Thick Skin'){
+				user_stats.defense += 3 * currentUpgrade.amount;
+			}
+			else if(currentUpgrade.upgrade.name == 'Calm Mind'){
+				user_stats.constitution += 3 * currentUpgrade.amount;
+			}
+		}
+		user_stats.save();
 	}
 });
 module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades };

@@ -73,16 +73,16 @@ module.exports = {
 					.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
 					.addFields(
 						{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-						{name: `You (${playerValue})`, value: `??, ??`},
+						{name: `You (??)`, value: `??, ??`},
 					);
 			}
 			//int check
 			else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .9){
+				dealerValue = getCardValue(dealerCards)
 				boardEmbed
 					.setColor(0xf5bf62)
 					.setTitle(`Current Table`)
 					.setDescription(`Your INT helps you count the cards... You're sure the dealer has this hand!`)
-					.setDescription
 					.addFields(
 						{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
 						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
@@ -98,10 +98,11 @@ module.exports = {
 					);
 			}
 				
-			await interaction.reply({embeds:[boardEmbed],components:[row]});
+			await interaction.reply({embeds:[boardEmbed],components:[row],ephemeral:true});
 			let collector = new InteractionCollector(interaction.client,{time: 60000 });
 			collector.once('collect', async i => {
 				if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
+				collector.stop();
 				await i.update({components:[]});
 				if(i.customId == 'hit'){
 					hit();
@@ -115,7 +116,7 @@ module.exports = {
 				}
 			});
 			collector.once('end', async i=> {
-				await interaction.editReply({components:[]});
+				
 			});
 			
 			//player functions
@@ -143,10 +144,11 @@ module.exports = {
 							{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 						);
 					
-					await interaction.editReply({embeds:[hitEmbed],components:[row]});
+					await interaction.editReply({embeds:[hitEmbed],components:[row],ephemeral:true});
 					collector = new InteractionCollector(interaction.client, { time: 60000 });
-					collector.once('collect', async i => {
+					collector.on('collect', async i => {
 						if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
+						collector.stop();
 						await i.update({components:[]});
 						if(i.customId == 'hit'){
 							hit();
@@ -159,8 +161,8 @@ module.exports = {
 							console.log('im not supposed to be here')
 						}
 					});
-					collector.once('end', async i=> {
-						await interaction.editReply({components:[]});
+					collector.on('end', async i=> {
+						
 					});
 				}
 			}
@@ -172,38 +174,38 @@ module.exports = {
 				}
 				endGame();
 			}
-			async function endGame(){
-				let playerCardValue = getCardValue(playerCards);
-				let dealerCardValue = getCardValue(dealerCards);
-				if(playerCardValue > 21){
-					//bust
-					lose();
-				}
-				else if(dealerCardValue > 21){
-					//dealer bust
-					win();
-				}
-				else if(dealerCardValue == playerCardValue){
-					//draw
-					const drawEmbed = new EmbedBuilder()
-						.setColor(0xf5bf62)
-						.setTitle(`It's a draw!`)
-						.addFields(
-							{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
-							{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
-						);
-					await interaction.editReply({embeds:[drawEmbed],components:[]});
-				}
-				else if(playerCardValue > dealerCardValue){
-					//player wins
-					win();
-				}
-				else{
-					//player lost
-					lose();
-				}
-				return;
+		}
+		async function endGame(){
+			let playerCardValue = getCardValue(playerCards);
+			let dealerCardValue = getCardValue(dealerCards);
+			if(playerCardValue > 21){
+				//bust
+				lose();
 			}
+			else if(dealerCardValue > 21){
+				//dealer bust
+				win();
+			}
+			else if(dealerCardValue == playerCardValue){
+				//draw
+				const drawEmbed = new EmbedBuilder()
+					.setColor(0xf5bf62)
+					.setTitle(`It's a draw!`)
+					.addFields(
+						{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
+						{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
+					);
+				await interaction.editReply({embeds:[drawEmbed],components:[],ephemeral:true});
+			}
+			else if(playerCardValue > dealerCardValue){
+				//player wins
+				win();
+			}
+			else{
+				//player lost
+				lose();
+			}
+			return;
 		}
 		//helper functions
 		function getPrettyCards(cardArray){
@@ -263,24 +265,29 @@ module.exports = {
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
 			//dealer wins
-			await interaction.editReply({embeds:[loseEmbed],components:[]});
+			try{
+				await interaction.reply({embeds:[loseEmbed],components:[],ephemeral:true});
+			}
+			catch(e){
+				await interaction.editReply({embeds:[loseEmbed],components:[],ephemeral:true});
+			}
 			//attempt wisdom save
 			if(user_stats.wisdom != 0 && Math.random() + (user_stats.wisdom * 0.001) > .95){
 				const wisSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But it never happened!`)
 					.setDescription(`You had the WIS to know that this would have been a loss, so you never played in the first place!`);
-				await interaction.followUp({embeds:[wisSaveEmbed]});
+				await interaction.followUp({embeds:[wisSaveEmbed],ephemeral:true});
 				return;
 			}
 			//attempt evade save
-			if(user_stats.evade != 0 && Math.random() + (user_stats.evade * 0.01) > .80){
+			else if(user_stats.evade != 0 && Math.random() + (user_stats.evade * 0.01) > .80){
 				const evdSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But you're quick!`)
 					.setDescription(`Using your EVD you quickly pocket half your bet back!`);
 				betAmount = Math.floor(betAmount/2);
-				await interaction.followUp({embeds:[evdSaveEmbed]});
+				await interaction.followUp({embeds:[evdSaveEmbed],ephemeral:true});
 			}
 			user_data.balance -= betAmount;
 			user_stats.sanity -= betAmount;
@@ -304,7 +311,12 @@ module.exports = {
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
-			await interaction.editReply({embeds:[winEmbed],components:[]});
+			try{
+				await interaction.reply({embeds:[winEmbed],components:[],ephemeral:true});
+			}
+			catch(e){
+				await interaction.editReply({embeds:[winEmbed],components:[],ephemeral:true});
+			}
 			user_data.balance += betAmount;
 			user_stats.sanity += betAmount
 			if(user_stats.sanity > 100){

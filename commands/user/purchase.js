@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, Events, StringSelectMenuBuilder, ComponentType, InteractionCollector } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, InteractionCollector } = require('discord.js');
 const { get_user, get_user_stats } = require('../../helper.js');
 const { Buildings, Items } = require('../../dbObjects.js');
 
@@ -46,6 +46,7 @@ module.exports = {
 			const collector = new InteractionCollector(interaction.client, {time: 15000})
 			collector.on('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
+				collector.stop();
 				await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
 				const selected = menuInteraction.values[0];
 				//get building based on ID
@@ -77,7 +78,7 @@ module.exports = {
 				}
 			});
 			collector.on('end', collected => {
-				interaction.editReply({components:[], ephemeral:true});
+				
 			});
 		}
 		else{
@@ -103,6 +104,7 @@ module.exports = {
 			collector.on('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
+				collector.stop()
 				const selected = menuInteraction.values[0];
 				//get building based on ID
 				let selectedItem = await Items.findOne({where:{id: selected}});
@@ -125,6 +127,24 @@ module.exports = {
 					user_data.balance -= cost;
 					await user_data.addItem(user_data, selectedItem);
 					user_data.save();
+					if(selectedItem.name == 'Hard Hat'){
+						user_stats.defense += 1;
+					}
+					else if(selectedItem.name == 'Homerun Bat'){
+						user_stats.strength += 1;
+					}
+					else if(selectedItem.name == 'Fog Machine'){
+						user_stats.evade += 1;
+					}
+					else if(selectedItem.name == 'Nerd Glasses'){
+						user_stats.intel += 1;
+					}
+					else if(selectedItem.name == 'Ponder Orb'){
+						user_stats.wisdom += 1;
+					}
+					else if(selectedItem.name == 'Meditation Orb'){
+						user_stats.constitution += 1;
+					}
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
 						.setTitle(`You bought 1 ${selectedItem.name}!`)
@@ -133,7 +153,7 @@ module.exports = {
 				}
 			});
 			collector.on('end', collected => {
-				interaction.editReply({components:[], ephemeral:true});
+				
 			});
 		}
 	},

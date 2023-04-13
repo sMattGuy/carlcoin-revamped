@@ -35,7 +35,6 @@ sequelize.sync({ force, alter }).then(async () => {
 		Items.upsert({ name: 'Nerd Glasses', cost: 1000, consume: false }),
 		Items.upsert({ name: 'Ponder Orb', cost: 2000, consume: false }),
 		Items.upsert({ name: 'Meditation Orb', cost: 2000, consume: false }),
-		Items.upsert({ name: 'Flower Crown', cost: 3000, consume: false }),
 		Items.upsert({ name: 'Energy Drink', cost: 20, consume: true }),
 		Items.upsert({ name: 'Sanity Pill', cost: 50, consume: true }),
 		Upgrades.upsert({ name: 'Jackhammer', cost: 1000 }),
