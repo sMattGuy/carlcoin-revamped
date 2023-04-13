@@ -124,9 +124,12 @@ module.exports = {
 			async function hit(){
 				drawCard(playerCards, user_stats.luck);
 				let cardValue = getCardValue(playerCards);
-				if(cardValue >= 21){
+				if(cardValue > 21){
 					//busted or at 21
 					endGame();
+				}
+				else if(cardValue == 21){
+					stand();
 				}
 				else{
 					let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
