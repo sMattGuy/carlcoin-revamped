@@ -122,7 +122,7 @@ module.exports = {
 					}
 				});
 				upgradeCollector.on('end', () => {
-					
+					await interaction.editReply({components:[],ephemeral:true});
 				});
 			}
 			else if(i.customId == 'cancel'){
@@ -138,7 +138,7 @@ module.exports = {
 			}
 		});
 		collector.once('end', async i=> {
-			
+			await interaction.editReply({components:[],ephemeral:true});
 		});
 	},
 };

@@ -54,9 +54,10 @@ module.exports = {
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
 			let message = await interaction.fetchReply();
-			const collector = message.createMessageComponentCollector({time: 60000});
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = message.createMessageComponentCollector({filter, time: 60000});
 			collector.once('collect', async menuInteraction => {
-				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
+				//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
 				let user_data = await get_user(user.id);
 				if(selected == 'balance'){
@@ -76,7 +77,7 @@ module.exports = {
 				return;
 			});
 			collector.on('end', () => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 		else if(optionChoice == 'stats'){
@@ -100,7 +101,8 @@ module.exports = {
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
 			let message = await interaction.fetchReply();
-			const collector = message.createMessageComponentCollector({time: 60000});
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = message.createMessageComponentCollector({filter, time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
@@ -143,7 +145,7 @@ module.exports = {
 				return;
 			});
 			collector.on('end', () => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 		else if(optionChoice == 'buildings'){
@@ -157,7 +159,8 @@ module.exports = {
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
 			let message = await interaction.fetchReply();
-			const collector = message.createMessageComponentCollector({time: 60000});
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = message.createMessageComponentCollector({filter, time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
@@ -174,7 +177,7 @@ module.exports = {
 				return;
 			});
 			collector.on('end', () => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 		else if(optionChoice == 'items'){
@@ -188,7 +191,8 @@ module.exports = {
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
 			let message = await interaction.fetchReply();
-			const collector = message.createMessageComponentCollector({time: 60000});
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = message.createMessageComponentCollector({filter, time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
@@ -205,7 +209,7 @@ module.exports = {
 				return;
 			});
 			collector.on('end', () => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 		else if(optionChoice == 'upgrades'){
@@ -219,7 +223,8 @@ module.exports = {
 			const row = new ActionRowBuilder().addComponents(selectMenu);
 			await interaction.reply({components:[row],ephemeral:true});
 			let message = await interaction.fetchReply();
-			const collector = message.createMessageComponentCollector({time: 60000});
+			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+			const collector = message.createMessageComponentCollector({filter, time: 60000});
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
@@ -236,7 +241,7 @@ module.exports = {
 				return;
 			});
 			collector.on('end', () => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 	},

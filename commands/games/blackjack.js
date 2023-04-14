@@ -118,7 +118,7 @@ module.exports = {
 				}
 			});
 			collector.once('end', async i=> {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 			
 			//player functions
@@ -167,7 +167,7 @@ module.exports = {
 						}
 					});
 					collector.on('end', async i=> {
-						
+						await interaction.editReply({components:[],ephemeral:true});
 					});
 				}
 			}

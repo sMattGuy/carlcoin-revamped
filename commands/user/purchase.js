@@ -89,7 +89,7 @@ module.exports = {
 				}
 			});
 			collector.on('end', collected => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 		else{
@@ -175,7 +175,7 @@ module.exports = {
 				}
 			});
 			collector.on('end', collected => {
-				
+				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
 	},
