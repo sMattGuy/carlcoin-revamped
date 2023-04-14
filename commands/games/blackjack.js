@@ -255,7 +255,7 @@ module.exports = {
 					newCard = luckCard;
 				}
 			}
-			usedCards[newCard] == true;
+			usedCards[newCard] = true;
 			cardArray.push(newCard);
 		}
 		
@@ -313,7 +313,7 @@ module.exports = {
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`You win!`)
-				.setDescription(`You now have ${user_data.balance + betAmount}`)
+				.setDescription(`You now have ${user_data.balance + betAmount}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
