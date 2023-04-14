@@ -88,7 +88,7 @@ module.exports = {
 					await interaction.followUp({embeds:[bought], ephemeral:true});
 				}
 			});
-			collector.on('end', collected => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
@@ -174,7 +174,7 @@ module.exports = {
 					await interaction.followUp({embeds:[bought], ephemeral:true});
 				}
 			});
-			collector.on('end', collected => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}

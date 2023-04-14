@@ -76,7 +76,7 @@ module.exports = {
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});
 				return;
 			});
-			collector.on('end', () => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
@@ -144,7 +144,7 @@ module.exports = {
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});
 				return;
 			});
-			collector.on('end', () => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
@@ -176,7 +176,7 @@ module.exports = {
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});
 				return;
 			});
-			collector.on('end', () => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
@@ -208,7 +208,7 @@ module.exports = {
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});
 				return;
 			});
-			collector.on('end', () => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
@@ -240,7 +240,7 @@ module.exports = {
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});
 				return;
 			});
-			collector.on('end', () => {
+			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 		}
