@@ -23,8 +23,8 @@ module.exports = {
 		let user = interaction.options.getUser('user') ?? interaction.user;
 		let menu_option = interaction.options.getString('menu');
 		
-		let user_data = await get_user(interaction.user.id);
-		let user_stats = await get_user_stats(interaction.user.id);
+		let user_data = await get_user(user.id);
+		let user_stats = await get_user_stats(user.id);
 		let user_items = await user_data.getItems(user_data);
 		let user_upgrades = await user_data.getUpgrades(user_data);
 		let user_buildings = await user_data.getBuildings(user_data);

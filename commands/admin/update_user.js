@@ -58,7 +58,7 @@ module.exports = {
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
-				let user_data = await get_user(interaction.user.id);
+				let user_data = await get_user(user.id);
 				if(selected == 'balance'){
 					user_data.balance = amount;
 				}
@@ -104,7 +104,7 @@ module.exports = {
 			collector.once('collect', async menuInteraction => {
 				if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
-				let user_stats = await get_user_stats(interaction.user.id);
+				let user_stats = await get_user_stats(user.id);
 				if(selected == 'experience'){
 					user_stats.experience = amount;
 				}
@@ -165,7 +165,7 @@ module.exports = {
 					interaction.editReply({content:'done!'});
 					return;
 				}
-				let user_data = await get_user(interaction.user.id);
+				let user_data = await get_user(user.id);
 				let building_data = await Buildings.findOne({where: {id:selected}});
 				let user_building = await user_data.getBuilding(user_data, building_data);
 				user_building.amount = amount;
@@ -196,7 +196,7 @@ module.exports = {
 					interaction.editReply({content:'done!'});
 					return;
 				}
-				let user_data = await get_user(interaction.user.id);
+				let user_data = await get_user(user.id);
 				let item_data = await Items.findOne({where: {id:selected}});
 				let user_item = await user_data.getItem(user_data, item_data);
 				user_item.amount = amount;
@@ -227,7 +227,7 @@ module.exports = {
 					interaction.editReply({content:'done!'});
 					return;
 				}
-				let user_data = await get_user(interaction.user.id);
+				let user_data = await get_user(user.id);
 				let upgrade_data = await Upgrades.findOne({where: {id:selected}});
 				let user_upgrade = await user_data.getUpgrade(user_data, upgrade_data);
 				user_upgrade.amount = amount;
