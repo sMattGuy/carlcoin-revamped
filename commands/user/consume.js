@@ -71,12 +71,12 @@ module.exports = {
 				return;
 			}
 		
-			if(user_items.item_id == 9){
+			if(user_items.item.name == 'Energy Drink'){
 				//energy drink
 				user_data.last_worked -= 7200000;
 				user_data.save();
 			}
-			else if(user_items.item_id == 10){
+			else if(user_items.item.name == 'Sanity Pill'){
 				//sanity pill
 				if(user_stats.sanity != 0){
 					let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*15;

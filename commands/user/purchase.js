@@ -131,6 +131,7 @@ module.exports = {
 				//get building based on ID
 				let selectedItem = await Items.findOne({where:{id: selected}});
 				let cost = selectedItem.cost;
+				user_data = await get_user(interaction.user.id);
 				let users_items = await user_data.getItem(user_data, selectedItem);
 				if(users_items)
 					cost += (selectedItem.id * 50 * users_items.amount);
@@ -145,7 +146,6 @@ module.exports = {
 				}
 				else{
 					//purchase
-					user_data = await get_user(interaction.user.id);
 					user_data.balance -= cost;
 					await user_data.addItem(user_data, selectedItem);
 					user_data.save();
