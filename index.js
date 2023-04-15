@@ -88,6 +88,6 @@ let hourlySanity = new cron.CronJob('0 * * * *', async () => {
 	});
 });
 dailyPayout.start();
-
+hourlySanity.start();
 // Log in to Discord with your client's token
 client.login(token);
