@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		payout: {
 			type: DataTypes.INTEGER,
+			defaultValue: 1,
 			allowNull: false,
 		},
 	}, {
