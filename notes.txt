@@ -9,13 +9,13 @@ stats:
  sanity
 
 buildings:
- house 	100 + 50 per owned
- apartment 	250 + 125 per owned
- mansion 	600 + 250 per owned
- skyscraper 1250 + 500 per owned
- city 	2550 + 1000 per owned
- country 	5150 + 2000 per owned
- satellite 	10200 + 4000 per owned
+ house 	100 + 50 per owned	10 per day
+ apartment 	250 + 125 per owned	25 per day
+ mansion 	600 + 250 per owned	50 per day
+ skyscraper 1250 + 500 per owned	100 per day
+ city 	2550 + 1000 per owned	200 per day
+ country 	5150 + 2000 per owned	400 per day
+ satellite 	10200 + 4000 per owned	800 per day
 
 items:
  diamond pick	increases work yield

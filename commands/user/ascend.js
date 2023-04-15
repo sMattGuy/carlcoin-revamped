@@ -51,7 +51,7 @@ module.exports = {
 					let cost = upgrades[i].cost
 					let users_upgrade = await user_data.getUpgrade(user_data, upgrades[i]);
 					if(users_upgrade)
-						cost += (upgrades[i].id * 50 * users_upgrade.amount)
+						cost += (upgrades[i].rank * 50 * users_upgrade.amount)
 					selectMenu.addOptions({label: `${upgrades[i].name}`, description: `Costs ${cost}CC`, value: `${upgrades[i].id}`})
 				}
 				selectMenu.addOptions({label: `Cancel`, description: `Cancel the purchase`, value: `cancel`})
@@ -82,7 +82,7 @@ module.exports = {
 					let cost = selectedUpgrade.cost;
 					let users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 					if(users_upgrades)
-						cost += (selectedUpgrade.id * 50 * users_upgrades.amount);
+						cost += (selectedUpgrade.rank * 50 * users_upgrades.amount);
 					//check if user can afford it
 					if(user_data.prestigeBalance - cost < 0){
 						//cant afford

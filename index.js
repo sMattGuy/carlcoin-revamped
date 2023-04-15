@@ -65,7 +65,7 @@ let dailyPayout = new cron.CronJob('0 18 * * *', async () => {
 		let userBuildings = await user.getBuildings(user);
 		let payout = 0;
 		for(let i=0;i<userBuildings.length;i++){
-			payout += (userBuildings[i].building.id * 10) * userBuildings[i].amount;
+			payout += userBuildings[i].building.payout * userBuildings[i].amount;
 		}
 		user.balance += payout;
 		user.save();

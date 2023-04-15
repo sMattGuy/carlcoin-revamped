@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 		},
+		payout: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
 	}, {
 		timestamps: false,
 	});

@@ -33,7 +33,7 @@ module.exports = {
 				let cost = buildings[i].cost
 				let users_building = await user_data.getBuilding(user_data, buildings[i]);
 				if(users_building)
-					cost += (buildings[i].id * 50 * users_building.amount)
+					cost += (buildings[i].payout * 50 * users_building.amount)
 				selectMenu.addOptions({label: `${buildings[i].name}`, description: `Costs ${cost}CC`, value: `${buildings[i].id}`})
 			}
 			selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
@@ -65,7 +65,7 @@ module.exports = {
 				let cost = selectedBuilding.cost;
 				let users_building = await user_data.getBuilding(user_data, selectedBuilding);
 				if(users_building)
-					cost += (selectedBuilding.id * 50 * users_building.amount);
+					cost += (selectedBuilding.payout * 50 * users_building.amount);
 				//check if user can afford it
 				if(user_data.balance - cost < 0){
 					//cant afford
@@ -101,7 +101,7 @@ module.exports = {
 				let cost = items[i].cost
 				let users_items = await user_data.getItem(user_data, items[i]);
 				if(users_items)
-					cost += (items[i].id * 50 * users_items.amount)
+					cost += (items[i].rank * 50 * users_items.amount)
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
 			}
 			selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
@@ -134,7 +134,7 @@ module.exports = {
 				user_data = await get_user(interaction.user.id);
 				let users_items = await user_data.getItem(user_data, selectedItem);
 				if(users_items)
-					cost += (selectedItem.id * 50 * users_items.amount);
+					cost += (selectedItem.rank * 50 * users_items.amount);
 				//check if user can afford it
 				if(user_data.balance - cost < 0){
 					//cant afford

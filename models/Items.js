@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 		},
+		rank: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
 		consume: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
