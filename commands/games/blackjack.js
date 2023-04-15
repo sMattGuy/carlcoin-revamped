@@ -34,12 +34,14 @@ module.exports = {
 		//player
 		drawCard(playerCards, user_stats.luck);
 		drawCard(playerCards, user_stats.luck);
-				
+		let naturalWin = false;	
 		//check instant win
 		if(getCardValue(playerCards) == 21){
+			naturalWin = true;
 			endGame();
 		}
 		else if(getCardValue(dealerCards) == 21){
+			naturalWin = true;
 			endGame();
 		}
 		else{
@@ -310,6 +312,9 @@ module.exports = {
 			//player wins
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
+			if(naturalWin){
+				betAmount = Math.floor(betAmount * 1.5)
+			}
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`You win!`)
