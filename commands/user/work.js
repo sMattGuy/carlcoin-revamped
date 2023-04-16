@@ -45,7 +45,7 @@ module.exports = {
 			const workEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle('Off to work!')
-				.setDescription(`You worked hard in the Carlcoin Mines and got ${best}CC! You also got ${experience_gain}XP!`)
+				.setDescription(`You worked hard in the Carlcoin Mines and got ${best}CC! You now have ${user.balance + best}CC and got ${experience_gain}XP!`)
 			await interaction.reply({embeds:[workEmbed]});
 			user.last_worked = Date.now();
 			user.balance += best;
