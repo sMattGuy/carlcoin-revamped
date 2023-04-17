@@ -11,7 +11,12 @@ module.exports = {
 		for(let i=0;i<list.length;i++){
 			try{
 				const username = await interaction.guild.members.fetch(list[i].user_id).then(userf => {return userf.displayName});
-				message += `${i+1}. ${username}: ${list[i].balance}\n`;
+				let user_buildings = await list[i].getBuildings(list[i]);
+				let currentValue = list[i].balance;
+				for(let j=0;j<user_buildings.length;j++){
+					currentValue += user_buildings[j].building.cost * user_buildings[j].amount;
+				}
+				message += `${i+1}. ${username}: ${currentValue}\n`;
 			} catch(e){
 				console.log('failed to get username');
 			}
