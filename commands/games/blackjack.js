@@ -28,6 +28,7 @@ module.exports = {
 		
 		let dealerCards = [];
 		let playerCards = [];
+		let playingGame = false;
 		//dealer
 		drawCard(dealerCards, 0);
 		drawCard(dealerCards, 0);
@@ -103,9 +104,9 @@ module.exports = {
 			await interaction.reply({embeds:[boardEmbed],components:[row]});
 			let filter = i => i.user.id == interaction.user.id && i.isButton();
 			let message = await interaction.fetchReply();
-			let collector = message.createMessageComponentCollector({time: 60000, filter});
-			collector.once('collect', async i => {
-				//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
+			let collector = message.createMessageComponentCollector({time: 45000, filter});
+			collector.on('collect', async i => {
+				playingGame = true;
 				collector.stop();
 				await i.update({components:[]});
 				if(i.customId == 'hit'){
@@ -119,19 +120,32 @@ module.exports = {
 					console.log('im not supposed to be here')
 				}
 			});
-			collector.once('end', async i=> {
-				await interaction.editReply({components:[],ephemeral:true});
+			collector.on('end', async i=> {
+				await interaction.editReply({components:[]});
+				if(!playingGame){
+					playingGame = true;
+					//user timed out, auto loss
+					const timeEmbed = new EmbedBuilder()
+						.setColor(0xf5bf62)
+						.setTitle(`You didn't respond in time!`)
+						.setDescription(`Not responding counts as a loss!`)
+					await interaction.followUp({embeds:[timeEmbed]});
+					lose();
+				}
 			});
 			
 			//player functions
 			async function hit(){
+				let playingGameHit = false;
 				drawCard(playerCards, user_stats.luck);
 				let cardValue = getCardValue(playerCards);
 				if(cardValue > 21){
+					playingGameHit = true;
 					//busted or at 21
 					endGame();
 				}
 				else if(cardValue == 21){
+					playingGameHit = true;
 					stand();
 				}
 				else{
@@ -152,10 +166,10 @@ module.exports = {
 						);
 					
 					await interaction.editReply({embeds:[hitEmbed],components:[row]});
-					collector = message.createMessageComponentCollector({ time: 60000, filter });
-					collector.on('collect', async i => {
-						//if(i.message.interaction.id != interaction.id || i.user.id != interaction.user.id || !i.isButton()) return;
-						collector.stop();
+					let hitCollector = message.createMessageComponentCollector({ time: 45000, filter });
+					hitCollector.on('collect', async i => {
+						playingGameHit = true;
+						hitCollector.stop();
 						await i.update({components:[]});
 						if(i.customId == 'hit'){
 							hit();
@@ -168,12 +182,23 @@ module.exports = {
 							console.log('im not supposed to be here')
 						}
 					});
-					collector.on('end', async i=> {
-						await interaction.editReply({components:[],ephemeral:true});
+					hitCollector.on('end', async i=> {
+						await interaction.editReply({components:[]});
+						if(!playingGameHit){
+							playingGameHit = true;
+							//user timed out, auto loss
+							const timeEmbed = new EmbedBuilder()
+								.setColor(0xf5bf62)
+								.setTitle(`You didn't respond in time!`)
+								.setDescription(`Not responding counts as a loss!`)
+							await interaction.followUp({embeds:[timeEmbed]});
+							lose();
+						}
 					});
 				}
 			}
 			async function stand(){
+				playingGame = true;
 				let dealerTotal = getCardValue(dealerCards);
 				while(dealerTotal < 17){
 					drawCard(dealerCards, 0);
@@ -183,6 +208,7 @@ module.exports = {
 			}
 		}
 		async function endGame(){
+			playingGame = true;
 			let playerCardValue = getCardValue(playerCards);
 			let dealerCardValue = getCardValue(dealerCards);
 			if(playerCardValue > 21){
@@ -262,6 +288,7 @@ module.exports = {
 		}
 		
 		async function lose(){
+			playingGame = true;
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
 			const loseEmbed = new EmbedBuilder()
@@ -299,6 +326,13 @@ module.exports = {
 			}
 			user_data.balance -= betAmount;
 			user_stats.sanity -= betAmount;
+			if(user_stats.sanity <= -50){
+				const insaneEmbed = new EmbedBuilder()
+					.setColor(0xff293b)
+					.setTitle(`Something doesn't feel right...`)
+					.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
+				await interaction.followUp({embeds:[insaneEmbed]});
+			}
 			if(user_stats.sanity < -100){
 				killUser(user_data, user_stats, interaction);
 			}
@@ -310,6 +344,7 @@ module.exports = {
 		}
 		async function win(){
 			//player wins
+			playingGame = true;
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
 			if(naturalWin){
