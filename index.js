@@ -58,7 +58,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-let dailyPayout = new cron.CronJob('0 18 * * *', async () => {
+async function dailyp(){
 	//get users buildings and pay out rent
 	let userList = await Users.findAll();
 	userList.forEach(async user => {
@@ -70,8 +70,8 @@ let dailyPayout = new cron.CronJob('0 18 * * *', async () => {
 		user.balance += payout;
 		user.save();
 	});
-});
-let hourlySanity = new cron.CronJob('0 * * * *', async () => {
+}
+async function hourlys(){
 	let userList = await Users.findAll();
 	userList.forEach(async user => {
 		let user_stats = await get_user_stats(user.user_id);
@@ -86,7 +86,9 @@ let hourlySanity = new cron.CronJob('0 * * * *', async () => {
 		}
 		user_stats.save();
 	});
-});
+}
+let dailyPayout = new cron.CronJob('0 18 * * *', dailyp);
+let hourlySanity = new cron.CronJob('0 * * * *', hourlys);
 dailyPayout.start();
 hourlySanity.start();
 // Log in to Discord with your client's token
