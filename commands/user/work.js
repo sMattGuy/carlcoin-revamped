@@ -19,14 +19,14 @@ module.exports = {
 			let pickaxe = items.findIndex(item => item.name == "Diamond Pick");
 			if(pickaxe >= 0 && items[pickaxe].amount > 0){
 				//has pickaxe, increase multiplier
-				coin_increase += 2 * items[pickaxe].amount;
+				coin_increase += 1 * items[pickaxe].amount;
 			}
 			//check upgrades
 			let upgrades = await user.getUpgrades(user);
 			let hammer = upgrades.findIndex(upgrade => upgrade.name == "Jackhammer");
 			if(hammer >= 0 && upgrades[hammer].amount > 0){
 				//has pickaxe, increase multiplier
-				coin_increase += 10 * upgrades[hammer].amount;
+				coin_increase += 5 * upgrades[hammer].amount;
 			}
 			//check sanity level and modify max coins
 			let sanityPercent = user_stats.sanity / 100;
