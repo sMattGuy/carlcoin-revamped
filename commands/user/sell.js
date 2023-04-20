@@ -44,12 +44,12 @@ module.exports = {
 		const collector = message.createMessageComponentCollector({filter, time: 60000});
 		collector.on('collect', async menuInteraction => {
 			//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
-			await interaction.editReply({ content: 'Validating purchase!',embeds:[], components: [], ephemeral:true });
+			await interaction.editReply({ content: 'Validating Sell!',embeds:[], components: [], ephemeral:true });
 			const selected = menuInteraction.values[0];
 			if(selected == 'cancel'){
 				const cancelEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
-					.setTitle(`You consumed nothing!`)
+					.setTitle(`You sold nothing!`)
 					.setDescription(`See you next time!`);
 				await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
 				return;
