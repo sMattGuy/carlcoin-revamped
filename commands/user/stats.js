@@ -40,6 +40,10 @@ module.exports = {
 				returnToWork = Math.floor(returnToWork / 60); //mins
 				canWork = `No, ${returnToWork} mins left`
 			}
+			let dailyPayout = 0;
+			for(const build of user_buildings){
+				dailyPayout += build.building.payout * build.amount;
+			}
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle('General Stats')
@@ -49,6 +53,7 @@ module.exports = {
 					{name: 'Prestige Balance', value: `${user_data.prestigeBalance}`, inline: true},
 					{name: 'Current Life', value: `${user_data.life}`, inline: true},
 					{name: 'Can Work?', value: `${canWork}`, inline: true},
+					{name: 'Daily Payout', value: `${dailyPayout}`, inline: true},
 				);
 			await interaction.reply({embeds:[levelUpEmbed]});
 		}
