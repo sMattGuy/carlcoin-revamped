@@ -44,7 +44,7 @@ async function giveLevels(user_stats, experience_gain, interaction){
 }
 
 async function killUser(user_data, user_stats, interaction){
-	if(user_stats.constitution != 0 && Math.random() + (user_stats.constitution * 0.01) > 0.85){
+	if(user_stats.constitution != 0 && Math.random() + (user_stats.constitution * 0.01) > 0.95){
 		const conSaveEmbed = new EmbedBuilder()
 			.setColor(0xf5bf62)
 			.setTitle(`You almost died!`)

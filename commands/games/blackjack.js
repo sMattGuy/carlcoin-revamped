@@ -80,7 +80,7 @@ module.exports = {
 					);
 			}
 			//int check
-			else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .9){
+			else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
 				dealerValue = getCardValue(dealerCards)
 				boardEmbed
 					.setColor(0xf5bf62)
@@ -316,7 +316,7 @@ module.exports = {
 				return;
 			}
 			//attempt evade save
-			else if(user_stats.evade != 0 && Math.random() + (user_stats.evade * 0.01) > .80){
+			else if(user_stats.evade != 0 && Math.random() + (user_stats.evade * 0.01) > .90){
 				const evdSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But you're quick!`)
