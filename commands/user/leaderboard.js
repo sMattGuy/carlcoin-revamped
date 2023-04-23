@@ -5,8 +5,8 @@ module.exports = {
 		.setName('leaderboard')
 		.setDescription('See the top 10 richest!'),
 	async execute(interaction) {
-		let list = await Users.findAll({order:[['balance','DESC']], limit: 10});
-		let message = `Top 10 Carlcoiners\n`;
+		let list = await Users.findAll();
+		let userArray =  [];
 		await interaction.deferReply();
 		for(let i=0;i<list.length;i++){
 			try{
@@ -16,10 +16,17 @@ module.exports = {
 				for(let j=0;j<user_buildings.length;j++){
 					currentValue += user_buildings[j].building.cost * user_buildings[j].amount;
 				}
-				message += `${i+1}. ${username}: ${currentValue}\n`;
+				userArray.push({'name':username,'balance':currentValue});
 			} catch(e){
 				console.log('failed to get username');
 			}
+		}
+		userArray.sort(function (a,b){
+			return (parseInt(b.balance) - parseInt(a.balance));
+		});
+		let message = 'Top 10 Carlcoin Earners\n';
+		for(let i=0;i<10;i++){
+			message += `${i+1}. ${userArray[i].name}: ${userArray[i].balance}\n`;
 		}
 		await interaction.editReply({content:codeBlock(`${message}`)});
 	},
