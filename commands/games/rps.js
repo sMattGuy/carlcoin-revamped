@@ -59,7 +59,7 @@ module.exports = {
 				.setStyle(ButtonStyle.Danger),
 		);
 		const accCollector = await interaction.channel.createMessageComponentCollector({filter:startFilter, time: 60000});
-		await interaction.editReply({content:`${optionOpp}! You have been challenged to RPS with ${bet_amount}CC on the line! Click 'accept' to accept the rock paper scissors battle, or 'deny' to refuse the battle! You have 1 min to respond!`,components:[accRow]}).then(msg => {
+		await interaction.editReply({content:`${enemy_user}! You have been challenged to RPS with ${bet_amount}CC on the line! Click 'accept' to accept the rock paper scissors battle, or 'deny' to refuse the battle! You have 1 min to respond!`,components:[accRow]}).then(msg => {
 			accCollector.once('collect', async buttInteraction => {
 				if(buttInteraction.customId == 'accept'){
 					acceptRPS();
