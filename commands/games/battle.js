@@ -40,8 +40,8 @@ module.exports = {
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
 		
-		let enemy_data = await get_user(enemy_user.id);
-		let enemy_stats = await get_user_stats(enemy_user.id);
+		let enemy_data = await get_user(opponentID);
+		let enemy_stats = await get_user_stats(opponentID);
 		
 		if(user_data.balance < bet_amount){
 			await interaction.reply({content: 'You don\'t have enough coins!', ephemeral:true});
@@ -224,8 +224,8 @@ module.exports = {
 			await giveLevels(winner_stats, Math.floor(bet_amount/2), interaction);
 			winner_stats.save();
 			//update loser
-			loser.balance -= betAmount;
-			loser_stats.sanity -= betAmount;
+			loser.balance -= bet_amount;
+			loser_stats.sanity -= bet_amount;
 			if(loser_stats.sanity <= -50){
 				const insaneEmbed = new EmbedBuilder()
 					.setColor(0xff293b)

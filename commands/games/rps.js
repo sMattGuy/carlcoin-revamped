@@ -98,10 +98,10 @@ module.exports = {
 			const oppDM = await enemy_user.createDM();
 			const challengerCollector = await challDM.createMessageComponentCollector({filter,time:60000});
 			const opponentCollector = await oppDM.createMessageComponentCollector({filter,time:60000});
-			challenger.send({content:`Select a throw!`,components:[gameRow]}).then(challMsg => {
+			interaction.user.send({content:`Select a throw!`,components:[gameRow]}).then(challMsg => {
 				challengerCollector.once('collect', async bi => {
 					bi.update({content:`Got it, going to get opponents throw now`,components:[]});
-					optionOpp.send({content:`Select a throw!`,components:[gameRow]}).then(oppMsg => {
+					enemy_user.send({content:`Select a throw!`,components:[gameRow]}).then(oppMsg => {
 						opponentCollector.once('collect', async obi => {
 							await bi.editReply({content:`Go back to the channel you were challenged to see who wins!`,components:[]});
 							await obi.update({content:`Go back to the channel you were challenged to see who wins!`,components:[]});
@@ -138,8 +138,8 @@ module.exports = {
 								await giveLevels(winner_stats, Math.floor(bet_amount/2), interaction);
 								winner_stats.save();
 								//update loser
-								loser.balance -= betAmount;
-								loser_stats.sanity -= betAmount;
+								loser.balance -= bet_amount;
+								loser_stats.sanity -= bet_amount;
 								if(loser_stats.sanity <= -50){
 									const insaneEmbed = new EmbedBuilder()
 										.setColor(0xff293b)
