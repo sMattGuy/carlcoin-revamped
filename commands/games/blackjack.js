@@ -365,7 +365,7 @@ module.exports = {
 				await interaction.editReply({embeds:[winEmbed],components:[]});
 			}
 			user_data.balance += betAmount;
-			user_stats.sanity += betAmount
+			user_stats.sanity += betAmount;
 			if(user_stats.sanity > 100){
 				user_stats.sanity = 100;
 			}
