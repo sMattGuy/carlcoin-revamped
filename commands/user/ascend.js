@@ -82,7 +82,7 @@ module.exports = {
 					let cost = selectedUpgrade.cost;
 					let users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 					if(users_upgrades)
-						cost += (selectedUpgrade.rank * 50 * users_upgrades.amount);
+						cost += (selectedUpgrade.rank * 100 * users_upgrades.amount);
 					//check if user can afford it
 					if(user_data.prestigeBalance - cost < 0){
 						//cant afford
@@ -97,21 +97,22 @@ module.exports = {
 						user_data = await get_user(interaction.user.id);
 						user_data.prestigeBalance -= cost;
 						await user_data.addUpgrade(user_data, selectedUpgrade);
-						user_data.save();
+						await user_data.save();
+						await users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 						if(selectedUpgrade.name == '57 Leaf Clover'){
 							user_stats.luck += 1;
 						}
 						else if(selectedUpgrade.name == 'Muscle Tonic'){
-							user_stats.strength += 3;
+							user_stats.strength += 25 * (users_upgrades.amount + 1);
 						}
 						else if(selectedUpgrade.name == 'Speed Cola'){
-							user_stats.evade += 3;
+							user_stats.evade += 25 * (users_upgrades.amount + 1);
 						}
 						else if(selectedUpgrade.name == 'Thick Skin'){
-							user_stats.defense += 3;
+							user_stats.defense += 25 * (users_upgrades.amount + 1);
 						}
 						else if(selectedUpgrade.name == 'Calm Mind'){
-							user_stats.constitution += 3;
+							user_stats.constitution += 25 * (users_upgrades.amount + 1);
 						}
 						user_stats.save();
 						const bought = new EmbedBuilder()

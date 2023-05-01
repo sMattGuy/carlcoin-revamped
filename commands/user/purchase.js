@@ -148,24 +148,25 @@ module.exports = {
 					//purchase
 					user_data.balance -= cost;
 					await user_data.addItem(user_data, selectedItem);
-					user_data.save();
+					await user_data.save();
+					await users_items = await user_data.getItem(user_data, selectedItem);
 					if(selectedItem.name == 'Hard Hat'){
-						user_stats.defense += 1;
+						user_stats.defense += 10 * (users_items.amount + 1);
 					}
 					else if(selectedItem.name == 'Homerun Bat'){
-						user_stats.strength += 1;
+						user_stats.strength += 10 * (users_items.amount + 1);
 					}
 					else if(selectedItem.name == 'Fog Machine'){
-						user_stats.evade += 1;
+						user_stats.evade += 10 * (users_items.amount + 1);
 					}
 					else if(selectedItem.name == 'Nerd Glasses'){
-						user_stats.intel += 1;
+						user_stats.intel += 10 * (users_items.amount + 1);
 					}
 					else if(selectedItem.name == 'Ponder Orb'){
-						user_stats.wisdom += 1;
+						user_stats.wisdom += 10 * (users_items.amount + 1);
 					}
 					else if(selectedItem.name == 'Meditation Orb'){
-						user_stats.constitution += 1;
+						user_stats.constitution += 10 * (users_items.amount + 1);
 					}
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
