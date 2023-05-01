@@ -98,21 +98,21 @@ module.exports = {
 						user_data.prestigeBalance -= cost;
 						await user_data.addUpgrade(user_data, selectedUpgrade);
 						await user_data.save();
-						await users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
+						users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 						if(selectedUpgrade.name == '57 Leaf Clover'){
 							user_stats.luck += 1;
 						}
 						else if(selectedUpgrade.name == 'Muscle Tonic'){
-							user_stats.strength += 25 * (users_upgrades.amount + 1);
+							user_stats.strength += 25 * users_upgrades.amount;
 						}
 						else if(selectedUpgrade.name == 'Speed Cola'){
-							user_stats.evade += 25 * (users_upgrades.amount + 1);
+							user_stats.evade += 25 * users_upgrades.amount;
 						}
 						else if(selectedUpgrade.name == 'Thick Skin'){
-							user_stats.defense += 25 * (users_upgrades.amount + 1);
+							user_stats.defense += 25 * users_upgrades.amount;
 						}
 						else if(selectedUpgrade.name == 'Calm Mind'){
-							user_stats.constitution += 25 * (users_upgrades.amount + 1);
+							user_stats.constitution += 25 * users_upgrades.amount;
 						}
 						user_stats.save();
 						const bought = new EmbedBuilder()
