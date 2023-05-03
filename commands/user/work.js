@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { get_user, get_user_stats, giveLevels } = require('../../helper.js');
+const { Items, Upgrades } = require('../../dbObjects.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('work')
@@ -15,22 +16,24 @@ module.exports = {
 			//user can work, go through various processes
 			user.last_worked = Date.now();
 			//check for items that might increase skill
-			let items = await user.getItems(user);
-			let pickaxe = items.findIndex(item => item.name == "Diamond Pick");
-			if(pickaxe >= 0 && items[pickaxe].amount > 0){
+			let item = await Items.findOne({where:{name:'Diamond Pick'}});
+			let user_items = await user.getItem(user, item);
+			if(user_items){
 				//has pickaxe, increase multiplier
-				coin_increase += 1 * items[pickaxe].amount;
+				coin_increase += 1 * user_items.amount;
 			}
 			//check upgrades
-			let upgrades = await user.getUpgrades(user);
-			let hammer = upgrades.findIndex(upgrade => upgrade.name == "Jackhammer");
-			if(hammer >= 0 && upgrades[hammer].amount > 0){
+			let upgrade = await Upgrades.findOne({where:{name:'Jackhammer'}});
+			let user_upgrades = await user.getUpgrade(user, upgrade);
+			if(user_upgrades){
 				//has pickaxe, increase multiplier
-				coin_increase += 5 * upgrades[hammer].amount;
+				coin_increase += 5 * user_upgrades.amount;
 			}
 			//check sanity level and modify max coins
 			let sanityPercent = user_stats.sanity / 100;
 			upper_bound += Math.floor(10 * sanityPercent);
+			upper_bound += user_stats.strength;
+			upper_bound *= coin_increase;
 			//roll the dice
 			let best = 0;
 			for(let i=0;i<=user_stats.luck;i++){
@@ -38,8 +41,6 @@ module.exports = {
 				if(coinReward > best)
 					best = coinReward;
 			}
-			best *= coin_increase;
-			best += user_stats.strength;
 			//update user
 			let experience_gain = Math.floor(best/2);
 			const workEmbed = new EmbedBuilder()
