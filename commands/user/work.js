@@ -34,10 +34,11 @@ module.exports = {
 			upper_bound += Math.floor(10 * sanityPercent);
 			upper_bound += user_stats.strength;
 			upper_bound *= coin_increase;
+			lower_bound = 1 + user_stats.strength;
 			//roll the dice
 			let best = 0;
 			for(let i=0;i<=user_stats.luck;i++){
-				let coinReward = Math.floor(Math.random()*upper_bound)+1
+				let coinReward = Math.floor(Math.random()*upper_bound)+lower_bound
 				if(coinReward > best)
 					best = coinReward;
 			}
