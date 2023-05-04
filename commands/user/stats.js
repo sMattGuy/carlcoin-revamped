@@ -54,6 +54,7 @@ module.exports = {
 					{name: 'Current Life', value: `${user_data.life}`, inline: true},
 					{name: 'Can Work?', value: `${canWork}`, inline: true},
 					{name: 'Daily Payout', value: `${dailyPayout}`, inline: true},
+					{name: 'Sanity', value: `${user_stats.sanity}`, inline: true},
 				);
 			await interaction.reply({embeds:[levelUpEmbed]});
 		}
