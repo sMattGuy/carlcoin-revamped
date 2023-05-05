@@ -32,7 +32,6 @@ module.exports = {
 			//check sanity level and modify max coins
 			let sanityPercent = user_stats.sanity / 100;
 			upper_bound += Math.floor(10 * sanityPercent);
-			upper_bound += user_stats.strength;
 			upper_bound *= coin_increase;
 			lower_bound = 1 + user_stats.strength;
 			//roll the dice
