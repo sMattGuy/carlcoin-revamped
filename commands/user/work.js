@@ -33,11 +33,11 @@ module.exports = {
 			let sanityPercent = user_stats.sanity / 100;
 			upper_bound += Math.floor(10 * sanityPercent);
 			upper_bound *= coin_increase;
-			lower_bound = 1 + user_stats.strength;
+			let lower_bound = 1 + user_stats.strength;
 			//roll the dice
 			let best = 0;
 			for(let i=0;i<=user_stats.luck;i++){
-				let coinReward = Math.floor(Math.random()*upper_bound)+lower_bound
+				let coinReward = Math.floor(Math.random()*(upper_bound-lower_bound+1))+lower_bound
 				if(coinReward > best)
 					best = coinReward;
 			}
@@ -46,7 +46,7 @@ module.exports = {
 			const workEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle('Off to work!')
-				.setDescription(`You worked hard in the Carlcoin Mines and got ${best}CC! You now have ${user.balance + best}CC and got ${experience_gain}XP!`)
+				.setDescription(`Your current range is from ${lower_bound}CC to ${upper_bound+lower_bound}CC. You worked hard in the Carlcoin Mines and got ${best}CC! You now have ${user.balance + best}CC and got ${experience_gain}XP!`)
 			await interaction.reply({embeds:[workEmbed]});
 			user.last_worked = Date.now();
 			user.balance += best;
