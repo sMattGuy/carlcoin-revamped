@@ -59,7 +59,7 @@ module.exports = {
 				const boardEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
 					.setTitle(`Want Insurance?`)
-					.setDescription(`The dealers upcard is an ace! Want to insure your bet for ${insuranceAmount}?`)
+					.setDescription(`The dealers upcard is an ace! Want to insure your bet for ${insuranceAmount}CC?`)
 					.addFields(
 						{name: `Dealer (11)`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
