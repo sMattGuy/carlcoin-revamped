@@ -147,11 +147,15 @@ module.exports = {
 							.setCustomId('stand')
 							.setLabel('Stand')
 							.setStyle(ButtonStyle.Secondary),
+					);
+				if(user_data.balance-(2*betAmount) >= 0){
+					firstrow.addComponents(
 						new ButtonBuilder()
 							.setCustomId('double')
 							.setLabel('Double Down')
 							.setStyle(ButtonStyle.Secondary),
 					);
+				}
 				let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
 				let dealerValue = cardValue[dealerCards[0]%13];
 				if(dealerValue == 1){
