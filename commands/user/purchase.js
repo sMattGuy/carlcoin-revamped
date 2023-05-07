@@ -100,8 +100,12 @@ module.exports = {
 			for(let i=0;i<items.length;i++){
 				let cost = items[i].cost
 				let users_items = await user_data.getItem(user_data, items[i]);
-				if(users_items)
-					cost += (items[i].rank * 25 * users_items.amount)
+				if(users_items){
+					cost += (items[i].rank * 25 * users_items.amount);
+					if(items[i].name == 'Energy Drink' || items[i].name == 'Sanity Pill'){
+						cost += (user_stats.level * 5);
+					}
+				}
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
 			}
 			selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
@@ -133,8 +137,12 @@ module.exports = {
 				let cost = selectedItem.cost;
 				user_data = await get_user(interaction.user.id);
 				let users_items = await user_data.getItem(user_data, selectedItem);
-				if(users_items)
+				if(users_items){
 					cost += (selectedItem.rank * 25 * users_items.amount);
+					if(selectedItem.name == 'Energy Drink' || selectedItem.name == 'Sanity Pill'){
+						cost += (user_stats.level * 5);
+					}
+				}
 				//check if user can afford it
 				if(user_data.balance - cost < 0){
 					//cant afford
