@@ -137,6 +137,21 @@ module.exports = {
 							.setStyle(ButtonStyle.Secondary),
 					);
 					
+				const firstrow = new ActionRowBuilder()
+					.addComponents(
+						new ButtonBuilder()
+							.setCustomId('hit')
+							.setLabel('Hit')
+							.setStyle(ButtonStyle.Primary),
+						new ButtonBuilder()
+							.setCustomId('stand')
+							.setLabel('Stand')
+							.setStyle(ButtonStyle.Secondary),
+						new ButtonBuilder()
+							.setCustomId('double')
+							.setLabel('Double Down')
+							.setStyle(ButtonStyle.Secondary),
+					);
 				let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
 				let dealerValue = cardValue[dealerCards[0]%13];
 				if(dealerValue == 1){
@@ -180,7 +195,7 @@ module.exports = {
 						);
 				}
 					
-				await interaction.editReply({embeds:[boardEmbed],components:[row]});
+				await interaction.editReply({embeds:[boardEmbed],components:[firstrow]});
 				let filter = i => i.user.id == interaction.user.id && i.isButton();
 				let message = await interaction.fetchReply();
 				let collector = message.createMessageComponentCollector({time: 45000, filter});
@@ -193,6 +208,9 @@ module.exports = {
 					}
 					else if(i.customId == 'stand'){
 						stand();
+					}
+					else if(i.customId == 'double'){
+						doubleDown();
 					}
 					else{
 						//something strange happened
@@ -287,6 +305,17 @@ module.exports = {
 				}
 				async function stand(){
 					playingGame = true;
+					let dealerTotal = getCardValue(dealerCards);
+					while(dealerTotal < 17){
+						drawCard(dealerCards, 0);
+						dealerTotal = getCardValue(dealerCards);
+					}
+					endGame();
+				}
+				async function doubleDown(){
+					playingGame = true;
+					betAmount *= 2;
+					drawCard(playerCards, user_stats.luck);
 					let dealerTotal = getCardValue(dealerCards);
 					while(dealerTotal < 17){
 						drawCard(dealerCards, 0);
