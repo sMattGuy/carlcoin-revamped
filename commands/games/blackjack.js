@@ -302,9 +302,9 @@ module.exports = {
 			let dealerCardValue = getCardValue(dealerCards);
 			if(insuranceWin){
 				//special function for insurance win
-				insurance_win();
+				win_insurance();
 			}
-			if(playerCardValue > 21){
+			else if(playerCardValue > 21){
 				//bust
 				lose();
 			}
