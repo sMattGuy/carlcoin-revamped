@@ -24,11 +24,13 @@ module.exports = {
 			await interaction.reply({content: 'You don\'t have enough coins!', ephemeral:true});
 			return;
 		}
+		await interaction.reply({content: 'Welcome to Blackjack!'});
 		let usedCards = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
 		
 		let dealerCards = [];
 		let playerCards = [];
 		let playingGame = false;
+		let int_check_success = false;
 		//dealer
 		drawCard(dealerCards, 0);
 		drawCard(dealerCards, 0);
@@ -36,181 +38,272 @@ module.exports = {
 		drawCard(playerCards, user_stats.luck);
 		drawCard(playerCards, user_stats.luck);
 		let naturalWin = false;	
-		//check instant win
-		if(getCardValue(playerCards) == 21){
-			naturalWin = true;
-			endGame();
-		}
-		else if(getCardValue(dealerCards) == 21){
-			naturalWin = true;
-			endGame();
-		}
-		else{
-			//game didnt end right away, start running the main game
+		let got_insurance = false;
+		let insuranceWin = false;
+		let insuranceAmount = Math.floor(betAmount/2);
+		//check if insurance can be used this game
+		if(dealerCards[0]%13 == 0){
+			//dealer shown card is an ace, prompt the user if they want insurance
+			let playerValue = getCardValue(playerCards);
 			const row = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
-						.setCustomId('hit')
-						.setLabel('Hit')
+						.setCustomId('insurance')
+						.setLabel(`Insure Bet`)
 						.setStyle(ButtonStyle.Primary),
 					new ButtonBuilder()
-						.setCustomId('stand')
-						.setLabel('Stand')
+						.setCustomId('continue')
+						.setLabel('Play Hand')
 						.setStyle(ButtonStyle.Secondary),
 				);
-				
-			let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
-			let dealerValue = cardValue[dealerCards[0]%13];
-			if(dealerValue == 1){
-				dealerValue = 11;
-			}
-			let playerValue = getCardValue(playerCards);
-			
-			const boardEmbed = new EmbedBuilder();
-			//sanity check
-			if(user_stats.sanity <= -50){
-				//debuff user for being crazy
-				boardEmbed
+				const boardEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
-					.setTitle(`Current Table`)
-					.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
+					.setTitle(`Want Insurance?`)
+					.setDescription(`The dealers upcard is an ace! Want to insure your bet for ${insuranceAmount}?`)
 					.addFields(
-						{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-						{name: `You (??)`, value: `??, ??`},
-					);
-			}
-			//int check
-			else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
-				dealerValue = getCardValue(dealerCards)
-				boardEmbed
-					.setColor(0xf5bf62)
-					.setTitle(`Current Table`)
-					.setDescription(`Your INT helps you count the cards... You're sure the dealer has this hand!`)
-					.addFields(
-						{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
+						{name: `Dealer (11)`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 					);
+			
+				await interaction.editReply({embeds:[boardEmbed],components:[row]});
+				let filter = i => i.user.id == interaction.user.id && i.isButton();
+				let message = await interaction.fetchReply();
+				let insurance_collector = message.createMessageComponentCollector({time: 45000, filter});
+				insurance_collector.on('collect', async i => {
+					playingGame = true;
+					insurance_collector.stop();
+					await i.update({components:[]});
+					if(i.customId == 'insurance'){
+						//user got insurance
+						got_insurance = true;
+						if(getCardValue(dealerCards) == 21){
+							//dealer has 21, insurance worked
+							insuranceWin = true;
+							endGame();
+						}
+						else{
+							//insurance was a failure, game continues as normal
+							playBlackjack();
+						}
+					}
+					else if(i.customId == 'continue'){
+						//user decided to play the game normally
+						playBlackjack();
+					}
+					else{
+						//something strange happened
+						console.log('im not supposed to be here')
+					}
+				});
+				insurance_collector.on('end', async i=> {
+					await interaction.editReply({components:[]});
+					if(!playingGame){
+						playingGame = true;
+						//user timed out, auto loss
+						const timeEmbed = new EmbedBuilder()
+							.setColor(0xf5bf62)
+							.setTitle(`You didn't respond in time!`)
+							.setDescription(`Not responding counts as a loss!`)
+						await interaction.followUp({embeds:[timeEmbed]});
+						lose();
+					}
+				});
+		}
+		else{
+			//continue game as normal
+			playBlackjack();
+		}
+		async function playBlackjack(){
+			//check instant win
+			if(getCardValue(playerCards) == 21){
+				naturalWin = true;
+				endGame();
+			}
+			else if(getCardValue(dealerCards) == 21){
+				naturalWin = true;
+				endGame();
 			}
 			else{
-				boardEmbed
-					.setColor(0xf5bf62)
-					.setTitle(`Current Table`)
-					.addFields(
-						{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+				//game didnt end right away, start running the main game
+				const row = new ActionRowBuilder()
+					.addComponents(
+						new ButtonBuilder()
+							.setCustomId('hit')
+							.setLabel('Hit')
+							.setStyle(ButtonStyle.Primary),
+						new ButtonBuilder()
+							.setCustomId('stand')
+							.setLabel('Stand')
+							.setStyle(ButtonStyle.Secondary),
 					);
-			}
-				
-			await interaction.reply({embeds:[boardEmbed],components:[row]});
-			let filter = i => i.user.id == interaction.user.id && i.isButton();
-			let message = await interaction.fetchReply();
-			let collector = message.createMessageComponentCollector({time: 45000, filter});
-			collector.on('collect', async i => {
-				playingGame = true;
-				collector.stop();
-				await i.update({components:[]});
-				if(i.customId == 'hit'){
-					hit();
-				}
-				else if(i.customId == 'stand'){
-					stand();
-				}
-				else{
-					//something strange happened
-					console.log('im not supposed to be here')
-				}
-			});
-			collector.on('end', async i=> {
-				await interaction.editReply({components:[]});
-				if(!playingGame){
-					playingGame = true;
-					//user timed out, auto loss
-					const timeEmbed = new EmbedBuilder()
-						.setColor(0xf5bf62)
-						.setTitle(`You didn't respond in time!`)
-						.setDescription(`Not responding counts as a loss!`)
-					await interaction.followUp({embeds:[timeEmbed]});
-					lose();
-				}
-			});
-			
-			//player functions
-			async function hit(){
-				let playingGameHit = false;
-				drawCard(playerCards, user_stats.luck);
-				let cardValue = getCardValue(playerCards);
-				if(cardValue > 21){
-					playingGameHit = true;
-					//busted or at 21
-					endGame();
-				}
-				else if(cardValue == 21){
-					playingGameHit = true;
-					stand();
-				}
-				else{
-					let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
-					let dealerValue = cardValue[dealerCards[0]%13];
-					if(dealerValue == 1){
-						dealerValue = 11;
-					}
-					let playerValue = getCardValue(playerCards);
 					
-					const hitEmbed = new EmbedBuilder()
+				let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
+				let dealerValue = cardValue[dealerCards[0]%13];
+				if(dealerValue == 1){
+					dealerValue = 11;
+				}
+				let playerValue = getCardValue(playerCards);
+				
+				const boardEmbed = new EmbedBuilder();
+				//sanity check
+				if(user_stats.sanity <= -50){
+					//debuff user for being crazy
+					boardEmbed
 						.setColor(0xf5bf62)
 						.setTitle(`Current Table`)
-						.setDescription(`Hit! You pulled ${blackjackCards[playerCards[playerCards.length-1]]}. You now have ${playerValue}`)
+						.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
+						.addFields(
+							{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
+							{name: `You (??)`, value: `??, ??`},
+						);
+				}
+				//int check
+				else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
+					dealerValue = getCardValue(dealerCards);
+					int_check_success = true;
+					boardEmbed
+						.setColor(0xf5bf62)
+						.setTitle(`Current Table`)
+						.setDescription(`Your INT helps you count the cards... You're sure the dealer has this hand!`)
+						.addFields(
+							{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
+							{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+						);
+				}
+				else{
+					boardEmbed
+						.setColor(0xf5bf62)
+						.setTitle(`Current Table`)
 						.addFields(
 							{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 							{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 						);
+				}
 					
-					await interaction.editReply({embeds:[hitEmbed],components:[row]});
-					let hitCollector = message.createMessageComponentCollector({ time: 45000, filter });
-					hitCollector.on('collect', async i => {
+				await interaction.editReply({embeds:[boardEmbed],components:[row]});
+				let filter = i => i.user.id == interaction.user.id && i.isButton();
+				let message = await interaction.fetchReply();
+				let collector = message.createMessageComponentCollector({time: 45000, filter});
+				collector.on('collect', async i => {
+					playingGame = true;
+					collector.stop();
+					await i.update({components:[]});
+					if(i.customId == 'hit'){
+						hit();
+					}
+					else if(i.customId == 'stand'){
+						stand();
+					}
+					else{
+						//something strange happened
+						console.log('im not supposed to be here')
+					}
+				});
+				collector.on('end', async i=> {
+					await interaction.editReply({components:[]});
+					if(!playingGame){
+						playingGame = true;
+						//user timed out, auto loss
+						const timeEmbed = new EmbedBuilder()
+							.setColor(0xf5bf62)
+							.setTitle(`You didn't respond in time!`)
+							.setDescription(`Not responding counts as a loss!`)
+						await interaction.followUp({embeds:[timeEmbed]});
+						lose();
+					}
+				});
+				
+				//player functions
+				async function hit(){
+					let playingGameHit = false;
+					drawCard(playerCards, user_stats.luck);
+					let cardValue = getCardValue(playerCards);
+					if(cardValue > 21){
 						playingGameHit = true;
-						hitCollector.stop();
-						await i.update({components:[]});
-						if(i.customId == 'hit'){
-							hit();
+						//busted or at 21
+						endGame();
+					}
+					else if(cardValue == 21){
+						playingGameHit = true;
+						stand();
+					}
+					else{
+						let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
+						let dealerValue = cardValue[dealerCards[0]%13];
+						if(dealerValue == 1){
+							dealerValue = 11;
 						}
-						else if(i.customId == 'stand'){
-							stand();
+						let playerValue = getCardValue(playerCards);
+						
+						const hitEmbed = new EmbedBuilder()
+							.setColor(0xf5bf62)
+							.setTitle(`Current Table`)
+							.setDescription(`Hit! You pulled ${blackjackCards[playerCards[playerCards.length-1]]}. You now have ${playerValue}`)
+						if(int_check_success){
+							dealerValue = getCardValue(dealerCards);
+							hitEmbed.addFields(
+								{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
+								{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+							);
 						}
 						else{
-							//something strange happened
-							console.log('im not supposed to be here')
+							hitEmbed.addFields(
+								{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
+								{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+							);
 						}
-					});
-					hitCollector.on('end', async i=> {
-						await interaction.editReply({components:[]});
-						if(!playingGameHit){
+						
+						await interaction.editReply({embeds:[hitEmbed],components:[row]});
+						let hitCollector = message.createMessageComponentCollector({ time: 45000, filter });
+						hitCollector.on('collect', async i => {
 							playingGameHit = true;
-							//user timed out, auto loss
-							const timeEmbed = new EmbedBuilder()
-								.setColor(0xf5bf62)
-								.setTitle(`You didn't respond in time!`)
-								.setDescription(`Not responding counts as a loss!`)
-							await interaction.followUp({embeds:[timeEmbed]});
-							lose();
-						}
-					});
+							hitCollector.stop();
+							await i.update({components:[]});
+							if(i.customId == 'hit'){
+								hit();
+							}
+							else if(i.customId == 'stand'){
+								stand();
+							}
+							else{
+								//something strange happened
+								console.log('im not supposed to be here')
+							}
+						});
+						hitCollector.on('end', async i=> {
+							await interaction.editReply({components:[]});
+							if(!playingGameHit){
+								playingGameHit = true;
+								//user timed out, auto loss
+								const timeEmbed = new EmbedBuilder()
+									.setColor(0xf5bf62)
+									.setTitle(`You didn't respond in time!`)
+									.setDescription(`Not responding counts as a loss!`)
+								await interaction.followUp({embeds:[timeEmbed]});
+								lose();
+							}
+						});
+					}
 				}
-			}
-			async function stand(){
-				playingGame = true;
-				let dealerTotal = getCardValue(dealerCards);
-				while(dealerTotal < 17){
-					drawCard(dealerCards, 0);
-					dealerTotal = getCardValue(dealerCards);
+				async function stand(){
+					playingGame = true;
+					let dealerTotal = getCardValue(dealerCards);
+					while(dealerTotal < 17){
+						drawCard(dealerCards, 0);
+						dealerTotal = getCardValue(dealerCards);
+					}
+					endGame();
 				}
-				endGame();
 			}
 		}
 		async function endGame(){
 			playingGame = true;
 			let playerCardValue = getCardValue(playerCards);
 			let dealerCardValue = getCardValue(dealerCards);
+			if(insuranceWin){
+				//special function for insurance win
+				insurance_win();
+			}
 			if(playerCardValue > 21){
 				//bust
 				lose();
@@ -291,6 +384,9 @@ module.exports = {
 			playingGame = true;
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
+			if(got_insurance){
+				betAmount += insuranceAmount;
+			}
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
 				.setTitle(`You lost!`)
@@ -362,6 +458,9 @@ module.exports = {
 			let playerCardValue = getCardValue(playerCards);
 			if(naturalWin){
 				betAmount = Math.floor(betAmount * 1.5)
+			}	
+			if(got_insurance){
+				betAmount -= insuranceAmount
 			}
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
@@ -379,6 +478,34 @@ module.exports = {
 			}
 			user_data.balance += betAmount;
 			user_stats.sanity += betAmount;
+			if(user_stats.sanity > 100){
+				user_stats.sanity = 100;
+			}
+			user_data.save();
+			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
+			user_stats.save();
+			return;
+		}
+		async function win_insurance(){
+			//player wins by insurance
+			playingGame = true;
+			let dealerCardValue = getCardValue(dealerCards);
+			let playerCardValue = getCardValue(playerCards);
+			const winEmbed = new EmbedBuilder()
+				.setColor(0x3bff29)
+				.setTitle(`Your insurance pays off!`)
+				.setDescription(`Thanks to your insurance you avoided losing! You now have ${user_data.balance}CC!`)
+				.addFields(
+					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
+					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
+				);
+			try{
+				await interaction.reply({embeds:[winEmbed],components:[]});
+			}
+			catch(e){
+				await interaction.editReply({embeds:[winEmbed],components:[]});
+			}
+			user_stats.sanity += betAmount + insuranceAmount;
 			if(user_stats.sanity > 100){
 				user_stats.sanity = 100;
 			}
