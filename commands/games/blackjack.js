@@ -42,7 +42,7 @@ module.exports = {
 		let insuranceWin = false;
 		let insuranceAmount = Math.floor(betAmount/2);
 		//check if insurance can be used this game
-		if(dealerCards[0]%13 == 0){
+		if(dealerCards[0]%13 == 0 && user_data.balance >= betAmount+insuranceAmount){
 			//dealer shown card is an ace, prompt the user if they want insurance
 			let playerValue = getCardValue(playerCards);
 			const row = new ActionRowBuilder()
