@@ -24,7 +24,7 @@ module.exports = {
 			await interaction.reply({content: 'You don\'t have enough coins!', ephemeral:true});
 			return;
 		}
-		await interaction.reply({content: 'Welcome to Blackjack!'});
+		await interaction.deferReply();
 		let usedCards = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
 		
 		let dealerCards = [];

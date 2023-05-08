@@ -33,7 +33,7 @@ module.exports = {
 				let cost = buildings[i].cost
 				let users_building = await user_data.getBuilding(user_data, buildings[i]);
 				if(users_building)
-					cost += (buildings[i].payout * users_building.amount * 2)
+					cost += Math.floor(buildings[i].payout * Math.pow(users_building.amount, 1.5) * 2)
 				selectMenu.addOptions({label: `${buildings[i].name}`, description: `Costs ${cost}CC`, value: `${buildings[i].id}`})
 			}
 			selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
@@ -65,7 +65,7 @@ module.exports = {
 				let cost = selectedBuilding.cost;
 				let users_building = await user_data.getBuilding(user_data, selectedBuilding);
 				if(users_building)
-					cost += (selectedBuilding.payout * users_building.amount * 2);
+					cost += Math.floor(selectedBuilding.payout * Math.pow(users_building.amount, 1.5) * 2);
 				//check if user can afford it
 				if(user_data.balance - cost < 0){
 					//cant afford
@@ -101,9 +101,9 @@ module.exports = {
 				let cost = items[i].cost
 				let users_items = await user_data.getItem(user_data, items[i]);
 				if(users_items){
-					cost += (items[i].rank * Math.floor(items[i].cost/2) * users_items.amount);
+					cost += Math.floor(items[i].rank * (items[i].cost/2) * Math.pow(users_items.amount,1.5));
 					if(items[i].name == 'Energy Drink' || items[i].name == 'Sanity Pill'){
-						cost += (user_stats.level * 5);
+						cost += (user_stats.level * 3);
 					}
 				}
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
@@ -138,9 +138,9 @@ module.exports = {
 				user_data = await get_user(interaction.user.id);
 				let users_items = await user_data.getItem(user_data, selectedItem);
 				if(users_items){
-					cost += (selectedItem.rank * Math.floor(selectedItem.cost/2) * users_items.amount);
+					cost += Math.floor(selectedItem.rank * (selectedItem.cost/2) * Math.pow(users_items.amount,1.5));
 					if(selectedItem.name == 'Energy Drink' || selectedItem.name == 'Sanity Pill'){
-						cost += (user_stats.level * 5);
+						cost += (user_stats.level * 3);
 					}
 				}
 				//check if user can afford it
