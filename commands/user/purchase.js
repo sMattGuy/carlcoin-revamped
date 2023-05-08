@@ -101,7 +101,7 @@ module.exports = {
 				let cost = items[i].cost
 				let users_items = await user_data.getItem(user_data, items[i]);
 				if(users_items){
-					cost += (items[i].rank * 25 * users_items.amount);
+					cost += (items[i].rank * Math.floor(items[i].cost/2) * users_items.amount);
 					if(items[i].name == 'Energy Drink' || items[i].name == 'Sanity Pill'){
 						cost += (user_stats.level * 5);
 					}
@@ -138,7 +138,7 @@ module.exports = {
 				user_data = await get_user(interaction.user.id);
 				let users_items = await user_data.getItem(user_data, selectedItem);
 				if(users_items){
-					cost += (selectedItem.rank * 25 * users_items.amount);
+					cost += (selectedItem.rank * Math.floor(selectedItem.cost/2) * users_items.amount);
 					if(selectedItem.name == 'Energy Drink' || selectedItem.name == 'Sanity Pill'){
 						cost += (user_stats.level * 5);
 					}
