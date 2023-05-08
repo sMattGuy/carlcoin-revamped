@@ -45,7 +45,12 @@ module.exports = {
 		if(dealerCards[0]%13 == 0 && user_data.balance >= betAmount+insuranceAmount){
 			//dealer shown card is an ace, prompt the user if they want insurance
 			let playerValue = getCardValue(playerCards);
-			const row = new ActionRowBuilder()
+			if(playerValue == 21){
+				//player has a natural
+				playBlackjack();
+			}
+			else{
+				const row = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
 						.setCustomId('insurance')
@@ -108,6 +113,7 @@ module.exports = {
 						lose();
 					}
 				});
+			}
 		}
 		else{
 			//continue game as normal

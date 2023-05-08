@@ -120,10 +120,8 @@ module.exports = {
 				RoundAttacker.send({content:codeBlock(`Select an option!\nYour HP:${RoundAttackerHealth}\nATK:${RoundAttackerStats.strength} DEF:${RoundAttackerStats.defense} EVD:${RoundAttackerStats.evade}\nEnemy HP:${RoundDefenderHealth}\nATK:${RoundDefenderStats.strength} DEF:${RoundDefenderStats.defense} EVD:${RoundDefenderStats.evade}`),components:[attackRow]}).then(challMsg => {
 					attackerCollector.once('collect', async bi => {
 						damageCalc = 0;
-
-						damageCalc = Math.floor(Math.random()*6)+1;
-						damageCalc += RoundAttackerStats.strength;
-
+						let maxDamage = 6 + RoundAttackerStats.strength;
+						damageCalc = Math.floor(Math.random()*maxDamage)+1;
 						if(damageCalc < 0)
 							damageCalc = 0;
 						bi.update({content:codeBlock(`You rolled ${damageCalc} for attack! Let's see what your opponent does...`),components:[]});
@@ -140,16 +138,18 @@ module.exports = {
 							
 							RoundDefender.send({content:codeBlock(`Select an option! ${filler}\nYour HP:${RoundDefenderHealth}\nATK:${RoundDefenderStats.strength} DEF:${RoundDefenderStats.defense} EVD:${RoundDefenderStats.evade}\nEnemy HP:${RoundAttackerHealth}\nATK:${RoundAttackerStats.strength} DEF:${RoundAttackerStats.defense} EVD:${RoundAttackerStats.evade}`),components:[defendRow]}).then(oppMsg => {
 								defenderCollector.once('collect', async obi => {
-									let defenseAmount = Math.floor(Math.random()*6)+1;
+									let defenseAmount = 0
 									if(obi.customId == 'defend'){
-										defenseAmount += RoundDefenderStats.defense;
+										let maxDefense = 6 + RoundDefenderStats.defense;
+										defenseAmount = Math.floor(Math.random()*maxDefense)+1;
 										damageCalc -= defenseAmount;
 										if(damageCalc <= 0)
 											damageCalc = 1;
 									}
 									else{
 										//evade
-										defenseAmount += RoundDefenderStats.evade;
+										let maxEvade = 6 + RoundDefenderStats.evade;
+										defenseAmount = Math.floor(Math.random()*maxEvade)+1;
 										if(defenseAmount > damageCalc)
 											damageCalc = 0;
 									}
