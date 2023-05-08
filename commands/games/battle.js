@@ -1,4 +1,4 @@
-const { ButtonStyle, SlashCommandBuilder, codeBlock, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { ButtonStyle, SlashCommandBuilder, codeBlock, ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js');
 const { get_user, get_user_stats, giveLevels, killUser } = require('../../helper.js');
 
 module.exports = {
