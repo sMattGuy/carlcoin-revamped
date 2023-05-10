@@ -462,6 +462,13 @@ module.exports = {
 			user_data.balance -= betAmount;
 			let prev_sanity = user_stats.sanity;
 			user_stats.sanity -= betAmount;
+			if(prev_sanity >= 0 && user_stats.sanity < 0){
+				const insaneEmbed = new EmbedBuilder()
+					.setColor(0xff293b)
+					.setTitle(`Be careful!`)
+					.setDescription(`Your mental fortitude is starting to slip... You dont have death protection anymore!`);
+				await interaction.followUp({embeds:[insaneEmbed]});
+			}
 			if(user_stats.sanity <= -50){
 				const insaneEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
