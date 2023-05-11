@@ -64,4 +64,57 @@ async function killUser(user_data, user_stats, interaction){
 		await interaction.followUp({embeds:[deathEmbed]});
 	}
 }
-module.exports = {get_user, get_user_stats, giveLevels, killUser}
+
+async function changeSanity(user_data, user_stats, interaction, sanity){
+	let prev_sanity = user_stats.sanity;
+	user_stats.sanity += sanity;
+	//sanity over 100, ceiling it
+	if(user_stats.sanity > 100){
+		user_stats.sanity = 100;
+	}
+	//sanity goes from below 0 to above, alert death protection active
+	if(prev_sanity < 0 && user_stats.sanity >= 0){
+		const insaneEmbed = new EmbedBuilder()
+			.setColor(0x3bff29)
+			.setTitle(`You feel better!`)
+			.setDescription(`Your feeling like your old self again... You have death protection again!`);
+		await interaction.followUp({embeds:[insaneEmbed]});
+	}
+	//sanity goes from above 0 to neg, alert death protection lost
+	if(prev_sanity >= 0 && user_stats.sanity < 0){
+		const insaneEmbed = new EmbedBuilder()
+			.setColor(0xff293b)
+			.setTitle(`Be careful!`)
+			.setDescription(`Your mental fortitude is starting to slip... You don't have death protection anymore!`);
+		await interaction.followUp({embeds:[insaneEmbed]});
+	}
+	//sanity past -50, alert insane
+	if(user_stats.sanity <= -50){
+		const insaneEmbed = new EmbedBuilder()
+			.setColor(0xff293b)
+			.setTitle(`Something doesn't feel right...`)
+			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
+		await interaction.followUp({embeds:[insaneEmbed]});
+	}
+	//test user death and save data
+	if(user_stats.sanity < -100){
+		if(prev_sanity >= 0){
+			user_stats.sanity = -99;
+			const insaneEmbed = new EmbedBuilder()
+				.setColor(0xff293b)
+				.setTitle(`You nearly died!`)
+				.setDescription(`Betting that much made you sick in the head! Take a break for a bit before betting again!`);
+			await interaction.followUp({embeds:[insaneEmbed]});
+			user_data.save();
+			user_stats.save();
+		}
+		else{
+			killUser(user_data, user_stats, interaction);
+		}
+	}
+	else{
+		user_data.save();
+		user_stats.save();
+	}
+}
+module.exports = {get_user, get_user_stats, giveLevels, killUser, changeSanity}

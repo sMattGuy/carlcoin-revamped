@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, killUser } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, newSanity } = require('../../helper.js');
 
 const blackjackCards = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
 
@@ -460,41 +460,8 @@ module.exports = {
 				await interaction.followUp({embeds:[evdSaveEmbed]});
 			}
 			user_data.balance -= betAmount;
-			let prev_sanity = user_stats.sanity;
-			user_stats.sanity -= betAmount;
-			if(prev_sanity >= 0 && user_stats.sanity < 0){
-				const insaneEmbed = new EmbedBuilder()
-					.setColor(0xff293b)
-					.setTitle(`Be careful!`)
-					.setDescription(`Your mental fortitude is starting to slip... You dont have death protection anymore!`);
-				await interaction.followUp({embeds:[insaneEmbed]});
-			}
-			if(user_stats.sanity <= -50){
-				const insaneEmbed = new EmbedBuilder()
-					.setColor(0xff293b)
-					.setTitle(`Something doesn't feel right...`)
-					.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
-				await interaction.followUp({embeds:[insaneEmbed]});
-			}
-			if(user_stats.sanity < -100){
-				if(prev_sanity >= 0){
-					user_stats.sanity = -99;
-					const insaneEmbed = new EmbedBuilder()
-						.setColor(0xff293b)
-						.setTitle(`You nearly died!`)
-						.setDescription(`Betting that much made you sick in the head! Take a break for a bit before betting again!`);
-					await interaction.followUp({embeds:[insaneEmbed]});
-					user_data.save();
-					user_stats.save();
-				}
-				else{
-					killUser(user_data, user_stats, interaction);
-				}
-			}
-			else{
-				user_data.save();
-				user_stats.save();
-			}
+			await user_data.save();
+			await changeSanity(user_data,user_stats,interaction,-bet_amount);
 			return;
 		}
 		async function win(){
@@ -523,11 +490,8 @@ module.exports = {
 				await interaction.editReply({embeds:[winEmbed],components:[]});
 			}
 			user_data.balance += betAmount;
-			user_stats.sanity += betAmount;
-			if(user_stats.sanity > 100){
-				user_stats.sanity = 100;
-			}
-			user_data.save();
+			await user_data.save();
+			await changeSanity(user_data,user_stats,interaction,bet_amount);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
 			user_stats.save();
 			return;
@@ -551,11 +515,8 @@ module.exports = {
 			catch(e){
 				await interaction.editReply({embeds:[winEmbed],components:[]});
 			}
-			user_stats.sanity += betAmount + insuranceAmount;
-			if(user_stats.sanity > 100){
-				user_stats.sanity = 100;
-			}
-			user_data.save();
+			let newSanity = betAmount + insuranceAmount;
+			await changeSanity(user_data,user_stats,interaction,newSanity);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
 			user_stats.save();
 			return;

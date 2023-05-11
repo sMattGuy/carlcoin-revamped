@@ -1,5 +1,5 @@
 const { ButtonStyle, SlashCommandBuilder, codeBlock, ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, killUser } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, changeSanity } = require('../../helper.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -216,50 +216,13 @@ module.exports = {
 		async function update_users(winner, winner_stats, loser, loser_stats){
 			//update winner
 			winner.balance += bet_amount;
-			winner_stats.sanity += bet_amount;
-			if(winner_stats.sanity > 100){
-				winner_stats.sanity = 100;
-			}
-			winner.save();
+			await winner.save();
+			await changeSanity(winner,winner_stats,interaction,bet_amount);
 			await giveLevels(winner_stats, Math.floor(bet_amount/2), interaction);
-			winner_stats.save();
 			//update loser
-			let prev_sanity = loser_stats.sanity;
 			loser.balance -= bet_amount;
-			loser_stats.sanity -= bet_amount;
-			if(prev_sanity >= 0 && loser_stats.sanity < 0){
-				const insaneEmbed = new EmbedBuilder()
-					.setColor(0xff293b)
-					.setTitle(`Be careful!`)
-					.setDescription(`Your mental fortitude is starting to slip... You dont have death protection anymore!`);
-				await interaction.followUp({embeds:[insaneEmbed]});
-			}
-			if(loser_stats.sanity <= -50){
-				const insaneEmbed = new EmbedBuilder()
-					.setColor(0xff293b)
-					.setTitle(`Something doesn't feel right...`)
-					.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
-				await interaction.followUp({embeds:[insaneEmbed]});
-			}
-			if(loser_stats.sanity < -100){
-				if(prev_sanity >= 0){
-					loser_stats.sanity = -99;
-					const insaneEmbed = new EmbedBuilder()
-						.setColor(0xff293b)
-						.setTitle(`You nearly died!`)
-						.setDescription(`Betting that much made you sick in the head! Take a break for a bit before betting again!`);
-					await interaction.followUp({embeds:[insaneEmbed]});
-					loser.save();
-					loser_stats.save();
-				}
-				else{
-					killUser(loser, loser_stats, interaction);
-				}
-			}
-			else{
-				loser.save();
-				loser_stats.save();
-			}
+			await loser.save();
+			await changeSanity(loser,loser_stats,interaction,-bet_amount);
 		}
 	}
 }
