@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, newSanity } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, changeSanity } = require('../../helper.js');
 
 const blackjackCards = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
 
@@ -461,7 +461,7 @@ module.exports = {
 			}
 			user_data.balance -= betAmount;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,-bet_amount);
+			await changeSanity(user_data,user_stats,interaction,-betAmount);
 			return;
 		}
 		async function win(){
@@ -491,7 +491,7 @@ module.exports = {
 			}
 			user_data.balance += betAmount;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,bet_amount);
+			await changeSanity(user_data,user_stats,interaction,betAmount);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
 			user_stats.save();
 			return;
