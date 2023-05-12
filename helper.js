@@ -80,6 +80,14 @@ async function changeSanity(user_data, user_stats, interaction, sanity){
 			.setDescription(`Your feeling like your old self again... You have death protection again!`);
 		await interaction.followUp({embeds:[insaneEmbed]});
 	}
+	//sanity goes from below -50 to above, no longer insane
+	if(prev_sanity <= -50 && user_stats.sanity > -50){
+		const insaneEmbed = new EmbedBuilder()
+			.setColor(0x3bff29)
+			.setTitle(`Your mind is clear!`)
+			.setDescription(`Your insanity fades... You're no longer insane!`);
+		await interaction.followUp({embeds:[insaneEmbed]});
+	}
 	//sanity goes from above 0 to neg, alert death protection lost
 	if(prev_sanity >= 0 && user_stats.sanity < 0){
 		const insaneEmbed = new EmbedBuilder()

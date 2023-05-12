@@ -50,6 +50,10 @@ module.exports = {
 				playBlackjack();
 			}
 			else{
+				let user_ins_cards = getPrettyCards(playerCards);
+				if(user_stats.sanity <= -50){
+					user_ins_cards = `??, ??`;
+				}
 				const row = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
@@ -67,7 +71,7 @@ module.exports = {
 					.setDescription(`The dealers upcard is an ace! Want to insure your bet for ${insuranceAmount}CC?`)
 					.addFields(
 						{name: `Dealer (11)`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-						{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+						{name: `You (${playerValue})`, value: `${user_ins_cards}`},
 					);
 			
 				await interaction.editReply({embeds:[boardEmbed],components:[row]});
@@ -258,6 +262,15 @@ module.exports = {
 					else{
 						let cardValue = [1,2,3,4,5,6,7,8,9,10,10,10,10];
 						let dealerValue = cardValue[dealerCards[0]%13];
+						let insaneCards = '';
+						for(let i=0;i<playerCards.length;i++){
+							if(i == playerCards.length-1){
+								insaneCards += '??';
+							}
+							else{
+								insaneCards += '??, ';
+							}
+						}
 						if(dealerValue == 1){
 							dealerValue = 11;
 						}
@@ -272,6 +285,12 @@ module.exports = {
 							hitEmbed.addFields(
 								{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
 								{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
+							);
+						}
+						else if(user_stats.sanity <= -50){
+							hitEmbed.addFields(
+								{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
+								{name: `You (??)`, value: `${insaneCards}`},
 							);
 						}
 						else{
