@@ -176,6 +176,7 @@ module.exports = {
 					else if(selectedItem.name == 'Meditation Orb'){
 						user_stats.constitution += 10 * users_items.amount;
 					}
+					user_stats.save();
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
 						.setTitle(`You bought 1 ${selectedItem.name}!`)

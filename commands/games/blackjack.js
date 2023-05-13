@@ -454,12 +454,7 @@ module.exports = {
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
 			//dealer wins
-			try{
-				await interaction.reply({embeds:[loseEmbed],components:[]});
-			}
-			catch(e){
-				await interaction.editReply({embeds:[loseEmbed],components:[]});
-			}
+			await interaction.editReply({embeds:[loseEmbed],components:[]});
 			//attempt wisdom save
 			if(user_stats.wisdom != 0 && Math.random() + (user_stats.wisdom * 0.001) > .95){
 				const wisSaveEmbed = new EmbedBuilder()
@@ -502,12 +497,7 @@ module.exports = {
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
-			try{
-				await interaction.reply({embeds:[winEmbed],components:[]});
-			}
-			catch(e){
-				await interaction.editReply({embeds:[winEmbed],components:[]});
-			}
+			await interaction.editReply({embeds:[winEmbed],components:[]});
 			user_data.balance += betAmount;
 			await user_data.save();
 			await changeSanity(user_data,user_stats,interaction,betAmount);
@@ -528,12 +518,7 @@ module.exports = {
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 					{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
 				);
-			try{
-				await interaction.reply({embeds:[winEmbed],components:[]});
-			}
-			catch(e){
-				await interaction.editReply({embeds:[winEmbed],components:[]});
-			}
+			await interaction.editReply({embeds:[winEmbed],components:[]});
 			let newSanity = betAmount + insuranceAmount;
 			await changeSanity(user_data,user_stats,interaction,newSanity);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
