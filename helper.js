@@ -65,7 +65,15 @@ async function killUser(user_data, user_stats, interaction){
 	}
 }
 
-async function changeSanity(user_data, user_stats, interaction, sanity){
+async function changeSanity(user_data, user_stats, interaction, balance, sanity){
+	if(balance > 100){
+		//adjust to percentage of bet
+		let bet_ratio = sanity / balance;
+		bet_ratio *= 100;
+		bet_ratio = Math.ceil(bet_ratio);
+		let sign = sanity/Math.abs(sanity)
+		sanity = bet_ratio * sign;
+	}
 	let prev_sanity = user_stats.sanity;
 	user_stats.sanity += sanity;
 	//sanity over 100, ceiling it

@@ -316,9 +316,10 @@ module.exports = {
 					{name: `Six Card Bonus Payout`, value: `${sixCardPayout}`, inline: true},
 				);
 			await interaction.editReply({embeds:[winEmbed],components:[]});
+			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,totalWinnings);
+			await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
@@ -346,9 +347,10 @@ module.exports = {
 					{name: `Six Card Bonus Payout`, value: `${sixCardPayout}`, inline: true},
 				);
 			await interaction.editReply({embeds:[winEmbed],components:[]});
+			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,totalWinnings);
+			await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
@@ -377,9 +379,10 @@ module.exports = {
 					{name: `Six Card Bonus Payout`, value: `${sixCardPayout}`, inline: true},
 				);
 			await interaction.editReply({embeds:[winEmbed],components:[]});
+			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,totalWinnings);
+			await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
@@ -426,9 +429,10 @@ module.exports = {
 				totalWinnings = Math.floor(totalWinnings/2);
 				await interaction.followUp({embeds:[evdSaveEmbed]});
 			}
+			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,totalWinnings);
+			await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			return;
 		}
 		async function win(){
@@ -455,9 +459,10 @@ module.exports = {
 					{name: `Six Card Bonus Payout`, value: `${sixCardPayout}`, inline: true},
 				);
 			await interaction.editReply({embeds:[winEmbed],components:[]});
+			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,totalWinnings);
+			await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;

@@ -215,14 +215,16 @@ module.exports = {
 		}
 		async function update_users(winner, winner_stats, loser, loser_stats){
 			//update winner
+			let winner_prev_balance = winner.balance;
 			winner.balance += bet_amount;
 			await winner.save();
-			await changeSanity(winner,winner_stats,interaction,bet_amount);
+			await changeSanity(winner,winner_stats,interaction,winner_prev_balance,bet_amount);
 			await giveLevels(winner_stats, Math.floor(bet_amount/2), interaction);
 			//update loser
+			let loser_prev_balance = loser.balance;
 			loser.balance -= bet_amount;
 			await loser.save();
-			await changeSanity(loser,loser_stats,interaction,-bet_amount);
+			await changeSanity(loser,loser_stats,interaction,loser_prev_balance,-bet_amount);
 		}
 	}
 }
