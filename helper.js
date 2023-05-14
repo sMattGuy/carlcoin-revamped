@@ -73,7 +73,7 @@ async function changeSanity(user_data, user_stats, interaction, sanity){
 		user_stats.sanity = 100;
 	}
 	//sanity goes from below 0 to above, alert death protection active
-	if(prev_sanity < 0 && user_stats.sanity >= 0){
+	if(prev_sanity < 0 && user_stats.sanity >= 0 && user_stats.level <= 30){
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0x3bff29)
 			.setTitle(`You feel better!`)
@@ -89,7 +89,7 @@ async function changeSanity(user_data, user_stats, interaction, sanity){
 		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
 	//sanity goes from above 0 to neg, alert death protection lost
-	if(prev_sanity >= 0 && user_stats.sanity < 0){
+	if(prev_sanity >= 0 && user_stats.sanity < 0 && user_stats.level <= 30){
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`Be careful!`)
@@ -106,7 +106,7 @@ async function changeSanity(user_data, user_stats, interaction, sanity){
 	}
 	//test user death and save data
 	if(user_stats.sanity < -100){
-		if(prev_sanity >= 0){
+		if(prev_sanity >= 0 && user_stats.level <= 30){
 			user_stats.sanity = -99;
 			const insaneEmbed = new EmbedBuilder()
 				.setColor(0xff293b)

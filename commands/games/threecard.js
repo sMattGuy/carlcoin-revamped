@@ -422,7 +422,7 @@ module.exports = {
 				const evdSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But you're quick!`)
-					.setDescription(`Using your EVD you quickly pocket half your bet back! You now have ${user_data.balance - Math.floor(totalWinnings/2)}CC`);
+					.setDescription(`Using your EVD you quickly pocket half your bet back! You now have ${user_data.balance + Math.floor(totalWinnings/2)}CC`);
 				totalWinnings = Math.floor(totalWinnings/2);
 				await interaction.followUp({embeds:[evdSaveEmbed]});
 			}
