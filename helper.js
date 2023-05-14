@@ -73,10 +73,12 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 	if(balance > 100){
 		//adjust to percentage of bet
 		let bet_ratio = sanity / balance;
+		let sign = Math.sign(bet_ratio);
 		bet_ratio *= 100;
-		bet_ratio = Math.pow(bet_ratio, 2.65);
-		bet_ratio = bet_ratio/320;
+		bet_ratio = Math.pow(Math.abs(bet_ratio), 2.27);
+		bet_ratio /= 73;
 		bet_ratio = Math.ceil(bet_ratio);
+		bet_ratio *= sign
 		sanity = bet_ratio;
 	}
 	let prev_sanity = user_stats.sanity;
