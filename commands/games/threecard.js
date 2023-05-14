@@ -157,7 +157,6 @@ module.exports = {
 						lose();
 					}
 				});
-			}
 		}
 		//helper functions
 		function getPrettyCards(cardArray){
