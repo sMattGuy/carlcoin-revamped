@@ -51,7 +51,7 @@ module.exports = {
 					let cost = upgrades[i].cost
 					let users_upgrade = await user_data.getUpgrade(user_data, upgrades[i]);
 					if(users_upgrade)
-						cost += (upgrades[i].rank * 50 * users_upgrade.amount)
+						cost += (upgrades[i].rank * 50 * Math.pow(users_upgrade.amount, 2))
 					selectMenu.addOptions({label: `${upgrades[i].name}`, description: `Costs ${cost}CC`, value: `${upgrades[i].id}`})
 				}
 				selectMenu.addOptions({label: `Cancel`, description: `Cancel the purchase`, value: `cancel`})
@@ -72,7 +72,7 @@ module.exports = {
 					if(selected == 'cancel'){
 						const cancelEmbed = new EmbedBuilder()
 							.setColor(0xf5bf62)
-							.setTitle(`You consumed nothing!`)
+							.setTitle(`You bought nothing!`)
 							.setDescription(`See you next time!`);
 						await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
 						return;
@@ -82,7 +82,7 @@ module.exports = {
 					let cost = selectedUpgrade.cost;
 					let users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 					if(users_upgrades)
-						cost += (selectedUpgrade.rank * 100 * users_upgrades.amount);
+						cost += (selectedUpgrade.rank * 100 * Math.pow(users_upgrades.amount,2));
 					//check if user can afford it
 					if(user_data.prestigeBalance - cost < 0){
 						//cant afford
@@ -103,16 +103,16 @@ module.exports = {
 							user_stats.luck += 1;
 						}
 						else if(selectedUpgrade.name == 'Muscle Tonic'){
-							user_stats.strength += 25 * users_upgrades.amount;
+							user_stats.strength += 10 * users_upgrades.amount;
 						}
 						else if(selectedUpgrade.name == 'Speed Cola'){
-							user_stats.evade += 25 * users_upgrades.amount;
+							user_stats.evade += 10 * users_upgrades.amount;
 						}
 						else if(selectedUpgrade.name == 'Thick Skin'){
-							user_stats.defense += 25 * users_upgrades.amount;
+							user_stats.defense += 10 * users_upgrades.amount;
 						}
 						else if(selectedUpgrade.name == 'Calm Mind'){
-							user_stats.constitution += 25 * users_upgrades.amount;
+							user_stats.constitution += 10 * users_upgrades.amount;
 						}
 						user_stats.save();
 						const bought = new EmbedBuilder()
