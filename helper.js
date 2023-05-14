@@ -37,7 +37,6 @@ async function giveLevels(user_stats, experience_gain, interaction){
 				{name: 'WIS', value: `${user_stats.wisdom}`, inline: true},
 				{name: 'CON', value: `${user_stats.constitution}`, inline: true},
 				{name: 'LCK', value: `${user_stats.luck}`, inline: true},
-				{name: 'SAN', value: `${user_stats.sanity}`, inline: true},
 			);
 		await interaction.followUp({embeds:[levelUpEmbed]});
 	}
