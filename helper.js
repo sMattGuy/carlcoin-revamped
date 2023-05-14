@@ -44,12 +44,12 @@ async function giveLevels(user_stats, experience_gain, interaction){
 }
 
 async function killUser(user_data, user_stats, interaction){
-	if(user_stats.constitution != 0 && Math.random() + (user_stats.constitution * 0.01) > 0.95){
+	if(user_stats.constitution != 0 && Math.random() + (user_stats.constitution * 0.001) > 0.95){
 		const conSaveEmbed = new EmbedBuilder()
 			.setColor(0xf5bf62)
 			.setTitle(`You almost died!`)
 			.setDescription(`On the brink of insanity, your CON saves you! Now might be a good time to take a Sanity Pill!`);
-		user_stats.sanity = -95;
+		user_stats.sanity = -99;
 		user_stats.save();
 		user_data.save();
 		await interaction.followUp({embeds:[conSaveEmbed]});
@@ -70,6 +70,8 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 		//adjust to percentage of bet
 		let bet_ratio = sanity / balance;
 		bet_ratio *= 100;
+		bet_ratio = Math.pow(bet_ratio, 2.65);
+		bet_ratio = bet_ratio/320;
 		bet_ratio = Math.ceil(bet_ratio);
 		sanity = bet_ratio;
 	}
