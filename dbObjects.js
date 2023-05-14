@@ -136,23 +136,22 @@ Reflect.defineProperty(User_Stats.prototype, 'giveXP', {
 			stats.next_level = stats.level * 2 + 10;
 			//str, def, evd, int, wis, con
 			let randomStat1 = Math.floor(Math.random()*6)
-			let randomStat2 = Math.floor(Math.random()*6)
-			if(randomStat1 == 0 || randomStat2 == 0){
+			if(randomStat1 == 0){
 				stats.strength += Math.floor(Math.random()*2)+1
 			}
-			if(randomStat1 == 1 || randomStat2 == 1){
+			if(randomStat1 == 1){
 				stats.defense += Math.floor(Math.random()*2)+1
 			}
-			if(randomStat1 == 2 || randomStat2 == 2){
+			if(randomStat1 == 2){
 				stats.evade += Math.floor(Math.random()*2)+1
 			}
-			if(randomStat1 == 3 || randomStat2 == 3){
+			if(randomStat1 == 3){
 				stats.intel += Math.floor(Math.random()*2)+1
 			}
-			if(randomStat1 == 4 || randomStat2 == 4){
+			if(randomStat1 == 4){
 				stats.wisdom += Math.floor(Math.random()*2)+1
 			}
-			if(randomStat1 == 5 || randomStat2 == 5){
+			if(randomStat1 == 5){
 				stats.constitution += Math.floor(Math.random()*2)+1
 			}
 		}

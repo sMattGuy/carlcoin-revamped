@@ -456,11 +456,11 @@ module.exports = {
 			//dealer wins
 			await interaction.editReply({embeds:[loseEmbed],components:[]});
 			//attempt wisdom save
-			let wisSaveChance = user_stats.wisdom * 0.001;
-			if(wisSaveChance >= 0.95){
-				wisSaveChance = 0.94;
+			let wisSaveChance = 0.95 - (user_stats.wisdom * 0.001);
+			if(wisSaveChance <= 0.8){
+				wisSaveChance = 0.8;
 			}
-			if(user_stats.wisdom != 0 && Math.random() + wisSaveChance > .95){
+			if(user_stats.wisdom != 0 && Math.random() > wisSaveChance){
 				const wisSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But it never happened!`)
@@ -469,11 +469,11 @@ module.exports = {
 				return;
 			}
 			//attempt evade save
-			let evdSaveChance = user_stats.evade * 0.001;
-			if(evdSaveChance >= 0.90){
-				evdSaveChance = 0.89;
+			let evdSaveChance = 0.9 - (user_stats.evade * 0.001);
+			if(evdSaveChance <= 0.80){
+				evdSaveChance = 0.80;
 			}
-			else if(user_stats.evade != 0 && Math.random() + evdSaveChance > .90){
+			else if(user_stats.evade != 0 && Math.random() > evdSaveChance){
 				const evdSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But you're quick!`)
