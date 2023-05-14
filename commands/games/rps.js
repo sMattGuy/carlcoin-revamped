@@ -132,7 +132,7 @@ module.exports = {
 								let winner_prev_balance = winner.balance
 								winner.balance += bet_amount;
 								await winner.save();
-								await changeSanity(winner,winner_stats,interaction,winner_prev_balance,bet_amount);
+								//await changeSanity(winner,winner_stats,interaction,winner_prev_balance,bet_amount);
 								await giveLevels(winner_stats, Math.floor(bet_amount/2), interaction);
 								//update loser
 								let loser_prev_balance = loser.balance;

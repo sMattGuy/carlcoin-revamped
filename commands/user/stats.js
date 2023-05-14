@@ -54,7 +54,7 @@ module.exports = {
 					{name: 'Current Life', value: `${user_data.life}`, inline: true},
 					{name: 'Can Work?', value: `${canWork}`, inline: true},
 					{name: 'Daily Payout', value: `${dailyPayout}`, inline: true},
-					{name: 'Sanity', value: `${user_stats.sanity}`, inline: true},
+					{name: 'Sanity', value: `${getSanityLevel(user_stats.sanity)}`, inline: true},
 				);
 			await interaction.reply({embeds:[levelUpEmbed]});
 		}
@@ -70,7 +70,6 @@ module.exports = {
 					{name: 'WIS', value: `${user_stats.wisdom}`, inline: true},
 					{name: 'CON', value: `${user_stats.constitution}`, inline: true},
 					{name: 'LCK', value: `${user_stats.luck}`, inline: true},
-					{name: 'SAN', value: `${user_stats.sanity}`, inline: true},
 				);
 			await interaction.reply({embeds:[levelUpEmbed]});
 		}
@@ -108,3 +107,39 @@ module.exports = {
 		}
 	},
 };
+
+function getSanityLevel(sanity_value){
+	if(sanity_value >= -10){
+		return 'Normal';
+	}
+	else if(sanity_value >= -20){
+		return 'Annoyed';
+	}
+	else if(sanity_value >= -30){
+		return 'Irate';
+	}
+	else if(sanity_value >= -40){
+		return 'Goofy';
+	}
+	else if(sanity_value >= -50){
+		return 'Crazy';
+	}
+	else if(sanity_value >= -60){
+		return 'Insane';
+	}
+	else if(sanity_value >= -70){
+		return 'Mentally Ill';
+	}
+	else if(sanity_value >= -80){
+		return 'Grippy Socks';
+	}
+	else if(sanity_value >= -90){
+		return 'Schizophrenic';
+	}
+	else if(sanity_value >= -100){
+		return 'Enlightened';
+	}
+	else{
+		return 'Incomprehensible';
+	}
+}

@@ -510,7 +510,7 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += betAmount;
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,prev_balance,betAmount);
+			//await changeSanity(user_data,user_stats,interaction,prev_balance,betAmount);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
 			user_stats.save();
 			return;
@@ -530,7 +530,7 @@ module.exports = {
 				);
 			await interaction.editReply({embeds:[winEmbed],components:[]});
 			let newSanity = betAmount + insuranceAmount;
-			await changeSanity(user_data,user_stats,interaction,user_data.balance,newSanity);
+			//await changeSanity(user_data,user_stats,interaction,user_data.balance,newSanity);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
 			user_stats.save();
 			return;

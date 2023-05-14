@@ -7,7 +7,7 @@ module.exports = {
 	async execute(interaction) {
 		const helpEmbed = new EmbedBuilder()
 			.setColor(0xf5bf62)
-			.setDescription(`Here is a link to the Wiki! https://www.matthewflammia.xyz/mediawiki`);
+			.setDescription(`Here is a link to the Wiki! https://matthewflammia.xyz/mediawiki`);
 		await interaction.reply({embeds:[helpEmbed],ephemeral:true});
 	},
 };
