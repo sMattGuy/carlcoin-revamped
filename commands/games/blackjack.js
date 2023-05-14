@@ -461,7 +461,7 @@ module.exports = {
 					.setColor(0xff293b)
 					.setTitle(`But it never happened!`)
 					.setDescription(`You had the WIS to know that this would have been a loss, so you never played in the first place!`);
-				await interaction.followUp({embeds:[wisSaveEmbed]});
+				await interaction.followUp({embeds:[wisSaveEmbed],ephemeral:true});
 				return;
 			}
 			//attempt evade save
@@ -471,7 +471,7 @@ module.exports = {
 					.setTitle(`But you're quick!`)
 					.setDescription(`Using your EVD you quickly pocket half your bet back! You now have ${user_data.balance - Math.floor(betAmount/2)}CC`);
 				betAmount = Math.floor(betAmount/2);
-				await interaction.followUp({embeds:[evdSaveEmbed]});
+				await interaction.followUp({embeds:[evdSaveEmbed],ephemeral:true});
 			}
 			user_data.balance -= betAmount;
 			await user_data.save();
