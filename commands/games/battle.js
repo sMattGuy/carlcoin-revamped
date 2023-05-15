@@ -122,9 +122,19 @@ module.exports = {
 						damageCalc = 0;
 						let maxDamage = 6 + RoundAttackerStats.strength;
 						damageCalc = Math.floor(Math.random()*maxDamage)+1;
+						let luck_message = '';
+						if(Math.random() > .9 && RoundAttackerStats.luck != 0){
+							for(let luck_check=0;luck_check<RoundAttackerStats.luck;luck_check++){
+								let tempAttk = Math.floor(Math.random()*maxDamage)+1;
+								if(tempAttk > damageCalc){
+									damageCalc = tempAttk;
+								}
+							}
+							luck_message = ' A Lucky roll!';
+						}
 						if(damageCalc < 0)
 							damageCalc = 0;
-						bi.update({content:codeBlock(`You rolled ${damageCalc} for attack! Let's see what your opponent does...`),components:[]});
+						bi.update({content:codeBlock(`You rolled ${damageCalc} for attack!${luck_message} Let's see what your opponent does...`),components:[]});
 						
 						//start opponents choice
 						if(damageCalc == 0){	
@@ -134,14 +144,28 @@ module.exports = {
 						}
 						else{
 							const defenderCollector = await RoundDefenderDM.createMessageComponentCollector({defendFilter,time:60000,max:1});
-							let filler = `Your opponent rolled a ${damageCalc}!`;
+							let filler = `Your opponent rolled a ${damageCalc}!${luck_message}`;
 							
 							RoundDefender.send({content:codeBlock(`Select an option! ${filler}\nYour HP:${RoundDefenderHealth}\nATK:${RoundDefenderStats.strength} DEF:${RoundDefenderStats.defense} EVD:${RoundDefenderStats.evade}\nEnemy HP:${RoundAttackerHealth}\nATK:${RoundAttackerStats.strength} DEF:${RoundAttackerStats.defense} EVD:${RoundAttackerStats.evade}`),components:[defendRow]}).then(oppMsg => {
 								defenderCollector.once('collect', async obi => {
+									let def_luck_chance = false;
+									let def_luck_message = '';
+									if(Math.random() > .9 && RoundDefenderStats.luck != 0){
+										def_luck_chance = true;
+										def_luck_message = ' A Lucky roll!';
+									}
 									let defenseAmount = 0
 									if(obi.customId == 'defend'){
 										let maxDefense = 6 + RoundDefenderStats.defense;
 										defenseAmount = Math.floor(Math.random()*maxDefense)+1;
+										if(def_luck_chance){
+											for(luck_check=0;luck_check<RoundDefenderStats.luck;luck_check++){
+												let tmp_defend = Math.floor(Math.random()*maxDefense)+1;
+												if(tmp_defend > defenseAmount){
+													defenseAmount = tmp_defend;
+												}
+											}
+										}
 										damageCalc -= defenseAmount;
 										if(damageCalc <= 0)
 											damageCalc = 1;
@@ -150,12 +174,20 @@ module.exports = {
 										//evade
 										let maxEvade = 6 + RoundDefenderStats.evade;
 										defenseAmount = Math.floor(Math.random()*maxEvade)+1;
+										if(def_luck_chance){
+											for(luck_check=0;luck_check<RoundDefenderStats.luck;luck_check++){
+												let tmp_defend = Math.floor(Math.random()*maxEvade)+1;
+												if(tmp_defend > defenseAmount){
+													defenseAmount = tmp_defend;
+												}
+											}
+										}
 										if(defenseAmount > damageCalc)
 											damageCalc = 0;
 									}
 									
-									let DefenderTurnDescription = `You rolled a ${defenseAmount}! You took ${damageCalc} damage!`;
-									let AttackerTurnDescription = `Your opponent rolled a ${defenseAmount}! You dealt ${damageCalc} damage!`;
+									let DefenderTurnDescription = `You rolled a ${defenseAmount}!${def_luck_message} You took ${damageCalc} damage!`;
+									let AttackerTurnDescription = `Your opponent rolled a ${defenseAmount}!${def_luck_message} You dealt ${damageCalc} damage!`;
 									
 									await bi.editReply({content:codeBlock(AttackerTurnDescription),components:[]});
 									await obi.update({content:codeBlock(DefenderTurnDescription),components:[]});
