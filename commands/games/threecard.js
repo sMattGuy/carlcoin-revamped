@@ -319,13 +319,9 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			if(pairPlusPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,pairPlusPayout);
+			if(totalWinnings < 0){
+				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			}
-			if(sixCardPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,sixCardPayout);
-			}
-			//await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
@@ -356,13 +352,9 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			if(pairPlusPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,pairPlusPayout);
+			if(totalWinnings < 0){
+				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			}
-			if(sixCardPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,sixCardPayout);
-			}
-			await changeSanity(user_data,user_stats,interaction,prev_balance,-ante_bet);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
@@ -394,13 +386,9 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			if(pairPlusPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,pairPlusPayout);
+			if(totalWinnings < 0){
+				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			}
-			if(sixCardPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,sixCardPayout);
-			}
-			//await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
@@ -415,7 +403,6 @@ module.exports = {
 				pair plus bonus
 				six card bonus
 			*/
-			let baseBet = -ante_bet + -ante_bet
 			let totalWinnings = -ante_bet + -ante_bet + anteBetPayout + pairPlusPayout + sixCardPayout;
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
@@ -459,13 +446,9 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			if(pairPlusPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,pairPlusPayout);
+			if(totalWinnings < 0){
+				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
 			}
-			if(sixCardPayout < 0){
-				await changeSanity(user_data,user_stats,interaction,prev_balance,sixCardPayout);
-			}
-			await changeSanity(user_data,user_stats,interaction,prev_balance,baseBet);
 			return;
 		}
 		async function win(){
@@ -495,7 +478,9 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
-			//await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			if(totalWinnings < 0){
+				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			}
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
