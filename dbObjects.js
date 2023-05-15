@@ -133,26 +133,33 @@ Reflect.defineProperty(User_Stats.prototype, 'giveXP', {
 			//user has enough xp to level up
 			stats.level += 1;
 			stats.experience -= stats.next_level
-			stats.next_level = stats.level * 2 + 10;
+			stats.next_level = Math.ceil(Math.pow(stats.level/0.19,2.1));
 			//str, def, evd, int, wis, con
-			let randomStat1 = Math.floor(Math.random()*6)
+			let randomStat1 = Math.floor(Math.random()*6);
+			//extreme luck
+			if(Math.random() > .999){
+				randomStat1 = 6;
+			}
 			if(randomStat1 == 0){
-				stats.strength += Math.floor(Math.random()*2)+1
+				stats.strength += Math.floor(Math.random()*2)+1;
 			}
 			if(randomStat1 == 1){
-				stats.defense += Math.floor(Math.random()*2)+1
+				stats.defense += Math.floor(Math.random()*2)+1;
 			}
 			if(randomStat1 == 2){
-				stats.evade += Math.floor(Math.random()*2)+1
+				stats.evade += Math.floor(Math.random()*2)+1;
 			}
 			if(randomStat1 == 3){
-				stats.intel += Math.floor(Math.random()*2)+1
+				stats.intel += Math.floor(Math.random()*2)+1;
 			}
 			if(randomStat1 == 4){
-				stats.wisdom += Math.floor(Math.random()*2)+1
+				stats.wisdom += Math.floor(Math.random()*2)+1;
 			}
 			if(randomStat1 == 5){
-				stats.constitution += Math.floor(Math.random()*2)+1
+				stats.constitution += Math.floor(Math.random()*2)+1;
+			}
+			if(randomStat1 == 6){
+				stats.luck += 1;
 			}
 		}
 		return leveled;

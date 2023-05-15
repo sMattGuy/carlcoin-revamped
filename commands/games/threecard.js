@@ -46,15 +46,24 @@ module.exports = {
 		let playerCards = [];
 		let playingGame = false;
 		let int_check_success = false;
+		let luck_chance = false;
+		let luck_message = '';
+		if(Math.random() > .90 && user_stats.luck != 0){
+			luck_chance = true;
+			luck_message = 'Luck is on your side!';
+		}
 		//dealer
-		drawCard(dealerCards, 0);
-		drawCard(dealerCards, 0);
-		drawCard(dealerCards, 0);
+		drawCard(dealerCards);
+		drawCard(dealerCards);
+		drawCard(dealerCards);
 		//player
-		drawCard(playerCards, user_stats.luck);
-		drawCard(playerCards, user_stats.luck);
-		drawCard(playerCards, user_stats.luck);
-		
+		drawCard(playerCards);
+		drawCard(playerCards);
+		drawCard(playerCards);
+		//special luck function
+		if(luck_chance){
+			rollLuckyHand(playerCards, user_stats.luck);
+		}
 		const player_hand = getHandResults(playerCards, 'threecard', false);
 		const dealer_hand = getHandResults(dealerCards, 'threecard', true);
 		let playerAndDealer = [dealerCards[0],dealerCards[1],dealerCards[2],playerCards[0],playerCards[1],playerCards[2]];
@@ -87,7 +96,7 @@ module.exports = {
 					//debuff user for being crazy
 					boardEmbed
 						.setColor(0xf5bf62)
-						.setTitle(`Current Table`)
+						.setTitle(`Current Table.`)
 						.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
 						.addFields(
 							{name: `Dealer`, value: `??, ??, ??`},
@@ -102,7 +111,7 @@ module.exports = {
 					int_check_success = true;
 					boardEmbed
 						.setColor(0xf5bf62)
-						.setTitle(`Current Table`)
+						.setTitle(`Current Table. ${luck_message}`)
 						.setDescription(`Your INT helps you count the cards... You're sure the dealer has this card!`)
 						.addFields(
 							{name: `Dealer`, value: `${card_icons[dealerCards[0]]}, ??, ??`},
@@ -115,7 +124,7 @@ module.exports = {
 				else{
 					boardEmbed
 						.setColor(0xf5bf62)
-						.setTitle(`Current Table`)
+						.setTitle(`Current Table. ${luck_message}`)
 						.addFields(
 							{name: `Dealer`, value: `??, ??, ??`},
 							{name: `You (${player_hand.descr})`, value: `${getPrettyCards(playerCards)}`},
@@ -166,13 +175,42 @@ module.exports = {
 			});
 			return prettyCards;
 		}
-		function drawCard(cardArray, luck){
+		function drawCard(cardArray){
 			let newCard = (Math.floor(Math.random() * 52));
 			while(usedCards[newCard]){
 				newCard = (Math.floor(Math.random() * 52));
 			}
 			usedCards[newCard] = true;
 			cardArray.push(newCard);
+		}
+		function rollLuckyHand(cardArray, luck){
+			for(i=0;i<luck;i++){
+				//temp allow getting cards in hand ie puts cards back in deck
+				usedCards[cardArray[0]] = false;
+				usedCards[cardArray[1]] = false;
+				usedCards[cardArray[2]] = false;
+				//get 3 new cards, sets cards as used
+				let tempArray = [];
+				drawCard(tempArray);
+				drawCard(tempArray);
+				drawCard(tempArray);
+				//compare hands
+				let currentHand = getHandResults(cardArray, 'threecard');
+				let tempHand = getHandResults(tempArray, 'threecard');
+				if(tempHand.rank > currentHand.rank){
+					//new hand is better just overwrite it
+					cardArray = tempArray;
+				}
+				else{
+					//old hand was better reverse used cards
+					usedCards[tempArray[0]] = false;
+					usedCards[tempArray[1]] = false;
+					usedCards[tempArray[2]] = false;
+					usedCards[cardArray[0]] = true;
+					usedCards[cardArray[1]] = true;
+					usedCards[cardArray[2]] = true;
+				}
+			}
 		}
 		//game specific functions
 		function getHandResults(cardArray, game){
@@ -306,7 +344,7 @@ module.exports = {
 			let totalWinnings = ante_bet + anteBetPayout + pairPlusPayout + sixCardPayout;
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
-				.setTitle(`Dealer doesn't Qualify!`)
+				.setTitle(`Dealer doesn't Qualify! ${luck_message}`)
 				.setDescription(`You now have ${user_data.balance + totalWinnings}CC!`)
 				.addFields(
 					{name: `Dealer (${dealer_hand.descr})`, value: `${getPrettyCards(dealerCards)}`},
@@ -339,7 +377,7 @@ module.exports = {
 			let totalWinnings = -ante_bet - pair_plus_bet - six_card_bet;
 			const winEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle(`You folded!`)
+				.setTitle(`You folded! ${luck_message}`)
 				.setDescription(`You now have ${user_data.balance + totalWinnings}CC!`)
 				.addFields(
 					{name: `Dealer (${dealer_hand.descr})`, value: `${getPrettyCards(dealerCards)}`},
@@ -373,7 +411,7 @@ module.exports = {
 			let totalWinnings = anteBetPayout + pairPlusPayout + sixCardPayout;
 			const winEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle(`It's a Draw!`)
+				.setTitle(`It's a Draw! ${luck_message}`)
 				.setDescription(`You now have ${user_data.balance + totalWinnings}CC!`)
 				.addFields(
 					{name: `Dealer (${dealer_hand.descr})`, value: `${getPrettyCards(dealerCards)}`},
@@ -465,7 +503,7 @@ module.exports = {
 			let totalWinnings = ante_bet + ante_bet + anteBetPayout + pairPlusPayout + sixCardPayout;
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
-				.setTitle(`You win!`)
+				.setTitle(`You win! ${luck_message}`)
 				.setDescription(`You now have ${user_data.balance + totalWinnings}CC!`)
 				.addFields(
 					{name: `Dealer (${dealer_hand.descr})`, value: `${getPrettyCards(dealerCards)}`},

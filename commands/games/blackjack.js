@@ -31,12 +31,18 @@ module.exports = {
 		let playerCards = [];
 		let playingGame = false;
 		let int_check_success = false;
+		let luck_chance = false;
+		let luck_message = '';
+		if(Math.random() > .90 && user_stats.luck != 0){
+			luck_chance = true;
+			luck_message = 'Luck is on your side!';
+		}
 		//dealer
-		drawCard(dealerCards, 0);
-		drawCard(dealerCards, 0);
+		drawCard(dealerCards, 0, luck_chance);
+		drawCard(dealerCards, 0, luck_chance);
 		//player
-		drawCard(playerCards, user_stats.luck);
-		drawCard(playerCards, user_stats.luck);
+		drawCard(playerCards, user_stats.luck, luck_chance);
+		drawCard(playerCards, user_stats.luck, luck_chance);
 		let naturalWin = false;	
 		let got_insurance = false;
 		let insuranceWin = false;
@@ -179,7 +185,7 @@ module.exports = {
 					//debuff user for being crazy
 					boardEmbed
 						.setColor(0xf5bf62)
-						.setTitle(`Current Table`)
+						.setTitle(`Current Table.`)
 						.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
 						.addFields(
 							{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
@@ -192,7 +198,7 @@ module.exports = {
 					int_check_success = true;
 					boardEmbed
 						.setColor(0xf5bf62)
-						.setTitle(`Current Table`)
+						.setTitle(`Current Table. ${luck_message}`)
 						.setDescription(`Your INT helps you count the cards... You're sure the dealer has this hand!`)
 						.addFields(
 							{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
@@ -202,7 +208,7 @@ module.exports = {
 				else{
 					boardEmbed
 						.setColor(0xf5bf62)
-						.setTitle(`Current Table`)
+						.setTitle(`Current Table. ${luck_message}`)
 						.addFields(
 							{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 							{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
@@ -278,7 +284,7 @@ module.exports = {
 						
 						const hitEmbed = new EmbedBuilder()
 							.setColor(0xf5bf62)
-							.setTitle(`Current Table`)
+							.setTitle(`Current Table. ${luck_message}`)
 							.setDescription(`Hit! You pulled ${blackjackCards[playerCards[playerCards.length-1]]}. You now have ${playerValue}`)
 						if(int_check_success){
 							dealerValue = getCardValue(dealerCards);
@@ -374,7 +380,7 @@ module.exports = {
 				//draw
 				const drawEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
-					.setTitle(`It's a draw!`)
+					.setTitle(`It's a draw! ${luck_message}`)
 					.addFields(
 						{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 						{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
@@ -414,24 +420,26 @@ module.exports = {
 			}
 			return value;
 		}
-		function drawCard(cardArray, luck){
+		function drawCard(cardArray, luck, luckChance){
 			let newCard = (Math.floor(Math.random() * 52));
 			while(usedCards[newCard]){
 				newCard = (Math.floor(Math.random() * 52));
 			}
-			for(let i=0;i<luck;i++){
-				let luckCard = (Math.floor(Math.random() * 52));
-				while(usedCards[luckCard]){
-					luckCard = (Math.floor(Math.random() * 52));
-				}
-				let tempArray = [...cardArray];
-				tempArray.push(newCard);
-				let luckArray = [...cardArray];
-				luckArray.push(luckCard);
-				let currentValue = getCardValue(tempArray);
-				let luckValue = getCardValue(luckArray);
-				if(luckValue > currentValue && luckValue <= 21){
-					newCard = luckCard;
+			if(luckChance){
+				for(let i=0;i<luck;i++){
+					let luckCard = (Math.floor(Math.random() * 52));
+					while(usedCards[luckCard]){
+						luckCard = (Math.floor(Math.random() * 52));
+					}
+					let tempArray = [...cardArray];
+					tempArray.push(newCard);
+					let luckArray = [...cardArray];
+					luckArray.push(luckCard);
+					let currentValue = getCardValue(tempArray);
+					let luckValue = getCardValue(luckArray);
+					if(luckValue > currentValue && luckValue <= 21){
+						newCard = luckCard;
+					}
 				}
 			}
 			usedCards[newCard] = true;
@@ -447,7 +455,7 @@ module.exports = {
 			}
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
-				.setTitle(`You lost!`)
+				.setTitle(`You lost! ${luck_message}`)
 				.setDescription(`You now have ${user_data.balance - betAmount}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
@@ -500,7 +508,7 @@ module.exports = {
 			}
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
-				.setTitle(`You win!`)
+				.setTitle(`You win! ${luck_message}`)
 				.setDescription(`You now have ${user_data.balance + betAmount}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},

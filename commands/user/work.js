@@ -37,16 +37,25 @@ module.exports = {
 			let lower_bound = user_stats.strength + 1;
 			//roll the dice
 			let best = 0;
-			for(let i=0;i<=user_stats.luck;i++){
-				let coinReward = Math.floor(Math.random()*(upper_bound-lower_bound+1)+lower_bound);
-				if(coinReward > best)
-					best = coinReward;
+			let luck_chance = false;
+			let luck_message = '';
+			if(Math.random() > .90 && user_stats.luck != 0){
+				luck_chance = true;
+				luck_message = 'Luck is on your side!';
+			}
+			best = Math.floor(Math.random()*(upper_bound-lower_bound+1)+lower_bound);
+			if(luck_chance){
+				for(let i=0;i<user_stats.luck;i++){
+					let coinReward = Math.floor(Math.random()*(upper_bound-lower_bound+1)+lower_bound);
+					if(coinReward > best)
+						best = coinReward;
+				}
 			}
 			//update user
 			let experience_gain = Math.floor(best/2);
 			const workEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle('Off to work!')
+				.setTitle(`Off to work! ${luck_message}`)
 				.setDescription(`Your current range is from ${lower_bound}CC to ${upper_bound}CC. You worked hard in the Carlcoin Mines and got ${best}CC! You now have ${user.balance + best}CC and got ${experience_gain}XP!`)
 			await interaction.reply({embeds:[workEmbed]});
 			user.last_worked = Date.now();
