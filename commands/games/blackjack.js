@@ -38,8 +38,8 @@ module.exports = {
 			luck_message = 'Luck is on your side!';
 		}
 		//dealer
-		drawCard(dealerCards, 0, luck_chance);
-		drawCard(dealerCards, 0, luck_chance);
+		drawCard(dealerCards, 0, false);
+		drawCard(dealerCards, 0, false);
 		//player
 		drawCard(playerCards, user_stats.luck, luck_chance);
 		drawCard(playerCards, user_stats.luck, luck_chance);
@@ -254,7 +254,7 @@ module.exports = {
 				//player functions
 				async function hit(){
 					let playingGameHit = false;
-					drawCard(playerCards, user_stats.luck);
+					drawCard(playerCards, user_stats.luck, luck_chance);
 					let cardValue = getCardValue(playerCards);
 					if(cardValue > 21){
 						playingGameHit = true;
@@ -342,7 +342,7 @@ module.exports = {
 					playingGame = true;
 					let dealerTotal = getCardValue(dealerCards);
 					while(dealerTotal < 17){
-						drawCard(dealerCards, 0);
+						drawCard(dealerCards, 0, false);
 						dealerTotal = getCardValue(dealerCards);
 					}
 					endGame();
@@ -350,10 +350,10 @@ module.exports = {
 				async function doubleDown(){
 					playingGame = true;
 					betAmount *= 2;
-					drawCard(playerCards, user_stats.luck);
+					drawCard(playerCards, user_stats.luck, luck_chance);
 					let dealerTotal = getCardValue(dealerCards);
 					while(dealerTotal < 17){
-						drawCard(dealerCards, 0);
+						drawCard(dealerCards, 0, false);
 						dealerTotal = getCardValue(dealerCards);
 					}
 					endGame();
