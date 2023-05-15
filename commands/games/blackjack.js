@@ -57,9 +57,11 @@ module.exports = {
 			}
 			else{
 				let user_ins_cards = getPrettyCards(playerCards);
+				/*
 				if(user_stats.sanity <= -50){
 					user_ins_cards = `??, ??`;
 				}
+				*/
 				const row = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
@@ -181,6 +183,7 @@ module.exports = {
 				
 				const boardEmbed = new EmbedBuilder();
 				//sanity check
+				/*
 				if(user_stats.sanity <= -50){
 					//debuff user for being crazy
 					boardEmbed
@@ -192,8 +195,9 @@ module.exports = {
 							{name: `You (??)`, value: `??, ??`},
 						);
 				}
-				//int check
-				else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
+				*/
+				//int check else
+				if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
 					dealerValue = getCardValue(dealerCards);
 					int_check_success = true;
 					boardEmbed
@@ -293,12 +297,14 @@ module.exports = {
 								{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 							);
 						}
+						/*
 						else if(user_stats.sanity <= -50){
 							hitEmbed.addFields(
 								{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 								{name: `You (??)`, value: `${insaneCards}`},
 							);
 						}
+						*/
 						else{
 							hitEmbed.addFields(
 								{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},

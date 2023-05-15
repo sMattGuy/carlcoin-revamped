@@ -92,6 +92,7 @@ module.exports = {
 				
 				const boardEmbed = new EmbedBuilder();
 				//sanity check
+				/*
 				if(user_stats.sanity <= -50){
 					//debuff user for being crazy
 					boardEmbed
@@ -106,8 +107,9 @@ module.exports = {
 							{name: `Six Card Bonus Payout`, value: `??`, inline: true},
 						);
 				}
-				//int check
-				else if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
+				*/
+				//int check else
+				if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
 					int_check_success = true;
 					boardEmbed
 						.setColor(0xf5bf62)
