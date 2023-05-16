@@ -82,7 +82,7 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 		bet_ratio = Math.pow(Math.abs(bet_ratio), 2.27);
 		bet_ratio /= 73;
 		bet_ratio = Math.ceil(bet_ratio);
-		bet_ratio += 5;
+		bet_ratio += 1;
 		bet_ratio *= sign
 		console.log(`ratio result ${bet_ratio}`)
 		//increase sanity based on current sanity
