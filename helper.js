@@ -69,6 +69,9 @@ async function killUser(user_data, user_stats, interaction){
 }
 
 async function changeSanity(user_data, user_stats, interaction, balance, sanity){
+	if(user_stats.sanity == 0){
+		user_stats.sanity = -1;
+	}
 	if(balance > 100){
 		//adjust to percentage of bet
 		let bet_ratio = sanity / balance;
