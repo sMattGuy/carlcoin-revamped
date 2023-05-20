@@ -76,7 +76,7 @@ async function hourlys(){
 	userList.forEach(async user => {
 		let user_stats = await get_user_stats(user.user_id);
 		if(user_stats.sanity != 0){
-			let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*10;
+			let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*20;
 			if (newSanity < 0 && user_stats.sanity >= 0 || newSanity >= 0 && user_stats.sanity < 0) {
 				user_stats.sanity = 0;
 			}

@@ -75,33 +75,30 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 	if(balance > 100){
 		//adjust to percentage of bet
 		let bet_ratio = sanity / balance;
+		console.log(`ratio ${bet_ratio}`)
 		let sign = Math.sign(bet_ratio);
 		bet_ratio *= 100;
 		bet_ratio = Math.pow(Math.abs(bet_ratio), 2.27);
 		bet_ratio /= 73;
 		bet_ratio = Math.ceil(bet_ratio);
-		bet_ratio += 5;
+		bet_ratio += 1;
 		bet_ratio *= sign
+		console.log(`ratio result ${bet_ratio}`)
 		//increase sanity based on current sanity
 		let san_sign = Math.sign(user_stats.sanity);
-		let sanity_modifier = Math.pow(Math.abs(user_stats.sanity)/15,1.15);
+		let sanity_modifier = Math.ceil(Math.pow(Math.abs(user_stats.sanity)/22,2));
+		console.log(`sanity mod: ${sanity_modifier}`);
 		sanity_modifier *= san_sign;
-		let sanity_diff = Math.ceil(sanity_modifier - user_stats.sanity);
-		sanity = bet_ratio + sanity_diff;
+		console.log(`sanity mod post sign: ${sanity_modifier}`);
+		sanity = bet_ratio + sanity_modifier;
 	}
 	let prev_sanity = user_stats.sanity;
+	console.log(`sanity drain: ${sanity}`);
 	user_stats.sanity += sanity;
+	console.log(`post sanity: ${user_stats.sanity}`);
 	//sanity over 100, ceiling it
 	if(user_stats.sanity > 100){
 		user_stats.sanity = 100;
-	}
-	//sanity goes from below 0 to above, alert death protection active
-	if(prev_sanity < 0 && user_stats.sanity >= 0 && user_stats.level <= 30){
-		const insaneEmbed = new EmbedBuilder()
-			.setColor(0x3bff29)
-			.setTitle(`You feel better!`)
-			.setDescription(`Your feeling like your old self again... You have death protection again!`);
-		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
 	//sanity goes from below -50 to above, no longer insane
 	if(prev_sanity <= -50 && user_stats.sanity > -50){
@@ -111,16 +108,8 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 			.setDescription(`Your insanity fades... You're no longer insane!`);
 		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
-	//sanity goes from above 0 to neg, alert death protection lost
-	if(prev_sanity >= 0 && user_stats.sanity < 0 && user_stats.level <= 30){
-		const insaneEmbed = new EmbedBuilder()
-			.setColor(0xff293b)
-			.setTitle(`Be careful!`)
-			.setDescription(`Your mental fortitude is starting to slip... You don't have death protection anymore!`);
-		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
-	}
 	//sanity past -50, alert insane
-	if(user_stats.sanity <= -50){
+	if(user_stats.sanity <= -50 && prev_sanity > -50){
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`Something doesn't feel right...`)
