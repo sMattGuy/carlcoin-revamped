@@ -44,6 +44,7 @@ module.exports = {
 		let avatar = await get_user_avatar(interaction.user.id);
 		if(subcommand == 'view'){
 			let user_cosmetics = await user_data.getCosmetics(user_data);
+			console.log(user_cosmetics)
 			if(user_cosmetics.length == 0){
 				interaction.reply({content:'You have no cosmetics!', ephemeral:true});
 			}
