@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, changeSanity, give_lootbox } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
 
 const blackjackCards = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
 
@@ -37,6 +37,7 @@ module.exports = {
 			luck_chance = true;
 			luck_message = 'Luck is on your side!';
 		}
+		let avatar = await generate_avatar(interaction.user.id);
 		//dealer
 		drawCard(dealerCards, 0, false);
 		drawCard(dealerCards, 0, false);
@@ -76,13 +77,14 @@ module.exports = {
 				const boardEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
 					.setTitle(`Want Insurance?`)
+					.setThumbnail('attachment://avatar.png')
 					.setDescription(`The dealers upcard is an ace! Want to insure your bet for ${insuranceAmount}CC?`)
 					.addFields(
 						{name: `Dealer (11)`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 						{name: `You (${playerValue})`, value: `${user_ins_cards}`},
 					);
 			
-				await interaction.editReply({embeds:[boardEmbed],components:[row]});
+				await interaction.editReply({embeds:[boardEmbed],components:[row],files:[avatar]});
 				let filter = i => i.user.id == interaction.user.id && i.isButton();
 				let message = await interaction.fetchReply();
 				let insurance_collector = message.createMessageComponentCollector({time: 45000, filter});
@@ -207,6 +209,7 @@ module.exports = {
 					boardEmbed
 						.setColor(0xf5bf62)
 						.setTitle(`Current Table. ${luck_message}`)
+						.setThumbnail('attachment://avatar.png')
 						.setDescription(`Your INT helps you count the cards... You're sure the dealer has this hand!`)
 						.addFields(
 							{name: `Dealer (${dealerValue})`, value: `${getPrettyCards(dealerCards)}`},
@@ -217,13 +220,14 @@ module.exports = {
 					boardEmbed
 						.setColor(0xf5bf62)
 						.setTitle(`Current Table. ${luck_message}`)
+						.setThumbnail('attachment://avatar.png')
 						.addFields(
 							{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
 							{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 						);
 				}
 					
-				await interaction.editReply({embeds:[boardEmbed],components:[firstrow]});
+				await interaction.editReply({embeds:[boardEmbed],components:[firstrow],files:[avatar]});
 				let filter = i => i.user.id == interaction.user.id && i.isButton();
 				let message = await interaction.fetchReply();
 				let collector = message.createMessageComponentCollector({time: 45000, filter});
@@ -293,6 +297,7 @@ module.exports = {
 						const hitEmbed = new EmbedBuilder()
 							.setColor(0xf5bf62)
 							.setTitle(`Current Table. ${luck_message}`)
+							.setThumbnail('attachment://avatar.png')
 							.setDescription(`Hit! You pulled ${blackjackCards[playerCards[playerCards.length-1]]}. You now have ${playerValue}`)
 						if(int_check_success){
 							dealerValue = getCardValue(dealerCards);
@@ -391,6 +396,7 @@ module.exports = {
 				const drawEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
 					.setTitle(`It's a draw! ${luck_message}`)
+					.setThumbnail('attachment://avatar.png')
 					.addFields(
 						{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
 						{name: `You (${playerCardValue})`, value: `${getPrettyCards(playerCards)}`},
@@ -466,6 +472,7 @@ module.exports = {
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
 				.setTitle(`You lost! ${luck_message}`)
+				.setThumbnail('attachment://avatar.png')
 				.setDescription(`You now have ${user_data.balance - betAmount}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
@@ -491,7 +498,7 @@ module.exports = {
 			if(evdSaveChance <= 0.80){
 				evdSaveChance = 0.80;
 			}
-			else if(user_stats.evade != 0 && Math.random() > evdSaveChance){
+			else if(betAmount != 1 && user_stats.evade != 0 && Math.random() > evdSaveChance){
 				const evdSaveEmbed = new EmbedBuilder()
 					.setColor(0xff293b)
 					.setTitle(`But you're quick!`)
@@ -519,6 +526,7 @@ module.exports = {
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`You win! ${luck_message}`)
+				.setThumbnail('attachment://avatar.png')
 				.setDescription(`You now have ${user_data.balance + betAmount}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},
@@ -542,6 +550,7 @@ module.exports = {
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`Your insurance pays off!`)
+				.setThumbnail('attachment://avatar.png')
 				.setDescription(`Thanks to your insurance you avoided losing! You now have ${user_data.balance}CC!`)
 				.addFields(
 					{name: `Dealer (${dealerCardValue})`, value: `${getPrettyCards(dealerCards)}`},

@@ -30,7 +30,7 @@ Reflect.defineProperty(Users.prototype, 'addCosmetic', {
 			where: {user_id: user.user_id, cosmetic_id: cosmetic.id},
 		});
 		if(userCosmetic){
-			userCosmetic.amount += 1;
+			userCosmetic.amount = 1;
 			return userCosmetic.save();
 		}
 		return User_Cosmetics.create({user_id: user.user_id, cosmetic_id:cosmetic.id, amount:1});

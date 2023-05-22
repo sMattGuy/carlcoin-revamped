@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { get_user, get_user_stats, giveLevels } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, generate_avatar } = require('../../helper.js');
 const { Items, Upgrades } = require('../../dbObjects.js');
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,7 +10,8 @@ module.exports = {
 		let user = await get_user(interaction.user.id);
 		//check if user can work
 		if(user.last_worked + 21600000 <= Date.now()){
-			user_stats = await get_user_stats(interaction.user.id);
+			let user_stats = await get_user_stats(interaction.user.id);
+			let avatar = await generate_avatar(interaction.user.id);
 			let coin_increase = 1;
 			let upper_bound = 10 //max coin you can get
 			//user can work, go through various processes
@@ -56,11 +57,21 @@ module.exports = {
 			const workEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle(`Off to work! ${luck_message}`)
+				.setThumbnail('attachment://avatar.png')
 				.setDescription(`Your current range is from ${lower_bound}CC to ${upper_bound}CC. You worked hard in the Carlcoin Mines and got ${best}CC! You now have ${user.balance + best}CC and got ${experience_gain}XP!`)
-			await interaction.reply({embeds:[workEmbed]});
+			await interaction.reply({embeds:[workEmbed],files:[avatar]});
 			user.last_worked = Date.now();
 			user.balance += best;
-			
+			if(Math.random() > .99){
+				let diamondValue = user_stats.level * 100;
+				const diamondEmbed = new EmbedBuilder()
+					.setColor(0xf5bf62)
+					.setTitle(`Wow! A Diamond!`)
+					.setThumbnail('attachment://avatar.png')
+					.setDescription(`While you were mining you found a diamond! You got an additional ${diamondValue}CC!`)
+				await interaction.followUp({embeds:[diamondEmbed],files:[avatar]});
+				user.balance += diamondValue;
+			}
 			if(user_stats.sanity != 0){
 				let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*10;
 				if (newSanity < 0 && user_stats.sanity >= 0 || newSanity >= 0 && user_stats.sanity < 0) {

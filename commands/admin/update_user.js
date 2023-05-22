@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, InteractionCollector } = require('discord.js');
 const { get_user, get_user_stats } = require('../../helper.js');
-const { Buildings, Items, Upgrades } = require('../../dbObjects.js');
+const { Buildings, Items, Upgrades, Cosmetic } = require('../../dbObjects.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -20,13 +20,17 @@ module.exports = {
 					{name:'Buildings',value:'buildings'},
 					{name:'Items',value:'items'},
 					{name:'Upgrades',value:'upgrades'},
+					{name:'Cosmetics',value:'cosmetics'},
 				)
 				.setRequired(true)
 		)
 		.addIntegerOption(option =>
 			option.setName('amount')
 				.setDescription('The value to change to')
-				.setRequired(true)),
+				.setRequired(true))
+		.addStringOption(option =>
+			option.setName('name')
+				.setDescription('for cosmetics only')),
 	async execute(interaction) {
 		let user = interaction.options.getUser('user');
 		if(interaction.guild.ownerId != interaction.user.id){
@@ -243,6 +247,20 @@ module.exports = {
 			collector.on('end', async () => {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
+		}
+		else if(optionChoice == 'cosmetics'){
+			let user_data = await get_user(user.id);
+			let cos_name = interaction.options.getString('name');
+			let new_cosmetic = await Cosmetic.findOne({where:{name:cos_name}});
+			if(!new_cosmetic){
+				await interaction.reply({content:'Failed to get cosmetic', ephemeral:true});
+			}
+			else{
+				let user_cosmetic = await user_data.getCosmetic(user_data, new_cosmetic);
+				user_cosmetic.amount = amount;
+				user_cosmetic.save();
+				await interaction.reply({content:'Updated!', ephemeral:true});
+			}
 		}
 	},
 };

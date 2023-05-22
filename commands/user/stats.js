@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { get_user, get_user_stats } = require('../../helper.js');
+const { get_user, get_user_stats,generate_avatar } = require('../../helper.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -56,10 +56,11 @@ module.exports = {
 				returnToWork = Math.floor(returnToWork / 60); //mins
 				lootboxAvailable = `No, ${returnToWork} mins left`
 			}
-			
+			let avatar = await generate_avatar(user.id);
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle('General Stats')
+				.setThumbnail('attachment://avatar.png')
 				.setDescription(`You are level ${user_stats.level}. Current XP ${user_stats.experience}/${user_stats.next_level}`)
 				.addFields(
 					{name: 'Balance', value: `${user_data.balance}`, inline: true},
@@ -70,7 +71,7 @@ module.exports = {
 					{name: 'Daily Payout', value: `${dailyPayout}`, inline: true},
 					{name: 'Sanity', value: `${getSanityLevel(user_stats.sanity)}`, inline: true},
 				);
-			await interaction.reply({embeds:[levelUpEmbed]});
+			await interaction.reply({embeds:[levelUpEmbed], files:[avatar]});
 		}
 		else if(menu_option == 'level'){
 			const levelUpEmbed = new EmbedBuilder()
