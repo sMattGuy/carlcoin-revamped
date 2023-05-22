@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-	return sequelize.define('stats', {
+	return sequelize.define('avatar', {
 		user_id: {
 			type: DataTypes.STRING,
 			unique: true,

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, codeBlock } = require('discord.js');
 const { get_user, get_user_avatar } = require('../../helper.js');
-const { Cosmetics } = require('../../dbObjects.js');
+const { Cosmetic } = require('../../dbObjects.js');
 
 const cosmetic_names = ['Background','Body','Glasses','Hat','Special'];
 
@@ -8,11 +8,11 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('cosmetics')
 		.setDescription('Lets you work with cosmetics!')
-		.addSubCommand(subcommand => 
+		.addSubcommand(subcommand => 
 			subcommand
 				.setName('view')
 				.setDescription('Lets you see your cosmetics!'))
-		.addSubCommand(subcommand => 
+		.addSubcommand(subcommand => 
 			subcommand
 				.setName('equip')
 				.setDescription('Lets you equip a cosmetic!')
@@ -21,7 +21,7 @@ module.exports = {
 						.setName('name')
 						.setDescription('The cosmetics name, must be exactly case sensitive correct!')
 						.setRequired(true)))
-		.addSubCommand(subcommand => 
+		.addSubcommand(subcommand => 
 			subcommand
 				.setName('remove')
 				.setDescription('Lets you remove a cosmetic!')
@@ -48,7 +48,7 @@ module.exports = {
 				interaction.reply({content:'You have no cosmetics!', ephemeral:true});
 			}
 			else{
-				await interaction.reply(interaction.followUp({content:codeBlock('Current Cosmetics'), ephemeral:true}););
+				await interaction.reply({content:codeBlock('Current Cosmetics'), ephemeral:true});
 				let cosmetic_list = ``;
 				for(let i=0;i<user_cosmetics.length;i++){
 					if(user_cosmetics[i].amount != 0){
@@ -70,7 +70,7 @@ module.exports = {
 		}
 		else if(subcommand == 'equip'){
 			let cosmetic_name = interaction.options.getString('name');
-			let cosmetic = await Cosmetics.findOne({where:{name:cosmetic_name}});
+			let cosmetic = await Cosmetic.findOne({where:{name:cosmetic_name}});
 			if(!cosmetic){
 				interaction.reply({content:codeBlock(`Couldn't find Cosmetic (Make sure it's exact!)`), ephemeral:true});
 			}

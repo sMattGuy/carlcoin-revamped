@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-	return sequelize.define('buildings', {
+	return sequelize.define('cosmetics', {
 		id: {
 			type: DataTypes.STRING,
 			primaryKey: true,
@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		rarity: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0
+			defaultValue: 0,
 			allowNull: false,
 		},
 		type: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0
+			defaultValue: 0,
 			allowNull: false,
 		},
 		file: {

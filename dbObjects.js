@@ -16,7 +16,7 @@ const User_Buildings = require('./models/User_Buildings.js')(sequelize, Sequeliz
 const User_Stats = require('./models/User_Stats.js')(sequelize, Sequelize.DataTypes);
 const User_Upgrades = require('./models/User_Upgrades.js')(sequelize, Sequelize.DataTypes);
 const User_Cosmetics = require('./models/User_Cosmetics.js')(sequelize, Sequelize.DataTypes);
-const Cosmetic = require('./models/Cosmetic.js')(sequelize, Sequelize.DataTypes);
+const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes);
 const Avatar = require('./models/Avatar.js')(sequelize, Sequelize.DataTypes);
 
 User_Items.belongsTo(Items, { foreignKey: 'item_id', as: 'item' });
