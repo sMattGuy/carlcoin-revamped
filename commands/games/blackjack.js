@@ -530,7 +530,8 @@ module.exports = {
 			await user_data.save();
 			//await changeSanity(user_data,user_stats,interaction,prev_balance,betAmount);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
-			user_stats.save();
+			await user_stats.save();
+			await give_lootbox(user_data, interaction);
 			return;
 		}
 		async function win_insurance(){
@@ -550,7 +551,8 @@ module.exports = {
 			let newSanity = betAmount + insuranceAmount;
 			//await changeSanity(user_data,user_stats,interaction,user_data.balance,newSanity);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
-			user_stats.save();
+			await user_stats.save();
+			await give_lootbox(user_data, interaction);
 			return;
 		}
 	},

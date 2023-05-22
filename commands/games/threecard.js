@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, changeSanity } = require('../../helper.js');
+const { get_user, get_user_stats, giveLevels, changeSanity, give_lootbox } = require('../../helper.js');
 const { Hand } = require('pokersolver');
 
 const card_icons = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
@@ -523,6 +523,7 @@ module.exports = {
 			}
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
+			await give_lootbox(user_data, interaction);
 			return;
 		}
 	},
