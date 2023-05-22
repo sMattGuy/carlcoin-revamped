@@ -1,32 +1,32 @@
 module.exports = (sequelize, DataTypes) => {
-	return sequelize.define('users', {
+	return sequelize.define('stats', {
 		user_id: {
 			type: DataTypes.STRING,
-			primaryKey: true,
+			unique: true,
 		},
-		balance: {
+		background: {
 			type: DataTypes.INTEGER,
-			defaultValue: 100,
+			defaultValue: -1,
 			allowNull: false,
 		},
-		prestigeBalance: {
+		body: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0,
+			defaultValue: -1,
 			allowNull: false,
 		},
-		life: {
+		glasses: {
 			type: DataTypes.INTEGER,
-			defaultValue: 1,
+			defaultValue: -1,
 			allowNull: false,
 		},
-		last_worked: {
+		hat: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0,
+			defaultValue: -1,
 			allowNull: false,
 		},
-		last_lootbox: {
+		special: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0,
+			defaultValue: -1,
 			allowNull: false,
 		},
 	}, {

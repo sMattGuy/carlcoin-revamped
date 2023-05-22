@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Users, User_Stats } = require('./dbObjects.js');
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { Users, User_Stats, Avatar, Cosmetic } = require('./dbObjects.js');
+const Canvas = require('@napi-rs/canvas');
 
 async function get_user(userID){
 	//returns the user if it can, otherwise creates a brand new user for the given ID
@@ -20,6 +21,66 @@ async function get_user_stats(userID){
 		user_stats = await User_Stats.create({user_id: userID});
 	}
 	return user_stats;
+}
+
+async function get_user_avatar(userID){
+	let avatar = await Avatar.findOne({where: {user_id: userID}});
+	if(!avatar){
+		avatar = await Avatar.create({user_id: userID});
+	}
+	return avatar;
+}
+async function generate_avatar(userID){
+	let avatar_data = await get_user_avatar(userID);
+	const canvas = Canvas.createCanvas(500,500);
+	const context = canvas.getContext('2d');
+	//get each item
+	let background = '';
+	let body = '';
+	let glasses = '';
+	let hat = '';
+	let special = '';
+	//get image path for each cosmetic
+	let avatar_image = await Canvas.loadImage(`./images/avatar.png`);
+	if(avatar_data.background != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.background}});
+		background = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
+	if(avatar_data.body != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.body}});
+		body = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
+	if(avatar_data.glasses != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.glasses}});
+		glasses = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
+	if(avatar_data.hat != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.hat}});
+		hat = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
+	if(avatar_data.special != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.special}});
+		special = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
+	//start drawing image
+	if(background != ''){
+		context.drawImage(background,0,0);
+	}
+	context.drawImage(avatar_image,0,0);
+	if(body != ''){
+		context.drawImage(body,0,127);
+	}
+	if(glasses != ''){
+		context.drawImage(glasses,0,140);
+	}
+	if(hat != ''){
+		context.drawImage(hat,30,30);
+	}
+	if(special != ''){
+		context.drawImage(special,0,0);
+	}
+	const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'avatar.png'});
+	return attachment;
 }
 
 async function giveLevels(user_stats, experience_gain, interaction){
@@ -43,11 +104,11 @@ async function giveLevels(user_stats, experience_gain, interaction){
 }
 
 async function killUser(user_data, user_stats, interaction){
-	let killSaveChance = user_stats.constitution * 0.001;
-	if(killSaveChance >= 0.95){
-		killChance = 0.94;
+	let killSaveChance = 0.95 - (user_stats.constitution * 0.001);
+	if(killSaveChance <= 0.85){
+		killSaveChance = 0.85;
 	}
-	if(user_stats.constitution != 0 && Math.random() + killSaveChance > 0.95){
+	if(user_stats.constitution != 0 && Math.random() > killSaveChance){
 		const conSaveEmbed = new EmbedBuilder()
 			.setColor(0xf5bf62)
 			.setTitle(`You almost died!`)
@@ -137,4 +198,56 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 		user_stats.save();
 	}
 }
-module.exports = {get_user, get_user_stats, giveLevels, killUser, changeSanity}
+
+async function give_lootbox(user_data, interaction){
+	if(user_data.last_lootbox + 86400000 <= Date.now()){
+		//generate and give lootbox
+		user_data.last_lootbox = Date.now();
+		/*
+			rarity
+			1	common
+			2	rare
+			3	super rare
+			4	ultra rare
+		*/
+		let rarity = Math.random();
+		let cosmetic_get = '';
+		if(rarity < 0.001){
+			//ultra rare
+			cosmetic_get = await Cosmetic.findAll({where:{rarity: 4}});
+		}
+		else if(rarity < 0.05){
+			//super rare
+			cosmetic_get = await Cosmetic.findAll({where:{rarity: 3}});
+		}
+		else if(rarity < 0.2){
+			//rare
+			cosmetic_get = await Cosmetic.findAll({where:{rarity: 2}});
+		}
+		else{
+			//common
+			cosmetic_get = await Cosmetic.findAll({where:{rarity: 1}});
+		}
+		let random_selection = Math.floor(Math.random() * cosmetic_get.length);
+		let selected_cosmetic = cosmetic_get[random_selection];
+		//check if user has cosmetic
+		let user_cosmetic = await user_data.getCosmetic(user_data, selected_cosmetic);
+		if(user_cosmetic.amount == 0){
+			//new cosmetic for them
+			user_cosmetic.amount = 1;
+			user_cosmetic.save();
+			interaction.followUp({content:`Congratulations! You unboxed the ${selected_cosmetic.name}!`,ephemeral:true});
+		}
+		else{
+			//already have, reward with coin
+			let coinreward = 10 * user_cosmetic.cosmetic.rarity;
+			user_data.balance += coinreward;
+			interaction.followUp({content:`You already had ${selected_cosmetic.name}, so you get ${coinreward}CC instead!`,ephemeral:true});
+		}
+		user_data.save();
+	}
+	else{
+		//not their time, ignore it
+	}
+}
+module.exports = {get_user, get_user_stats, giveLevels, killUser, changeSanity, generate_avatar, get_user_avatar, give_lootbox}

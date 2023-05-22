@@ -15,10 +15,47 @@ const User_Items = require('./models/User_Items.js')(sequelize, Sequelize.DataTy
 const User_Buildings = require('./models/User_Buildings.js')(sequelize, Sequelize.DataTypes);
 const User_Stats = require('./models/User_Stats.js')(sequelize, Sequelize.DataTypes);
 const User_Upgrades = require('./models/User_Upgrades.js')(sequelize, Sequelize.DataTypes);
+const User_Cosmetics = require('./models/User_Cosmetics.js')(sequelize, Sequelize.DataTypes);
+const Cosmetic = require('./models/Cosmetic.js')(sequelize, Sequelize.DataTypes);
+const Avatar = require('./models/Avatar.js')(sequelize, Sequelize.DataTypes);
 
 User_Items.belongsTo(Items, { foreignKey: 'item_id', as: 'item' });
 User_Buildings.belongsTo(Buildings, { foreignKey: 'building_id', as: 'building' });
 User_Upgrades.belongsTo(Upgrades, { foreignKey: 'upgrade_id', as: 'upgrade' });
+User_Cosmetics.belongsTo(Cosmetic, { foreignKey: 'cosmetic_id', as: 'cosmetic'});
+
+Reflect.defineProperty(Users.prototype, 'addCosmetic', {
+	value: async (user, cosmetic) => {
+		const userCosmetic = await User_Cosmetics.findOne({
+			where: {user_id: user.user_id, cosmetic_id: cosmetic.id},
+		});
+		if(userCosmetic){
+			userCosmetic.amount += 1;
+			return userCosmetic.save();
+		}
+		return User_Cosmetics.create({user_id: user.user_id, cosmetic_id:cosmetic.id, amount:1});
+	}
+});
+Reflect.defineProperty(Users.prototype, 'getCosmetic', {
+	value: async (user, cosmetic) => {
+		const user_cosmetic = await User_Cosmetics.findOne({
+			where: {user_id: user.user_id, cosmetic_id:cosmetic.id},
+			include: ['cosmetic'],
+		});
+		if(user_cosmetic){
+			return user_cosmetic;
+		}
+		return User_Cosmetics.create({user_id: user.user_id, cosmetic_id:cosmetic.id, amount:0});
+	}
+});
+Reflect.defineProperty(Users.prototype, 'getCosmetics', {
+	value: (user) => {
+		return User_Cosmetics.findAll({
+			where: {user_id: user.user_id},
+			include: ['cosmetic'],
+		});
+	}
+});
 
 Reflect.defineProperty(Users.prototype, 'addItem', {
 	value: async (user, item) => {
@@ -32,7 +69,6 @@ Reflect.defineProperty(Users.prototype, 'addItem', {
 		return User_Items.create({user_id: user.user_id, item_id:item.id, amount:1});
 	}
 });
-
 Reflect.defineProperty(Users.prototype, 'getItem', {
 	value: async (user, item) => {
 		const user_item = await User_Items.findOne({
@@ -45,7 +81,6 @@ Reflect.defineProperty(Users.prototype, 'getItem', {
 		return User_Items.create({user_id: user.user_id, item_id:item.id, amount:0});
 	}
 });
-
 Reflect.defineProperty(Users.prototype, 'getItems', {
 	value: (user) => {
 		return User_Items.findAll({
@@ -100,7 +135,6 @@ Reflect.defineProperty(Users.prototype, 'addBuilding', {
 		return User_Buildings.create({user_id: user.user_id, building_id:building.id, amount:1});
 	}
 });
-
 Reflect.defineProperty(Users.prototype, 'getBuilding', {
 	value: async (user, building) => {
 		const user_building = await User_Buildings.findOne({
@@ -113,7 +147,6 @@ Reflect.defineProperty(Users.prototype, 'getBuilding', {
 		return User_Buildings.create({user_id: user.user_id, building_id:building.id, amount:0});
 	}
 });
-
 Reflect.defineProperty(Users.prototype, 'getBuildings', {
 	value: (user) => {
 		return User_Buildings.findAll({
@@ -210,4 +243,4 @@ Reflect.defineProperty(Users.prototype, 'killUser', {
 		user_stats.save();
 	}
 });
-module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades };
+module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades, User_Cosmetics, Cosmetic, Avatar };

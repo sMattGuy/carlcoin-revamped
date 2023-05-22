@@ -10,11 +10,14 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 const Buildings = require('./models/Buildings.js')(sequelize, Sequelize.DataTypes);
 const Items = require('./models/Items.js')(sequelize, Sequelize.DataTypes);
 const Upgrades = require('./models/Upgrades.js')(sequelize, Sequelize.DataTypes);
+const Cosmetic = require('./models/Cosmetic.js')(sequelize, Sequelize.DataTypes);
 require('./models/Users.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Items.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Buildings.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Stats.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Upgrades.js')(sequelize, Sequelize.DataTypes);
+require('./models/Avatar.js')(sequelize, Sequelize.DataTypes);
+require('./models/User_Cosmetics.js')(sequelize, Sequelize.DataTypes);
 
 const force = process.argv.includes('--force') || process.argv.includes('-f');
 const alter = process.argv.includes('--alter') || process.argv.includes('-a');

@@ -197,7 +197,11 @@ module.exports = {
 				}
 				*/
 				//int check else
-				if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
+				let intChance = 0.90 - (user_stats.intel * 0.01);
+				if(intChance <= 0.8){
+					intChance = 0.8;
+				}
+				if(user_stats.intel != 0 && Math.random() > intChance){
 					dealerValue = getCardValue(dealerCards);
 					int_check_success = true;
 					boardEmbed
