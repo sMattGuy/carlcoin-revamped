@@ -7,7 +7,7 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 	storage: 'database.sqlite',
 });
 
-const Cosmetic = require('./models/Cosmetic.js')(sequelize, Sequelize.DataTypes);
+const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes);
 
 const inserts = [
 	Cosmetic.upsert({ name: 'Beach', rarity: 1, type: 0, file:'beach.png' }),
@@ -22,7 +22,7 @@ const inserts = [
 	Cosmetic.upsert({ name: 'Tophat', rarity: 2, type: 3, file:'tophat.png' }),
 	Cosmetic.upsert({ name: 'Burning Fedora', rarity: 4, type: 3, file:'burning_fedora.png' }),
 ];
-await Promise.all(inserts);
+Promise.all(inserts);
 console.log('Database synced');
 /*
 	cosmetic types
