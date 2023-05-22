@@ -1,9 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('cosmetics', {
-		id: {
-			type: DataTypes.STRING,
-			primaryKey: true,
-		},
 		name: {
 			type: DataTypes.STRING,
 			defaultValue: 'Generic',
