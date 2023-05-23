@@ -71,6 +71,12 @@ const inserts = [
 	Cosmetic.upsert({ name: 'Pyramids', rarity: 1, type: 0, file:'pyramids.png' }),
 	Cosmetic.upsert({ name: 'Roblox Smirk', rarity: 4, type: 2, file:'roblox_smirk.png' }),
 	Cosmetic.upsert({ name: 'Kawaii Eyes', rarity: 1, type: 2, file:'kawaii_eyes.png' }),
+
+	Cosmetic.upsert({ name: 'Milkman Basket', rarity: 2, type: 4, file:'milkman_basket.png' }),
+	Cosmetic.upsert({ name: 'Milkman Conspiracy', rarity: 1, type: 0, file:'milkman_conspiracy.png' }),
+	Cosmetic.upsert({ name: 'Milkman Hat', rarity: 3, type: 3, file:'milkman_hat.png' }),
+	Cosmetic.upsert({ name: 'Milkman Suit', rarity: 3, type: 1, file:'milkman_suit.png' }),
+	Cosmetic.upsert({ name: 'Pikachu', rarity: 2, type: 1, file:'pikachu.png' }),
 ];
 Promise.all(inserts);
 console.log('Database synced');
