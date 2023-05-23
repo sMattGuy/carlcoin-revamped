@@ -58,6 +58,19 @@ const inserts = [
 	Cosmetic.upsert({ name: 'Buster', rarity: 999, type: 4, file:'buster.png' }),
 	Cosmetic.upsert({ name: 'Baby Pepperoni', rarity: 3, type: 4, file:'baby_pepperoni.png' }),
 	Cosmetic.upsert({ name: 'Psycho Milkman', rarity: 999, type: 3, file:'psycho_milkman.png' }),
+
+	Cosmetic.upsert({ name: 'Anubis Cane', rarity: 2, type: 4, file:'anubis_cane.png' }),
+	Cosmetic.upsert({ name: 'Anubis Garment', rarity: 3, type: 1, file:'anubis_garment.png' }),
+	Cosmetic.upsert({ name: 'Anubis Crown', rarity: 999, type: 3, file:'anubis_hat.png' }),
+	Cosmetic.upsert({ name: 'CIA Briefcase', rarity: 1, type: 4, file:'cia_briefcase.png' }),
+	Cosmetic.upsert({ name: 'CIA Shades', rarity: 1, type: 2, file:'cia_shades.png' }),
+	Cosmetic.upsert({ name: 'CIA Suit', rarity: 3, type: 1, file:'cia_suit.png' }),
+	Cosmetic.upsert({ name: 'CIA Ear Piece', rarity: 1, type: 3, file:'ear_piece.png' }),
+	Cosmetic.upsert({ name: 'Eyeliner', rarity: 1, type: 2, file:'eyeliner.png' }),
+	Cosmetic.upsert({ name: 'Pentagon', rarity: 2, type: 0, file:'pentagon.png' }),
+	Cosmetic.upsert({ name: 'Pyramids', rarity: 1, type: 0, file:'pyramids.png' }),
+	Cosmetic.upsert({ name: 'Roblox Smirk', rarity: 4, type: 2, file:'roblox_smirk.png' }),
+	Cosmetic.upsert({ name: 'Kawaii Eyes', rarity: 1, type: 2, file:'kawaii_eyes.png' }),
 ];
 Promise.all(inserts);
 console.log('Database synced');
