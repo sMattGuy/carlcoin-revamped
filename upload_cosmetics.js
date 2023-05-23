@@ -53,6 +53,11 @@ const inserts = [
 	Cosmetic.upsert({ name: 'Elephants Foot', rarity: 1, type: 0, file:'elephants_foot.png' }),
 	Cosmetic.upsert({ name: 'Tired Eyes', rarity: 4, type: 2, file:'tired_eyes.png' }),
 	Cosmetic.upsert({ name: 'Prop Hat', rarity: 1, type: 3, file:'prop_hat.png' }),
+
+	Cosmetic.upsert({ name: 'Glitch Millionaire', rarity: 999, type: 4, file:'glitch_million.png' }),
+	Cosmetic.upsert({ name: 'Buster', rarity: 999, type: 4, file:'buster.png' }),
+	Cosmetic.upsert({ name: 'Baby Pepperoni', rarity: 3, type: 4, file:'baby_pepperoni.png' }),
+	Cosmetic.upsert({ name: 'Psycho Milkman', rarity: 999, type: 3, file:'psycho_milkman.png' }),
 ];
 Promise.all(inserts);
 console.log('Database synced');
