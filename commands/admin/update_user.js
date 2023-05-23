@@ -262,7 +262,7 @@ module.exports = {
 			else{
 				let user_cosmetic = await user_data.getCosmetic(user_data, new_cosmetic);
 				user_cosmetic.amount = amount;
-				user_cosmetic.save();
+				await user_cosmetic.save();
 				await interaction.reply({content:'Updated!', ephemeral:true});
 			}
 		}

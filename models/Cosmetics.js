@@ -2,8 +2,8 @@ module.exports = (sequelize, DataTypes) => {
 	return sequelize.define('cosmetics', {
 		name: {
 			type: DataTypes.STRING,
-			defaultValue: 'Generic',
 			allowNull: false,
+			unique: true,
 		},
 		rarity: {
 			type: DataTypes.INTEGER,
