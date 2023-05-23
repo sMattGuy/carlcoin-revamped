@@ -210,19 +210,24 @@ async function give_lootbox(user_data, interaction){
 			3	super rare
 			4	ultra rare
 		*/
+		const rarity_levels = ['Common', 'Rare', 'Super Rare', 'Ultra Rare']
 		let rarity = Math.random();
 		let cosmetic_get = '';
+		let rarity_level_img = 'common.png';
 		if(rarity < 0.001){
 			//ultra rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 4}});
+			rarity_level_img = 'ultra_rare.png';
 		}
 		else if(rarity < 0.05){
 			//super rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 3}});
+			rarity_level_img = 'super_rare.png';
 		}
 		else if(rarity < 0.2){
 			//rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 2}});
+			rarity_level_img = 'rare.png';
 		}
 		else{
 			//common
@@ -236,13 +241,32 @@ async function give_lootbox(user_data, interaction){
 			//new cosmetic for them
 			user_cosmetic.amount = 1;
 			user_cosmetic.save();
-			interaction.followUp({content:`Congratulations! You unboxed the ${selected_cosmetic.name}!`,ephemeral:true});
+			const canvas = Canvas.createCanvas(500,500);
+			const context = canvas.getContext('2d');
+			//draw item
+			const cos_image = await Canvas.loadImage(`./images/cosmetics/${selected_cosmetic.file}`);
+			context.drawImage(cos_image,canvas.width/2 - cos_image.width/2, canvas.height/2 - cos_image.height/2);
+			//draw rarity
+			const rarity_image = await Canvas.loadImage(`./images/cosmetics/${rarity_level_img}`);
+			context.drawImage(rarity_image,200,10);
+			//build attachment
+			const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'cosmetic.png'});
+			const cosmeticEmbed = new EmbedBuilder()
+				.setColor(0x2eb7f6)
+				.setTitle('You got a new cosmetic!')
+				.setDescription(`You unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
+				.setImage('attachment://cosmetic.png');
+			interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true,files:[attachment]});
 		}
 		else{
 			//already have, reward with coin
 			let coinreward = 10 * user_cosmetic.cosmetic.rarity;
 			user_data.balance += coinreward;
-			interaction.followUp({content:`You already had ${selected_cosmetic.name}, so you get ${coinreward}CC instead!`,ephemeral:true});
+			const cosmeticEmbed = new EmbedBuilder()
+				.setColor(0x2eb7f6)
+				.setTitle('You got a duplicate!')
+				.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead!`)
+			interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true});
 		}
 		user_data.save();
 	}

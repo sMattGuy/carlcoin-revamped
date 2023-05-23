@@ -53,6 +53,7 @@ module.exports = {
 					{label:'PBalance',description:'Click me!',value:'prestigeBalance',},
 					{label:'Life',description:'Click me!',value:'life',},
 					{label:'Last Worked',description:'Click me!',value:'last_worked',},
+					{label:'Last Lootbox',description:'Click me!',value:'last_lootbox',},
 					{label:'Cancel',description:'Click me!',value:'cancel',},
 				);
 			const row = new ActionRowBuilder().addComponents(selectMenu);
@@ -75,6 +76,9 @@ module.exports = {
 				}
 				else if(selected == 'last_worked'){
 					user_data.last_worked = amount;
+				}
+				else if(selected == 'last_lootbox'){
+					user_data.last_lootbox = amount;
 				}
 				user_data.save();
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});

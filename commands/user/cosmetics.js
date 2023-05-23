@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, codeBlock } = require('discord.js');
-const { get_user, get_user_avatar } = require('../../helper.js');
+const { get_user, get_user_avatar, generate_avatar } = require('../../helper.js');
 const { Cosmetic } = require('../../dbObjects.js');
 
 const cosmetic_names = ['Background','Body','Glasses','Hat','Special'];
@@ -72,12 +72,20 @@ module.exports = {
 			let cosmetic_name = interaction.options.getString('name');
 			let cosmetic = await Cosmetic.findOne({where:{name:cosmetic_name}});
 			if(!cosmetic){
-				interaction.reply({content:codeBlock(`Couldn't find Cosmetic (Make sure it's exact!)`), ephemeral:true});
+				const errorEmbed = new EmbedBuilder()
+					.setTitle('Cosmetic doesn\'t exist!')
+					.setDescription(`Make sure it's spelled exactly as shown in /cosmetic view!`)
+					.setColor(0xff293b)
+				interaction.reply({embeds:[errorEmbed], ephemeral:true});
 			}
 			else{
 				let user_cosmetic = await user_data.getCosmetic(user_data, cosmetic);
 				if(user_cosmetic.amount == 0){
-					interaction.reply({content:codeBlock(`You don't have this cosmetic!`), ephemeral:true});
+					const errorEmbed = new EmbedBuilder()
+						.setTitle('You don\'t have this!')
+						.setDescription(`You do not own this cosmetic!`)
+						.setColor(0xff293b)
+					interaction.reply({embeds:[errorEmbed], ephemeral:true});
 				}
 				else{
 					let cosmetic_type = user_cosmetic.cosmetic.type;
@@ -96,8 +104,13 @@ module.exports = {
 					if(cosmetic_type == 4){
 						avatar.special = user_cosmetic.cosmetic_id;
 					}
-					avatar.save();
-					interaction.reply({content:codeBlock(`You equipped the cosmetic!`), ephemeral:true});
+					await avatar.save();
+					let avatar_img = await generate_avatar(interaction.user.id);
+					const cosmeticEmbed = new EmbedBuilder()
+						.setTitle('You equipped the cosmetic!')
+						.setImage('attachment://avatar.png')
+						.setColor(0x2eb7f6)
+					interaction.reply({embeds:[cosmeticEmbed], files:[avatar_img], ephemeral:true});
 				}
 			}
 		}
@@ -119,8 +132,12 @@ module.exports = {
 			else if(cosmetic_type == 'special'){
 				avatar.special = -1;
 			}
-			avatar.save();
-			interaction.reply({content:codeBlock('Cosmetic Updated'), ephemeral:true})
+			await avatar.save();
+			const cosmeticEmbed = new EmbedBuilder()
+				.setTitle('You removed a cosmetic')
+				.setColor(0x2eb7f6)
+				.setDescription('The cosmetic has been sent to your inventory.');
+			interaction.reply({embeds:[cosmeticEmbed], ephemeral:true});
 		}
 	},
 };
