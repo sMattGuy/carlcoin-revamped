@@ -36,9 +36,17 @@ module.exports = {
 			}
 			else{
 				let returnToWork = user_data.last_worked + 21600000 - Date.now();
+				let time_word = 'secs';
 				returnToWork = Math.floor(returnToWork / 1000); //seconds
-				returnToWork = Math.floor(returnToWork / 60); //mins
-				canWork = `No, ${returnToWork} mins left`
+				if(returnToWork > 60){
+					returnToWork = Math.floor(returnToWork / 60); //mins
+					time_word = 'mins';
+				}
+				if(returnToWork > 60){
+					returnToWork = Math.floor(returnToWork / 60); //hours
+					time_word = 'hours';
+				}
+				canWork = `No, ${returnToWork} ${time_word} left`
 			}
 			
 			let dailyPayout = 0;
@@ -52,9 +60,17 @@ module.exports = {
 			}
 			else{
 				let returnToWork = user_data.last_lootbox + 86400000 - Date.now();
+				let time_word = 'secs';
 				returnToWork = Math.floor(returnToWork / 1000); //seconds
-				returnToWork = Math.floor(returnToWork / 60); //mins
-				lootboxAvailable = `No, ${returnToWork} mins left`
+				if(returnToWork > 60){
+					returnToWork = Math.floor(returnToWork / 60); //mins
+					time_word = 'mins'
+				}
+				if(returnToWork > 60){
+					returnToWork = Math.floor(returnToWork / 60); //hours
+					time_word = 'hours'
+				}
+				lootboxAvailable = `No, ${returnToWork} ${time_word} left`
 			}
 			let avatar = await generate_avatar(user.id);
 			const levelUpEmbed = new EmbedBuilder()
