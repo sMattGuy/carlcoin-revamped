@@ -266,7 +266,7 @@ async function give_lootbox(user_data, interaction){
 			context.drawImage(cos_image,canvas.width/2 - cos_image.width/2, canvas.height/2 - cos_image.height/2);
 			//draw rarity
 			const rarity_image = await Canvas.loadImage(`./images/cosmetics/${rarity_level_img}`);
-			context.drawImage(rarity_image,200,10);
+			context.drawImage(rarity_image,0,0);
 			//build attachment
 			const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'cosmetic.png'});
 			const cosmeticEmbed = new EmbedBuilder()

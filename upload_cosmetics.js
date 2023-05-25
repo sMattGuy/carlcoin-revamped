@@ -83,6 +83,9 @@ const inserts = [
 	Cosmetic.upsert({ name: 'Drip Shoes', rarity: 1, type: 4, file:'drip_shoes.png' }),
 	Cosmetic.upsert({ name: 'Hawaii Shirt', rarity: 1, type: 1, file:'hawaii_shirt.png' }),
 	Cosmetic.upsert({ name: 'Marinos Shirt', rarity: 1, type: 1, file:'marinos_shirt.png' }),
+
+	Cosmetic.upsert({ name: 'Heart Tattoo', rarity: 1, type: 1, file:'mom_heart.png' }),
+	Cosmetic.upsert({ name: 'Tribal Tattoo', rarity: 1, type: 2, file:'tribal_tattoo.png' }),
 ];
 Promise.all(inserts);
 console.log('Database synced');
