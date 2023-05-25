@@ -274,7 +274,7 @@ async function give_lootbox(user_data, interaction){
 				.setTitle('You got a new cosmetic!')
 				.setDescription(`You unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
 				.setImage('attachment://cosmetic.png');
-			interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true,files:[attachment]});
+			interaction.followUp({embeds:[cosmeticEmbed],files:[attachment]});
 		}
 		else{
 			//already have, reward with coin
