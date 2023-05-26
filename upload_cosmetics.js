@@ -10,6 +10,7 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes);
 
 const inserts = [
+	/**
 	Cosmetic.upsert({ name: 'Beach', rarity: 1, type: 0, file:'beach.png' }),
 	Cosmetic.upsert({ name: 'Chevy Hat', rarity: 2, type: 3, file:'chevy_hat.png' }),
 	Cosmetic.upsert({ name: 'Funny Glasses', rarity: 1, type: 2, file:'funny_glasses.png' }),
@@ -86,6 +87,13 @@ const inserts = [
 
 	Cosmetic.upsert({ name: 'Heart Tattoo', rarity: 1, type: 1, file:'mom_heart.png' }),
 	Cosmetic.upsert({ name: 'Tribal Tattoo', rarity: 1, type: 2, file:'tribal_tattoo.png' }),
+	**/
+	
+	Cosmetic.upsert({ name: 'Excalibur', rarity: 3, type: 4, file:'excalibur.png' }),
+	Cosmetic.upsert({ name: 'King Armor', rarity: 3, type: 1, file:'king_armor.png' }),
+	Cosmetic.upsert({ name: 'King Crown', rarity: 4, type: 3, file:'king_crown.png' }),
+	Cosmetic.upsert({ name: 'Kingdom Castle', rarity: 1, type: 0, file:'kingdom_castle.png' }),
+	Cosmetic.upsert({ name: 'Yeezy Glasses', rarity: 2, type: 2, file:'yeezy_glasses.png' }),
 ];
 Promise.all(inserts);
 console.log('Database synced');
