@@ -87,13 +87,35 @@ const inserts = [
 
 	Cosmetic.upsert({ name: 'Heart Tattoo', rarity: 1, type: 1, file:'mom_heart.png' }),
 	Cosmetic.upsert({ name: 'Tribal Tattoo', rarity: 1, type: 2, file:'tribal_tattoo.png' }),
-	**/
 	
 	Cosmetic.upsert({ name: 'Excalibur', rarity: 3, type: 4, file:'excalibur.png' }),
 	Cosmetic.upsert({ name: 'King Armor', rarity: 3, type: 1, file:'king_armor.png' }),
 	Cosmetic.upsert({ name: 'King Crown', rarity: 4, type: 3, file:'king_crown.png' }),
 	Cosmetic.upsert({ name: 'Kingdom Castle', rarity: 1, type: 0, file:'kingdom_castle.png' }),
 	Cosmetic.upsert({ name: 'Yeezy Glasses', rarity: 2, type: 2, file:'yeezy_glasses.png' }),
+	
+	Cosmetic.upsert({ name: 'Buster Face', rarity: 1, type: 2, file:'busterface.png' }),
+	Cosmetic.upsert({ name: 'Buster Body', rarity: 2, type: 1, file:'chewbuster.png' }),
+	Cosmetic.upsert({ name: 'Laser Eyes', rarity: 2, type: 2, file:'laser_eyes.png' }),
+	Cosmetic.upsert({ name: 'Plant Stem', rarity: 1, type: 3, file:'plant_stem.png' }),
+	Cosmetic.upsert({ name: 'Prince Crown', rarity: 2, type: 3, file:'prince_crown.png' }),
+	Cosmetic.upsert({ name: 'Sonic Body', rarity: 2, type: 1, file:'sonic_body.png' }),
+	Cosmetic.upsert({ name: 'Sonic Eyes', rarity: 1, type: 2, file:'sonic_eyes.png' }),
+	Cosmetic.upsert({ name: 'Sonic Hair', rarity: 1, type: 3, file:'sonic_hair.png' }),
+	Cosmetic.upsert({ name: 'Windows 95', rarity: 2, type: 0, file:'windows_95.png' }),
+	Cosmetic.upsert({ name: 'Abs', rarity: 1, type: 1, file:'abs.png' }),
+	Cosmetic.upsert({ name: 'School of Athens', rarity: 2, type: 0, file:'athens_school.png' }),
+	Cosmetic.upsert({ name: 'Dave Chappelle', rarity: 2, type: 2, file:'dave_chappelle.png' }),
+	Cosmetic.upsert({ name: 'Fairy Body', rarity: 1, type: 1, file:'fairy_body.png' }),
+	Cosmetic.upsert({ name: 'Flower Crown', rarity: 1, type: 3, file:'flower_crown.png' }),
+	Cosmetic.upsert({ name: 'Goku Hair', rarity: 2, type: 3, file:'goku_hair.png' }),
+	Cosmetic.upsert({ name: 'Goku Outfit', rarity: 2, type: 1, file:'goku_outfit.png' }),
+	Cosmetic.upsert({ name: 'Greek Beard', rarity: 1, type: 2, file:'greek_beard.png' }),
+	Cosmetic.upsert({ name: 'Greek Crown', rarity: 3, type: 3, file:'greek_crown.png' }),
+	Cosmetic.upsert({ name: 'Greek Garb', rarity: 3, type: 1, file:'greek_garb.png' }),
+	Cosmetic.upsert({ name: 'Juul', rarity: 1, type: 4, file:'juul.png' }),
+	Cosmetic.upsert({ name: 'Pink Hair', rarity: 1, type: 3, file:'pink_hair.png' }),
+	*/
 ];
 Promise.all(inserts);
 console.log('Database synced');
