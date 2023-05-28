@@ -98,9 +98,11 @@ module.exports = {
 					card3Button,
 					card4Button,
 					card5Button,
+				);
+			const sendRow = new ActionRowBuilder()
+				.addComponents(
 					sendHandButton,
 				);
-				
 			const boardEmbed = new EmbedBuilder();
 
 			boardEmbed
@@ -112,7 +114,7 @@ module.exports = {
 					{name: `You (${player_hand.descr})`, value: `${getPrettyCards(playerCards)}`},
 				);
 				
-			await interaction.editReply({embeds:[boardEmbed],components:[row],files:[avatar]});
+			await interaction.editReply({embeds:[boardEmbed],components:[row,sendRow],files:[avatar]});
 			
 			let filter = i => i.user.id == interaction.user.id && i.isButton();
 			let message = await interaction.fetchReply();
@@ -120,7 +122,7 @@ module.exports = {
 			collector.on('collect', async i => {
 				playingGame = true;
 				collector.stop();
-				const cardRegex = new RegExp('card\d')
+				const cardRegex = new RegExp('card\\d')
 				await i.update({components:[]});
 				if(cardRegex.test(i.customId)){
 					updateCardHold(i.customId);
