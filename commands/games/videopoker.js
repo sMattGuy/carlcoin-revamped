@@ -103,7 +103,7 @@ module.exports = {
 				.setColor(0xf5bf62)
 				.setTitle(`Current Table. ${luck_message}`)
 				.setThumbnail('attachment://avatar.png')
-				.setDescription(`Click to hold cards, when you're ready click Send Hand to submit it!`)
+				.setDescription(`Click to discard cards, when you're ready click Send Hand to submit it!`)
 				.addFields(
 					{name: `You (${player_hand.descr})`, value: `${getPrettyCards(playerCards)}`},
 				);
