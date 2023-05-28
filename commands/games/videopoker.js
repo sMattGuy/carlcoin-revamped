@@ -12,13 +12,7 @@ module.exports = {
 		.addIntegerOption(option => 
 			option.setName('bet')
 				.setDescription('The amount you want to bet')
-				.addChoices(
-					{ name:'1CC', value: 1},
-					{ name:'2CC', value: 2},
-					{ name:'3CC', value: 3},
-					{ name:'4CC', value: 4},
-					{ name:'5CC', value: 5},
-				)
+				.setMinValue(1)
 				.setRequired(true)),
 	async execute(interaction) {
 		//get user
@@ -118,10 +112,10 @@ module.exports = {
 			
 			let filter = i => i.user.id == interaction.user.id && i.isButton();
 			let message = await interaction.fetchReply();
-			let collector = message.createMessageComponentCollector({time: 45000, filter});
-			collector.on('collect', async i => {
+			let videoPokerCollector = message.createMessageComponentCollector({time: 60000, filter});
+			videoPokerCollector.on('collect', async i => {
 				playingGame = true;
-				collector.stop();
+				await videoPokerCollector.stop();
 				const cardRegex = new RegExp('card\\d')
 				await i.update({components:[]});
 				if(cardRegex.test(i.customId)){
@@ -136,8 +130,7 @@ module.exports = {
 					console.log('im not supposed to be here')
 				}
 			});
-			collector.on('end', async i=> {
-				await interaction.editReply({components:[]});
+			videoPokerCollector.on('end', async i=> {
 				if(!playingGame){
 					playingGame = true;
 					//user timed out, auto loss
@@ -148,6 +141,7 @@ module.exports = {
 					await interaction.followUp({embeds:[timeEmbed]});
 					lose();
 				}
+				await interaction.editReply({components:[]});
 			});
 		}
 		function updateCardHold(cardToHold){
