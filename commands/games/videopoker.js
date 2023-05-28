@@ -98,14 +98,15 @@ module.exports = {
 					sendHandButton,
 				);
 			const boardEmbed = new EmbedBuilder();
-
+			const pretty_holding = ['H','D']
 			boardEmbed
 				.setColor(0xf5bf62)
 				.setTitle(`Current Table. ${luck_message}`)
 				.setThumbnail('attachment://avatar.png')
-				.setDescription(`Click to discard cards, when you're ready click Send Hand to submit it!`)
+				.setDescription(`Click to discard cards (H) means heald, (D) means discarded. when you're ready click Send Hand to submit it!`)
 				.addFields(
 					{name: `You (${player_hand.descr})`, value: `${getPrettyCards(playerCards)}`},
+					{name: `Card Status`, value: `${pretty_holding[cardsHeld[0]]}  |  ${pretty_holding[cardsHeld[1]]}  |  ${pretty_holding[cardsHeld[2]]}  |  ${pretty_holding[cardsHeld[3]]}  |  ${pretty_holding[cardsHeld[4]]}`},
 				);
 				
 			await interaction.editReply({embeds:[boardEmbed],components:[row,sendRow],files:[avatar]});
@@ -183,9 +184,10 @@ module.exports = {
 		//helper functions
 		function getPrettyCards(cardArray){
 			let prettyCards = [];
-			cardArray.forEach(item => {
-				prettyCards.push(card_icons[item]);
-			});
+			for(let i=0;i<cardArray.length;i++){
+				let cardFace = card_icons[cardArray[i]];
+				prettyCards.push(cardFace);
+			}
 			return prettyCards;
 		}
 		function drawCard(cardArray){
@@ -366,7 +368,7 @@ module.exports = {
 					.setColor(0xff293b)
 					.setTitle(`But it never happened!`)
 					.setDescription(`You had the WIS to know that this would have been a loss, so you never played in the first place!`);
-				await interaction.followUp({embeds:[wisSaveEmbed]});
+				await interaction.followUp({embeds:[wisSaveEmbed], ephemeral: true});
 				return;
 			}
 			
@@ -381,7 +383,7 @@ module.exports = {
 					.setTitle(`But you're quick!`)
 					.setDescription(`Using your EVD you quickly pocket half your bet back! You now have ${user_data.balance + Math.floor(bet/2)}CC`);
 				bet = Math.floor(bet/2);
-				await interaction.followUp({embeds:[evdSaveEmbed]});
+				await interaction.followUp({embeds:[evdSaveEmbed], ephemeral: true});
 			}
 			
 			let prev_balance = user_data.balance;
