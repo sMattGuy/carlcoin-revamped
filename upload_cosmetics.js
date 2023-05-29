@@ -10,111 +10,27 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes);
 
 const inserts = [
-	/**
-	Cosmetic.upsert({ name: 'Beach', rarity: 1, type: 0, file:'beach.png' }),
-	Cosmetic.upsert({ name: 'Chevy Hat', rarity: 2, type: 3, file:'chevy_hat.png' }),
-	Cosmetic.upsert({ name: 'Funny Glasses', rarity: 1, type: 2, file:'funny_glasses.png' }),
-	Cosmetic.upsert({ name: 'Ghostly Gibus', rarity: 1, type: 3, file:'ghostly_gibus.png' }),
-	Cosmetic.upsert({ name: 'Please be Pepperoni', rarity: 2, type: 1, file:'pepperoni_shirt.png' }),
-	Cosmetic.upsert({ name: 'Rainbow Cloud', rarity: 3, type: 4, file:'rainbow_cloud.png' }),
-	Cosmetic.upsert({ name: 'Round Glasses', rarity: 1, type: 2, file:'round_glasses.png' }),
-	Cosmetic.upsert({ name: 'Team Captain', rarity: 3, type: 3, file:'team_captain_hat.png' }),
-	Cosmetic.upsert({ name: 'Terminator Glasses', rarity: 2, type: 2, file:'terminator_glasses.png' }),
-	Cosmetic.upsert({ name: 'Tophat', rarity: 2, type: 3, file:'tophat.png' }),
-	Cosmetic.upsert({ name: 'Burning Fedora', rarity: 4, type: 3, file:'burning_fedora.png' }),
-	
-	Cosmetic.upsert({ name: 'Moon', rarity: 1, type: 0, file:'moon.png' }),
-	Cosmetic.upsert({ name: 'Astro Outfit', rarity: 2, type: 1, file:'astro_outfit.png' }),
-	Cosmetic.upsert({ name: 'Astro Helmet', rarity: 1, type: 3, file:'space_helmet.png' }),
-	Cosmetic.upsert({ name: 'American Flag', rarity: 1, type: 4, file:'american_flag.png' }),
-	
-	Cosmetic.upsert({ name: 'Chefs Kitchen', rarity: 2, type: 0, file:'chefs_kitchen.png' }),
-	Cosmetic.upsert({ name: 'Chef Coat', rarity: 3, type: 1, file:'chef_coat.png' }),
-	Cosmetic.upsert({ name: 'Chef Hat', rarity: 1, type: 3, file:'chef_hat.png' }),
-	Cosmetic.upsert({ name: 'Gordon Ramsey', rarity: 2, type: 4, file:'gordon_ramsey.png' }),
-	
-	Cosmetic.upsert({ name: 'Desert', rarity: 1, type: 0, file:'indy_background.png' }),
-	Cosmetic.upsert({ name: 'Indy Outfit', rarity: 3, type: 1, file:'indy_outfit.png' }),
-	Cosmetic.upsert({ name: 'Indy Face', rarity: 2, type: 2, file:'indy_face.png' }),
-	Cosmetic.upsert({ name: 'Indy Hat', rarity: 3, type: 3, file:'indy_hat.png' }),
-	Cosmetic.upsert({ name: 'Rifle', rarity: 4, type: 4, file:'rifle.png' }),
-	
-	Cosmetic.upsert({ name: 'Moneybags Island', rarity: 2, type: 0, file:'moneybags_island.png' }),
-	Cosmetic.upsert({ name: 'Moneybags Suit', rarity: 3, type: 1, file:'moneybags_suit.png' }),
-	Cosmetic.upsert({ name: 'Moneybags Monocle', rarity: 2, type: 2, file:'moneybags_monocle.png' }),
-	Cosmetic.upsert({ name: 'Moneybags Hat', rarity: 4, type: 3, file:'moneybags_hat.png' }),
-	Cosmetic.upsert({ name: 'Moneybags Sack', rarity: 1, type: 4, file:'moneybags_sack.png' }),
-
-	Cosmetic.upsert({ name: 'Rolling Pin', rarity: 1, type: 4, file:'rolling_pin.png' }),
-	Cosmetic.upsert({ name: 'Furbacca Face', rarity: 3, type: 2, file:'furbacca_face.png' }),
-	Cosmetic.upsert({ name: 'Furbacca Ears', rarity: 1, type: 3, file:'furbacca_ears.png' }),
-	Cosmetic.upsert({ name: 'Millennium Falcon', rarity: 2, type: 0, file:'millennium_falcon.png' }),
-	Cosmetic.upsert({ name: 'Furbacca Body', rarity: 3, type: 1, file:'furbacca_body.png' }),
-	Cosmetic.upsert({ name: 'Furbacca Bag', rarity: 2, type: 4, file:'furbacca_bag.png' }),
-	Cosmetic.upsert({ name: 'Elephants Foot', rarity: 1, type: 0, file:'elephants_foot.png' }),
-	Cosmetic.upsert({ name: 'Tired Eyes', rarity: 4, type: 2, file:'tired_eyes.png' }),
-	Cosmetic.upsert({ name: 'Prop Hat', rarity: 1, type: 3, file:'prop_hat.png' }),
-
-	Cosmetic.upsert({ name: 'Glitch Millionaire', rarity: 999, type: 4, file:'glitch_million.png' }),
-	Cosmetic.upsert({ name: 'Buster', rarity: 999, type: 4, file:'buster.png' }),
-	Cosmetic.upsert({ name: 'Baby Pepperoni', rarity: 3, type: 4, file:'baby_pepperoni.png' }),
-	Cosmetic.upsert({ name: 'Psycho Milkman', rarity: 999, type: 3, file:'psycho_milkman.png' }),
-
-	Cosmetic.upsert({ name: 'Anubis Cane', rarity: 2, type: 4, file:'anubis_cane.png' }),
-	Cosmetic.upsert({ name: 'Anubis Garment', rarity: 3, type: 1, file:'anubis_garment.png' }),
-	Cosmetic.upsert({ name: 'Anubis Crown', rarity: 999, type: 3, file:'anubis_hat.png' }),
-	Cosmetic.upsert({ name: 'CIA Briefcase', rarity: 1, type: 4, file:'cia_briefcase.png' }),
-	Cosmetic.upsert({ name: 'CIA Shades', rarity: 1, type: 2, file:'cia_shades.png' }),
-	Cosmetic.upsert({ name: 'CIA Suit', rarity: 3, type: 1, file:'cia_suit.png' }),
-	Cosmetic.upsert({ name: 'CIA Ear Piece', rarity: 1, type: 3, file:'ear_piece.png' }),
-	Cosmetic.upsert({ name: 'Eyeliner', rarity: 1, type: 2, file:'eyeliner.png' }),
-	Cosmetic.upsert({ name: 'Pentagon', rarity: 2, type: 0, file:'pentagon.png' }),
-	Cosmetic.upsert({ name: 'Pyramids', rarity: 1, type: 0, file:'pyramids.png' }),
-	Cosmetic.upsert({ name: 'Roblox Smirk', rarity: 4, type: 2, file:'roblox_smirk.png' }),
-	Cosmetic.upsert({ name: 'Kawaii Eyes', rarity: 1, type: 2, file:'kawaii_eyes.png' }),
-
-	Cosmetic.upsert({ name: 'Milkman Basket', rarity: 2, type: 4, file:'milkman_basket.png' }),
-	Cosmetic.upsert({ name: 'Milkman Conspiracy', rarity: 1, type: 0, file:'milkman_conspiracy.png' }),
-	Cosmetic.upsert({ name: 'Milkman Hat', rarity: 3, type: 3, file:'milkman_hat.png' }),
-	Cosmetic.upsert({ name: 'Milkman Suit', rarity: 3, type: 1, file:'milkman_suit.png' }),
-	Cosmetic.upsert({ name: 'Pikachu', rarity: 2, type: 1, file:'pikachu.png' }),
-
-	Cosmetic.upsert({ name: 'Jeans', rarity: 1, type: 1, file:'jeans.png' }),
-	Cosmetic.upsert({ name: 'Sun Hat', rarity: 1, type: 3, file:'sun_hat.png' }),
-	Cosmetic.upsert({ name: 'Drip Shoes', rarity: 1, type: 4, file:'drip_shoes.png' }),
-	Cosmetic.upsert({ name: 'Hawaii Shirt', rarity: 1, type: 1, file:'hawaii_shirt.png' }),
-	Cosmetic.upsert({ name: 'Marinos Shirt', rarity: 1, type: 1, file:'marinos_shirt.png' }),
-
-	Cosmetic.upsert({ name: 'Heart Tattoo', rarity: 1, type: 1, file:'mom_heart.png' }),
-	Cosmetic.upsert({ name: 'Tribal Tattoo', rarity: 1, type: 2, file:'tribal_tattoo.png' }),
-	
-	Cosmetic.upsert({ name: 'Excalibur', rarity: 3, type: 4, file:'excalibur.png' }),
-	Cosmetic.upsert({ name: 'King Armor', rarity: 3, type: 1, file:'king_armor.png' }),
-	Cosmetic.upsert({ name: 'King Crown', rarity: 4, type: 3, file:'king_crown.png' }),
-	Cosmetic.upsert({ name: 'Kingdom Castle', rarity: 1, type: 0, file:'kingdom_castle.png' }),
-	Cosmetic.upsert({ name: 'Yeezy Glasses', rarity: 2, type: 2, file:'yeezy_glasses.png' }),
-	
-	Cosmetic.upsert({ name: 'Buster Face', rarity: 1, type: 2, file:'busterface.png' }),
-	Cosmetic.upsert({ name: 'Buster Body', rarity: 2, type: 1, file:'chewbuster.png' }),
-	Cosmetic.upsert({ name: 'Laser Eyes', rarity: 2, type: 2, file:'laser_eyes.png' }),
-	Cosmetic.upsert({ name: 'Plant Stem', rarity: 1, type: 3, file:'plant_stem.png' }),
-	Cosmetic.upsert({ name: 'Prince Crown', rarity: 2, type: 3, file:'prince_crown.png' }),
-	Cosmetic.upsert({ name: 'Sonic Body', rarity: 2, type: 1, file:'sonic_body.png' }),
-	Cosmetic.upsert({ name: 'Sonic Eyes', rarity: 1, type: 2, file:'sonic_eyes.png' }),
-	Cosmetic.upsert({ name: 'Sonic Hair', rarity: 1, type: 3, file:'sonic_hair.png' }),
-	Cosmetic.upsert({ name: 'Windows 95', rarity: 2, type: 0, file:'windows_95.png' }),
-	Cosmetic.upsert({ name: 'Abs', rarity: 1, type: 1, file:'abs.png' }),
-	Cosmetic.upsert({ name: 'School of Athens', rarity: 2, type: 0, file:'athens_school.png' }),
-	Cosmetic.upsert({ name: 'Dave Chappelle', rarity: 2, type: 2, file:'dave_chappelle.png' }),
-	Cosmetic.upsert({ name: 'Fairy Body', rarity: 1, type: 1, file:'fairy_body.png' }),
-	Cosmetic.upsert({ name: 'Flower Crown', rarity: 1, type: 3, file:'flower_crown.png' }),
-	Cosmetic.upsert({ name: 'Goku Hair', rarity: 2, type: 3, file:'goku_hair.png' }),
-	Cosmetic.upsert({ name: 'Goku Outfit', rarity: 2, type: 1, file:'goku_outfit.png' }),
-	Cosmetic.upsert({ name: 'Greek Beard', rarity: 1, type: 2, file:'greek_beard.png' }),
-	Cosmetic.upsert({ name: 'Greek Crown', rarity: 3, type: 3, file:'greek_crown.png' }),
-	Cosmetic.upsert({ name: 'Greek Garb', rarity: 3, type: 1, file:'greek_garb.png' }),
-	Cosmetic.upsert({ name: 'Juul', rarity: 1, type: 4, file:'juul.png' }),
-	Cosmetic.upsert({ name: 'Pink Hair', rarity: 1, type: 3, file:'pink_hair.png' }),
+	/*
+	Cosmetic.upsert({ name: 'Anime Face', rarity: 1, type: 2, file:'anime_face.png' }),
+	Cosmetic.upsert({ name: 'Cargo Snail', rarity: 2, type: 4, file:'cargo_snail.png' }),
+	Cosmetic.upsert({ name: 'Crazy Eyes', rarity: 1, type: 2, file:'crazy_eyes.png' }),
+	Cosmetic.upsert({ name: 'Deer Moment', rarity: 1, type: 1, file:'deer_moment.png' }),
+	Cosmetic.upsert({ name: 'Leaf Village', rarity: 1, type: 0, file:'leaf_village.png' }),
+	Cosmetic.upsert({ name: 'M60', rarity: 3, type: 4, file:'m60.png' }),
+	Cosmetic.upsert({ name: 'Naruto Eyes', rarity: 1, type: 2, file:'naruto_eyes.png' }),
+	Cosmetic.upsert({ name: 'Naruto Hair', rarity: 2, type: 3, file:'naruto_hair.png' }),
+	Cosmetic.upsert({ name: 'Naruto Kunai', rarity: 2, type: 4, file:'naruto_kunai.png' }),
+	Cosmetic.upsert({ name: 'Naruto Outfit', rarity: 2, type: 1, file:'naruto_outfit.png' }),
+	Cosmetic.upsert({ name: 'Pepepperoni', rarity: 999, type: 2, file:'pepepperoni.png' }),
+	Cosmetic.upsert({ name: 'Rectangle Glasses', rarity: 1, type: 2, file:'rectangle_glasses.png' }),
+	Cosmetic.upsert({ name: 'Serious Eyes', rarity: 1, type: 2, file:'serious_eyes.png' }),
+	Cosmetic.upsert({ name: 'Sleepy Eyes', rarity: 1, type: 2, file:'sleepy_eyes.png' }),
+	Cosmetic.upsert({ name: 'Single Action Army', rarity: 3, type: 4, file:'single_action.png' }),
+	Cosmetic.upsert({ name: 'Tiny Eyes', rarity: 1, type: 2, file:'tiny_eyes.png' }),
+	Cosmetic.upsert({ name: 'Tiny Glasses', rarity: 1, type: 2, file:'tiny_glasses.png' }),
+	Cosmetic.upsert({ name: 'War Helmet', rarity: 2, type: 3, file:'war_helmet.png' }),
+	Cosmetic.upsert({ name: 'War Outfit', rarity: 2, type: 1, file:'war_outfit.png' }),
+	Cosmetic.upsert({ name: 'Warzone', rarity: 1, type: 0, file:'warzone.png' }),
 	*/
 ];
 Promise.all(inserts);
@@ -134,4 +50,5 @@ console.log('Database synced');
 	2	rare
 	3	super rare
 	4	ultra rare
+	999	reward
 */
