@@ -142,7 +142,6 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 		bet_ratio = Math.pow(Math.abs(bet_ratio), 2.27);
 		bet_ratio /= 73;
 		bet_ratio = Math.ceil(bet_ratio);
-		bet_ratio += Math.ceil(Math.random() * 10);
 		bet_ratio *= sign
 		console.log(`ratio result ${bet_ratio}`)
 		//increase sanity based on current sanity
@@ -154,6 +153,15 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 		sanity = bet_ratio + sanity_modifier;
 	}
 	let prev_sanity = user_stats.sanity;
+	if(sanity > 0){
+		sanity += Math.ceil(Math.random() * 10);
+	}
+	else{
+		sanity -= Math.ceil(Math.random() * 10);
+	}
+	if(sanity > 0){
+		sanity *= -1;
+	}
 	console.log(`sanity drain: ${sanity}`);
 	user_stats.sanity += sanity;
 	console.log(`post sanity: ${user_stats.sanity}`);
