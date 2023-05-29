@@ -388,8 +388,9 @@ module.exports = {
 			
 			let prev_balance = user_data.balance;
 			user_data.balance -= bet;
+			let sanityDrain = Math.ceil(-bet * 1.5);
 			await user_data.save();
-			await changeSanity(user_data,user_stats,interaction,prev_balance,-bet);
+			await changeSanity(user_data,user_stats,interaction,prev_balance,sanityDrain);
 			return;
 		}
 		async function win(){
