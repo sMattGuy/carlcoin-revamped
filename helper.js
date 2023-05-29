@@ -136,27 +136,27 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 	if(balance > 100){
 		//adjust to percentage of bet
 		let bet_ratio = sanity / balance;
-		//console.log(`ratio ${bet_ratio}`)
+		console.log(`ratio ${bet_ratio}`)
 		let sign = Math.sign(bet_ratio);
 		bet_ratio *= 100;
 		bet_ratio = Math.pow(Math.abs(bet_ratio), 2.27);
 		bet_ratio /= 73;
 		bet_ratio = Math.ceil(bet_ratio);
-		bet_ratio += 1;
+		bet_ratio += 10;
 		bet_ratio *= sign
-		//console.log(`ratio result ${bet_ratio}`)
+		console.log(`ratio result ${bet_ratio}`)
 		//increase sanity based on current sanity
 		let san_sign = Math.sign(user_stats.sanity);
 		let sanity_modifier = Math.ceil(Math.pow(Math.abs(user_stats.sanity)/22,2));
-		//console.log(`sanity mod: ${sanity_modifier}`);
+		console.log(`sanity mod: ${sanity_modifier}`);
 		sanity_modifier *= san_sign;
-		//console.log(`sanity mod post sign: ${sanity_modifier}`);
+		console.log(`sanity mod post sign: ${sanity_modifier}`);
 		sanity = bet_ratio + sanity_modifier;
 	}
 	let prev_sanity = user_stats.sanity;
-	//console.log(`sanity drain: ${sanity}`);
+	console.log(`sanity drain: ${sanity}`);
 	user_stats.sanity += sanity;
-	//console.log(`post sanity: ${user_stats.sanity}`);
+	console.log(`post sanity: ${user_stats.sanity}`);
 	//sanity over 100, ceiling it
 	if(user_stats.sanity > 100){
 		user_stats.sanity = 100;
