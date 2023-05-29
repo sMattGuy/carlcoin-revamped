@@ -89,20 +89,14 @@ module.exports = {
 		else{
 			//user cannot work, notify them
 			let returnToWork = user.last_worked + 21600000 - Date.now();
-			let time_word = 'secs';
-			returnToWork = Math.floor(returnToWork / 1000); //seconds
-			if(returnToWork > 60){
-				returnToWork = Math.floor(returnToWork / 60); //mins
-				time_word = 'mins';
-			}
-			if(returnToWork > 60){
-				returnToWork = Math.floor(returnToWork / 60); //hours
-				time_word = 'hours';
-			}
+			let hours = Math.floor((returnToWork % (1000*60*60*24))/(1000*60*60));
+			let mins = Math.floor((returnToWork % (1000*60*60))/(1000*60));
+			let secs = Math.floor((returnToWork % (1000*60))/(1000));
+
 			const noWorkEmbed = new EmbedBuilder()
 				.setColor(0xeb3434)
 				.setTitle('Can\'t work yet!')
-				.setDescription(`You cannot work yet! Come back in ${returnToWork} ${time_word}!`)
+				.setDescription(`You cannot work yet! Come back in ${hours}:${mins}:${secs}!`)
 			await interaction.reply({embeds:[noWorkEmbed], ephemeral:true});
 		}
 	},

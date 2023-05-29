@@ -36,17 +36,10 @@ module.exports = {
 			}
 			else{
 				let returnToWork = user_data.last_worked + 21600000 - Date.now();
-				let time_word = 'secs';
-				returnToWork = Math.floor(returnToWork / 1000); //seconds
-				if(returnToWork > 60){
-					returnToWork = Math.floor(returnToWork / 60); //mins
-					time_word = 'mins';
-				}
-				if(returnToWork > 60){
-					returnToWork = Math.floor(returnToWork / 60); //hours
-					time_word = 'hours';
-				}
-				canWork = `No, ${returnToWork} ${time_word} left`
+				let hours = Math.floor((returnToWork % (1000*60*60*24))/(1000*60*60));
+				let mins = Math.floor((returnToWork % (1000*60*60))/(1000*60));
+				let secs = Math.floor((returnToWork % (1000*60))/1000);
+				canWork = `No, ${hours}:${mins}:${secs} left`
 			}
 			
 			let dailyPayout = 0;
@@ -60,17 +53,10 @@ module.exports = {
 			}
 			else{
 				let returnToWork = user_data.last_lootbox + 86400000 - Date.now();
-				let time_word = 'secs';
-				returnToWork = Math.floor(returnToWork / 1000); //seconds
-				if(returnToWork > 60){
-					returnToWork = Math.floor(returnToWork / 60); //mins
-					time_word = 'mins'
-				}
-				if(returnToWork > 60){
-					returnToWork = Math.floor(returnToWork / 60); //hours
-					time_word = 'hours'
-				}
-				lootboxAvailable = `No, ${returnToWork} ${time_word} left`
+				let hours = Math.floor((returnToWork % (1000*60*60*24))/(1000*60*60));
+				let mins = Math.floor((returnToWork % (1000*60*60))/(1000*60));
+				let secs = Math.floor((returnToWork % (1000*60))/1000);
+				lootboxAvailable = `No, ${hours}:${mins}:${secs} left`
 			}
 			let avatar = await generate_avatar(user.id);
 			const levelUpEmbed = new EmbedBuilder()
