@@ -48,11 +48,11 @@ module.exports = {
 			}
 			
 			let lootboxAvailable = '';
-			if(user_data.last_lootbox + 86400000 <= Date.now()){
+			if(user_data.last_lootbox + 64800000 <= Date.now()){
 				lootboxAvailable = `Yes`;
 			}
 			else{
-				let returnToWork = user_data.last_lootbox + 86400000 - Date.now();
+				let returnToWork = user_data.last_lootbox + 64800000 - Date.now();
 				let hours = Math.floor((returnToWork % (1000*60*60*24))/(1000*60*60));
 				let mins = Math.floor((returnToWork % (1000*60*60))/(1000*60));
 				let secs = Math.floor((returnToWork % (1000*60))/1000);

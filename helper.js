@@ -208,7 +208,7 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 }
 
 async function give_lootbox(user_data, interaction){
-	if(user_data.last_lootbox + 86400000 <= Date.now()){
+	if(user_data.last_lootbox + 64800000 <= Date.now()){
 		//generate and give lootbox
 		user_data.last_lootbox = Date.now();
 		/*
