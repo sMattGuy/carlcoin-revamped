@@ -61,7 +61,7 @@ module.exports = {
 			let avatar = await generate_avatar(user.id);
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle('General Stats')
+				.setTitle(`${user.username}'s General Stats`)
 				.setThumbnail('attachment://avatar.png')
 				.setDescription(`You are level ${user_stats.level}. Current XP ${user_stats.experience}/${user_stats.next_level}`)
 				.addFields(
@@ -78,7 +78,7 @@ module.exports = {
 		else if(menu_option == 'level'){
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle('Character Stats')
+				.setTitle(`${user.username}'s Character Stats`)
 				.addFields(
 					{name: 'STR', value: `${user_stats.strength}`, inline: true},
 					{name: 'DEF', value: `${user_stats.defense}`, inline: true},
@@ -93,7 +93,7 @@ module.exports = {
 		else if(menu_option == 'building'){
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle('Buildings');
+				.setTitle(`${user.username}'s Buildings`);
 			if(user_buildings.length == 0){
 				levelUpEmbed.setDescription(`You don't have any buildings!`);
 			}
@@ -108,7 +108,7 @@ module.exports = {
 			//user items
 			const levelUpEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
-				.setTitle('Items/Upgrades');
+				.setTitle(`${user.username}'s Items/Upgrades`);
 			if(user_items.length == 0 && user_upgrades == 0){
 				levelUpEmbed.setDescription(`You don't have any items or upgrades!`);
 			}
