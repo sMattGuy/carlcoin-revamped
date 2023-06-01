@@ -466,6 +466,7 @@ module.exports = {
 			playingGame = true;
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
+			user_data = await get_user(interaction.user.id);
 			if(got_insurance){
 				betAmount += insuranceAmount;
 			}
@@ -517,6 +518,7 @@ module.exports = {
 			playingGame = true;
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
+			user_data = await get_user(interaction.user.id);
 			if(naturalWin){
 				betAmount = Math.floor(betAmount * 1.5)
 			}	
@@ -547,6 +549,7 @@ module.exports = {
 			playingGame = true;
 			let dealerCardValue = getCardValue(dealerCards);
 			let playerCardValue = getCardValue(playerCards);
+			user_data = await get_user(interaction.user.id);
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`Your insurance pays off!`)

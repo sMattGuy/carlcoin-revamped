@@ -154,10 +154,10 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 	}
 	let prev_sanity = user_stats.sanity;
 	if(sanity > 0){
-		sanity += Math.ceil(Math.random() * 10);
+		sanity += Math.ceil(Math.random()*5 + 5);
 	}
 	else{
-		sanity -= Math.ceil(Math.random() * 10);
+		sanity -= Math.ceil(Math.random()*5 + 5);
 	}
 	if(sanity > 0){
 		sanity *= -1;

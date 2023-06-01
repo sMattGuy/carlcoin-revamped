@@ -347,6 +347,7 @@ module.exports = {
 		//end game states
 		async function lose(){
 			playingGame = true;
+			user_data = await get_user(interaction.user.id);
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
 				.setTitle(`You lost!`)
@@ -396,6 +397,7 @@ module.exports = {
 		async function win(){
 			//player wins
 			playingGame = true;
+			user_data = await get_user(interaction.user.id);
 			let payoutMod = getPayoutModifier(player_hand);
 			bet *= payoutMod;
 			const winEmbed = new EmbedBuilder()

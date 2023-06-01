@@ -347,6 +347,7 @@ module.exports = {
 				six card bonus
 			*/
 			let totalWinnings = ante_bet + anteBetPayout + pairPlusPayout + sixCardPayout;
+			user_data = await get_user(interaction.user.id);
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`Dealer doesn't Qualify! ${luck_message}`)
@@ -381,6 +382,7 @@ module.exports = {
 				six card bonus
 			*/
 			let totalWinnings = -ante_bet - pair_plus_bet - six_card_bet;
+			user_data = await get_user(interaction.user.id);
 			const winEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle(`You folded! ${luck_message}`)
@@ -416,6 +418,7 @@ module.exports = {
 				six card bonus
 			*/
 			let totalWinnings = anteBetPayout + pairPlusPayout + sixCardPayout;
+			user_data = await get_user(interaction.user.id);
 			const winEmbed = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle(`It's a Draw! ${luck_message}`)
@@ -450,6 +453,7 @@ module.exports = {
 				six card bonus
 			*/
 			let totalWinnings = -ante_bet + -ante_bet + anteBetPayout + pairPlusPayout + sixCardPayout;
+			user_data = await get_user(interaction.user.id);
 			const loseEmbed = new EmbedBuilder()
 				.setColor(0xff293b)
 				.setTitle(`You lost!`)
@@ -510,6 +514,7 @@ module.exports = {
 				six card bonus
 			*/
 			let totalWinnings = ante_bet + ante_bet + anteBetPayout + pairPlusPayout + sixCardPayout;
+			user_data = await get_user(interaction.user.id);
 			const winEmbed = new EmbedBuilder()
 				.setColor(0x3bff29)
 				.setTitle(`You win! ${luck_message}`)
