@@ -222,7 +222,7 @@ async function give_lootbox(user_data, interaction){
 		let rarity = Math.random();
 		let cosmetic_get = '';
 		let rarity_level_img = 'common.png';
-		if(rarity < 0.001){
+		if(rarity < 0.005){
 			//ultra rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 4}});
 			rarity_level_img = 'ultra_rare.png';
