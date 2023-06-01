@@ -31,6 +31,7 @@ const inserts = [
 	Cosmetic.upsert({ name: 'War Helmet', rarity: 2, type: 3, file:'war_helmet.png' }),
 	Cosmetic.upsert({ name: 'War Outfit', rarity: 2, type: 1, file:'war_outfit.png' }),
 	Cosmetic.upsert({ name: 'Warzone', rarity: 1, type: 0, file:'warzone.png' }),
+	Cosmetic.upsert({ name: 'Pokemon Battle', rarity: 3, type: 0, file:'pokemon_battle.png' }),
 	*/
 ];
 Promise.all(inserts);
