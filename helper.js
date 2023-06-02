@@ -288,6 +288,7 @@ async function give_lootbox(user_data, interaction){
 			//already have, reward with coin
 			let coinreward = 10 * user_cosmetic.cosmetic.rarity;
 			user_data.balance += coinreward;
+			user_data.last_lootbox -= 32400000;
 			const cosmeticEmbed = new EmbedBuilder()
 				.setColor(0x2eb7f6)
 				.setTitle('You got a duplicate!')
