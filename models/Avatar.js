@@ -19,12 +19,22 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: -1,
 			allowNull: false,
 		},
+		glasses2: {
+			type: DataTypes.INTEGER,
+			defaultValue: -1,
+			allowNull: false,
+		},
 		hat: {
 			type: DataTypes.INTEGER,
 			defaultValue: -1,
 			allowNull: false,
 		},
 		special: {
+			type: DataTypes.INTEGER,
+			defaultValue: -1,
+			allowNull: false,
+		},
+		special2: {
 			type: DataTypes.INTEGER,
 			defaultValue: -1,
 			allowNull: false,

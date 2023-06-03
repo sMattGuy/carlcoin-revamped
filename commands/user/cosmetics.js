@@ -20,7 +20,16 @@ module.exports = {
 					option
 						.setName('name')
 						.setDescription('The cosmetics name, must be exactly case sensitive correct!')
-						.setRequired(true)))
+						.setRequired(true))
+				.addIntegerOption(option => 
+					option
+						.setName('slotnum')
+						.setDescription('The slot for glasses or special to equip to, not required by default')
+						.addChoices(
+							{name: '1', value: 1},
+							{name: '2', value: 2},
+						)
+						.setRequired(false)))
 		.addSubcommand(subcommand => 
 			subcommand
 				.setName('remove')
@@ -34,8 +43,10 @@ module.exports = {
 							{name: 'Background', value: 'background'},
 							{name: 'Body', value: 'body'},
 							{name: 'Glasses', value: 'glasses'},
+							{name: 'Glasses 2', value: 'glasses2'},
 							{name: 'Hat', value: 'hat'},
 							{name: 'Special', value: 'special'},
+							{name: 'Special 2', value: 'special2'},
 						))),
 	async execute(interaction) {
 		//get user
@@ -50,8 +61,10 @@ module.exports = {
 			else{
 				await interaction.reply({content:codeBlock('Current Cosmetics'), ephemeral:true});
 				let cosmetic_list = ``;
+				let equipped_ids = [avatar.background, avatar.body, avatar.glasses, avatar.glasses2, avatar.hat, avatar.special, avatar.special2];
 				for(let i=0;i<user_cosmetics.length;i++){
 					if(user_cosmetics[i].amount != 0){
+						if()
 						let newEntry = `${cosmetic_names[user_cosmetics[i].cosmetic.type]}, ${user_cosmetics[i].cosmetic.name}\n`;
 						if(cosmetic_list.length + newEntry.length > 2000){
 							interaction.followUp({content:codeBlock(cosmetic_list), ephemeral:true});
@@ -70,6 +83,7 @@ module.exports = {
 		}
 		else if(subcommand == 'equip'){
 			let cosmetic_name = interaction.options.getString('name');
+			let cosmetic_slot = interaction.options.getInteger('slotnum') ?? 1;
 			let cosmetic = await Cosmetic.findOne({where:{name:cosmetic_name}});
 			if(!cosmetic){
 				const errorEmbed = new EmbedBuilder()
@@ -95,14 +109,20 @@ module.exports = {
 					if(cosmetic_type == 1){
 						avatar.body = user_cosmetic.cosmetic_id;
 					}
-					if(cosmetic_type == 2){
+					if(cosmetic_type == 2 && cosmetic_slot == 1){
 						avatar.glasses = user_cosmetic.cosmetic_id;
+					}
+					if(cosmetic_type == 2 && cosmetic_slot == 2){
+						avatar.glasses2 = user_cosmetic.cosmetic_id;
 					}
 					if(cosmetic_type == 3){
 						avatar.hat = user_cosmetic.cosmetic_id;
 					}
-					if(cosmetic_type == 4){
+					if(cosmetic_type == 4 && cosmetic_slot == 1){
 						avatar.special = user_cosmetic.cosmetic_id;
+					}
+					if(cosmetic_type == 4 && cosmetic_slot == 2){
+						avatar.special2 = user_cosmetic.cosmetic_id;
 					}
 					await avatar.save();
 					let avatar_img = await generate_avatar(interaction.user.id);
@@ -126,18 +146,26 @@ module.exports = {
 			else if(cosmetic_type == 'glasses'){
 				avatar.glasses = -1;
 			}
+			else if(cosmetic_type == 'glasses2'){
+				avatar.glasses2 = -1;
+			}
 			else if(cosmetic_type == 'hat'){
 				avatar.hat = -1;
 			}
 			else if(cosmetic_type == 'special'){
 				avatar.special = -1;
 			}
+			else if(cosmetic_type == 'special2'){
+				avatar.special2 = -1;
+			}
 			await avatar.save();
+			let avatar_img = await generate_avatar(interaction.user.id);
 			const cosmeticEmbed = new EmbedBuilder()
 				.setTitle('You removed a cosmetic')
 				.setColor(0x2eb7f6)
+				.setImage('attachment://avatar.png')
 				.setDescription('The cosmetic has been sent to your inventory.');
-			interaction.reply({embeds:[cosmeticEmbed], ephemeral:true});
+			interaction.reply({embeds:[cosmeticEmbed], files:[avatar_img], ephemeral:true});
 		}
 	},
 };

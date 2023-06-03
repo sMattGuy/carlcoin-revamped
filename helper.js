@@ -38,8 +38,10 @@ async function generate_avatar(userID){
 	let background = '';
 	let body = '';
 	let glasses = '';
+	let glasses2 = '';
 	let hat = '';
 	let special = '';
+	let special2 = '';
 	//get image path for each cosmetic
 	let avatar_image = await Canvas.loadImage(`./images/avatar.png`);
 	if(avatar_data.background != -1){
@@ -54,6 +56,10 @@ async function generate_avatar(userID){
 		let load = await Cosmetic.findOne({where:{id: avatar_data.glasses}});
 		glasses = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
 	}
+	if(avatar_data.glasses2 != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.glasses2}});
+		glasses2 = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
 	if(avatar_data.hat != -1){
 		let load = await Cosmetic.findOne({where:{id: avatar_data.hat}});
 		hat = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
@@ -61,6 +67,10 @@ async function generate_avatar(userID){
 	if(avatar_data.special != -1){
 		let load = await Cosmetic.findOne({where:{id: avatar_data.special}});
 		special = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
+	}
+	if(avatar_data.special2 != -1){
+		let load = await Cosmetic.findOne({where:{id: avatar_data.special2}});
+		special2 = await Canvas.loadImage(`./images/cosmetics/${load.file}`);
 	}
 	//start drawing image
 	if(background != ''){
@@ -73,11 +83,17 @@ async function generate_avatar(userID){
 	if(glasses != ''){
 		context.drawImage(glasses,0,140);
 	}
+	if(glasses2 != ''){
+		context.drawImage(glasses2,0,140);
+	}
 	if(hat != ''){
 		context.drawImage(hat,30,30);
 	}
 	if(special != ''){
 		context.drawImage(special,0,0);
+	}
+	if(special2 != ''){
+		context.drawImage(special2,0,0);
 	}
 	const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'avatar.png'});
 	return attachment;
@@ -260,11 +276,17 @@ async function give_lootbox(user_data, interaction){
 			else if(selected_cosmetic.type == 2 && user_avatar.glasses == -1){
 				user_avatar.glasses = selected_cosmetic.id;
 			}
+			else if(selected_cosmetic.type == 2 && user_avatar.glasses2 == -1){
+				user_avatar.glasses2 = selected_cosmetic.id;
+			}
 			else if(selected_cosmetic.type == 3 && user_avatar.hat == -1){
 				user_avatar.hat = selected_cosmetic.id;
 			}
 			else if(selected_cosmetic.type == 4 && user_avatar.special == -1){
 				user_avatar.special = selected_cosmetic.id;
+			}
+			else if(selected_cosmetic.type == 4 && user_avatar.special2 == -1){
+				user_avatar.special2 = selected_cosmetic.id;
 			}
 			user_avatar.save();
 			const canvas = Canvas.createCanvas(500,500);
