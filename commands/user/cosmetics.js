@@ -64,8 +64,11 @@ module.exports = {
 				let equipped_ids = [avatar.background, avatar.body, avatar.glasses, avatar.glasses2, avatar.hat, avatar.special, avatar.special2];
 				for(let i=0;i<user_cosmetics.length;i++){
 					if(user_cosmetics[i].amount != 0){
-						if()
-						let newEntry = `${cosmetic_names[user_cosmetics[i].cosmetic.type]}, ${user_cosmetics[i].cosmetic.name}\n`;
+						let wearingthing = '';
+						if(equipped_ids.includes(user_cosmetics[i].cosmetic_id)){
+							wearingthing = '(Equipped)'
+						}
+						let newEntry = `${cosmetic_names[user_cosmetics[i].cosmetic.type]}, ${user_cosmetics[i].cosmetic.name} ${wearingthing}\n`;
 						if(cosmetic_list.length + newEntry.length > 2000){
 							interaction.followUp({content:codeBlock(cosmetic_list), ephemeral:true});
 							cosmetic_list = ``;
