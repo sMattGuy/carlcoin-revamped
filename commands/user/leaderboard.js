@@ -16,7 +16,7 @@ module.exports = {
 				for(let j=0;j<user_buildings.length;j++){
 					currentValue += user_buildings[j].building.cost * user_buildings[j].amount;
 				}
-				userArray.push({'name':username,'balance':currentValue});
+				userArray.push({'name':username,'balance':currentValue,'life':list[i].life});
 			} catch(e){
 				console.log('failed to get username');
 			}
@@ -26,7 +26,7 @@ module.exports = {
 		});
 		let message = 'Top 10 Carlcoin Earners\n';
 		for(let i=0;i<10;i++){
-			message += `${i+1}. ${userArray[i].name}: ${userArray[i].balance}\n`;
+			message += `${i+1}. ${userArray[i].name}: ${userArray[i].balance}, life: ${userArray[i].life}\n`;
 		}
 		await interaction.editReply({content:codeBlock(`${message}`)});
 	},

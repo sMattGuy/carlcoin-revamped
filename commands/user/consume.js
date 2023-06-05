@@ -79,7 +79,7 @@ module.exports = {
 			else if(user_items.item.name == 'Sanity Pill'){
 				//sanity pill
 				if(user_stats.sanity != 0){
-					let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*15;
+					let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*25;
 					if (newSanity < 0 && user_stats.sanity >= 0 || newSanity >= 0 && user_stats.sanity < 0) {
 						user_stats.sanity = 0;
 					}
@@ -94,7 +94,7 @@ module.exports = {
 			const bought = new EmbedBuilder()
 				.setColor(0xf5bf62)
 				.setTitle(`You consumed 1 ${user_items.item.name}!`)
-				.setDescription(`You now own have ${user_items.amount}!`);
+				.setDescription(`You now have ${user_items.amount}!`);
 			await interaction.followUp({embeds:[bought], ephemeral:true});
 		});
 		collector.on('end', collected => {
