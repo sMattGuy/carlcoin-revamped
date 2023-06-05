@@ -201,7 +201,7 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
 			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
-	if(user_stats.sanity <= -85 && prev_sanity > -85){
+	if(user_stats.sanity <= -80 && prev_sanity > -80){
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`You're at Death's Door!`)
