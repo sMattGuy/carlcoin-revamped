@@ -199,23 +199,18 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 			.setColor(0xff293b)
 			.setTitle(`Something doesn't feel right...`)
 			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
-		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+	}
+	if(user_stats.sanity <= -85 && prev_sanity > -85){
+		const insaneEmbed = new EmbedBuilder()
+			.setColor(0xff293b)
+			.setTitle(`You're at Death's Door!`)
+			.setDescription(`One more bet and it could spell your doom! You REALLY should consider a Sanity Pill!`);
+			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
 	//test user death and save data
 	if(user_stats.sanity < -100){
-		if(prev_sanity >= 0 && user_stats.level <= 30){
-			user_stats.sanity = -99;
-			const insaneEmbed = new EmbedBuilder()
-				.setColor(0xff293b)
-				.setTitle(`You nearly died!`)
-				.setDescription(`Betting that much made you sick in the head! Take a break for a bit before betting again!`);
-			await interaction.followUp({embeds:[insaneEmbed]});
-			user_data.save();
-			user_stats.save();
-		}
-		else{
-			killUser(user_data, user_stats, interaction);
-		}
+		killUser(user_data, user_stats, interaction);
 	}
 	else{
 		user_data.save();
