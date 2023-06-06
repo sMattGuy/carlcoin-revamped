@@ -145,13 +145,14 @@ async function killUser(user_data, user_stats, interaction){
 	}
 }
 
-async function changeSanity(user_data, user_stats, interaction, balance, sanity){
+async function changeSanity(user_data, user_stats, interaction, balance, bet){
+	let sanity = bet;
 	if(user_stats.sanity == 0){
 		user_stats.sanity = -1;
 	}
 	if(balance > 100){
 		//adjust to percentage of bet
-		let bet_ratio = sanity / balance;
+		let bet_ratio = bet / balance;
 		console.log(`ratio ${bet_ratio}`)
 		let sign = Math.sign(bet_ratio);
 		bet_ratio *= 100;
