@@ -185,32 +185,25 @@ async function changeSanity(user_data, user_stats, interaction, balance, sanity)
 	if(user_stats.sanity > 100){
 		user_stats.sanity = 100;
 	}
-	//sanity goes from below -50 to above, no longer insane
-	if(prev_sanity <= -50 && user_stats.sanity > -50){
-		const insaneEmbed = new EmbedBuilder()
-			.setColor(0x3bff29)
-			.setTitle(`Your mind is clear!`)
-			.setDescription(`Your insanity fades... You're no longer insane!`);
-		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+	//test user death and save data
+	if(user_stats.sanity < -100){
+		killUser(user_data, user_stats, interaction);
 	}
-	//sanity past -50, alert insane
-	if(user_stats.sanity <= -50 && prev_sanity > -50){
-		const insaneEmbed = new EmbedBuilder()
-			.setColor(0xff293b)
-			.setTitle(`Something doesn't feel right...`)
-			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
-			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
-	}
-	if(user_stats.sanity <= -80 && prev_sanity > -80){
+	//sanity past -80, warn deaths door
+	else if(user_stats.sanity <= -80 && prev_sanity > -80){
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`You're at Death's Door!`)
 			.setDescription(`One more bet and it could spell your doom! You REALLY should consider a Sanity Pill!`);
 			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
-	//test user death and save data
-	if(user_stats.sanity < -100){
-		killUser(user_data, user_stats, interaction);
+	//sanity past -50, alert insane
+	else if(user_stats.sanity <= -50 && prev_sanity > -50){
+		const insaneEmbed = new EmbedBuilder()
+			.setColor(0xff293b)
+			.setTitle(`Something doesn't feel right...`)
+			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
+			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
 	}
 	else{
 		user_data.save();
