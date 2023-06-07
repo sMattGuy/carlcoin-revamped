@@ -103,7 +103,7 @@ module.exports = {
 				.setColor(0xf5bf62)
 				.setTitle(`Current Table. ${luck_message}`)
 				.setThumbnail('attachment://avatar.png')
-				.setDescription(`Click to discard cards (H) means heald, (D) means discarded. when you're ready click Send Hand to submit it!`)
+				.setDescription(`Click to discard cards (H) means held, (D) means discarded. when you're ready click Send Hand to submit it!`)
 				.addFields(
 					{name: `You (${player_hand.descr})`, value: `${getPrettyCards(playerCards)}`},
 					{name: `Card Status`, value: `${pretty_holding[cardsHeld[0]]}  |  ${pretty_holding[cardsHeld[1]]}  |  ${pretty_holding[cardsHeld[2]]}  |  ${pretty_holding[cardsHeld[3]]}  |  ${pretty_holding[cardsHeld[4]]}`},
