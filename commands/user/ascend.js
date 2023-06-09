@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionCollector, StringSelectMenuBuilder } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, killUser } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, killUser } = require('../../helper.js');
 const { Upgrades } = require('../../dbObjects.js');
 
 module.exports = {
@@ -10,6 +10,7 @@ module.exports = {
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
 		let user_buildings = await user_data.getBuildings(user_data);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		let totalValue = user_data.balance;
 		for(let i=0;i<user_buildings.length;i++){
@@ -41,6 +42,9 @@ module.exports = {
 			collector.stop();
 			await i.update({components:[]});
 			if(i.customId == 'ascend'){
+				user_metric.ascentions += 1;
+				user_metric.pc_earned += prestigeGain;
+				user_metric.cc_total_lost += user_data.balance;
 				await user_data.killUser(user_data);
 				user_data.prestigeBalance += prestigeGain;
 				user_data.save();
@@ -65,7 +69,6 @@ module.exports = {
 				let message = await interaction.fetchReply();
 				const upgradeCollector = message.createMessageComponentCollector({filter:upFilter, time: 60000});
 				upgradeCollector.on('collect', async menuInteraction => {
-					//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id) return;
 					upgradeCollector.stop();
 					await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
 					const selected = menuInteraction.values[0];
@@ -75,6 +78,7 @@ module.exports = {
 							.setTitle(`You bought nothing!`)
 							.setDescription(`See you next time!`);
 						await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
+						user_metric.save();
 						return;
 					}
 					//get selected upgrade
@@ -114,6 +118,7 @@ module.exports = {
 						else if(selectedUpgrade.name == 'Calm Mind'){
 							user_stats.constitution += 10 * users_upgrades.amount;
 						}
+						user_metric.upgrades_purchased += 1;
 						user_stats.save();
 						const bought = new EmbedBuilder()
 							.setColor(0xf5bf62)
@@ -121,6 +126,7 @@ module.exports = {
 							.setDescription(`You now own have ${user_data.prestigeBalance} Prestige CC! Now back to the overworld with you!`);
 						await interaction.followUp({embeds:[bought], ephemeral:true});
 					}
+					user_metric.save();
 				});
 				upgradeCollector.on('end', async () => {
 					await interaction.editReply({components:[],ephemeral:true});

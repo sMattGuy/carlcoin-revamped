@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 const { Client, codeBlock, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { Users } = require('./dbObjects.js');
 const { token } = require('./config.json');
-const { get_user_stats } = require('./helper.js');
+const { get_user_stats, get_user_metrics } = require('./helper.js');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -63,12 +63,16 @@ async function dailyp(){
 	let userList = await Users.findAll();
 	userList.forEach(async user => {
 		let userBuildings = await user.getBuildings(user);
+		let user_metric = await get_user_metrics(user.user_id);
 		let payout = 0;
 		for(let i=0;i<userBuildings.length;i++){
 			payout += userBuildings[i].building.payout * userBuildings[i].amount;
 		}
+		user_metric.cc_earned_realty += payout;
+		user_metric.cc_total_gained += payout;
 		user.balance += payout;
 		user.save();
+		user_metric.save();
 	});
 }
 async function hourlys(){

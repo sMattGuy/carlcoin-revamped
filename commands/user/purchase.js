@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics } = require('../../helper.js');
 const { Buildings, Items } = require('../../dbObjects.js');
 
 module.exports = {
@@ -22,6 +22,7 @@ module.exports = {
 		let user_stats = await get_user_stats(interaction.user.id);
 		let user_items = await user_data.getItems(user_data);
 		let user_buildings = await user_data.getBuildings(user_data);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		if(menu_option == 'buildings'){
 			//generate rows for buildings
@@ -79,6 +80,9 @@ module.exports = {
 					user_data = await get_user(interaction.user.id);
 					user_data.balance -= cost;
 					await user_data.addBuilding(user_data, selectedBuilding);
+					user_metric.buildings_purchased += 1;
+					user_metric.cc_total_lost += cost;
+					user_metric.save();
 					user_data.save();
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
@@ -174,6 +178,9 @@ module.exports = {
 					else if(selectedItem.name == 'Meditation Orb'){
 						user_stats.constitution += 2 * users_items.amount;
 					}
+					user_metric.items_purchased += 1;
+					user_metric.cc_total_lost += cost;
+					user_metric.save();
 					user_stats.save();
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)

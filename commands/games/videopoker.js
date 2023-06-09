@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
 const { Hand } = require('pokersolver');
 
 const card_icons = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
@@ -21,6 +21,7 @@ module.exports = {
 		
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		if(user_data.balance < bet){
 			await interaction.reply({content: `You don't have enough coins!`, ephemeral:true});
@@ -288,6 +289,8 @@ module.exports = {
 		
 		//game ending helpers
 		async function endGame(){
+			user_metric.videopoker_plays += 1;
+			user_metric.cc_gambled += bet;
 			//discard cards and draw new ones in its place
 			if(cardsHeld[0] == 1){
 				let newCard = (Math.floor(Math.random() * 52));
@@ -391,6 +394,16 @@ module.exports = {
 			user_data.balance -= bet;
 			let sanityDrain = Math.ceil(-bet * 1.5);
 			await user_data.save();
+			user_metric.cc_gambled_lost += bet;
+			user_metric.cc_total_lost += bet;
+			user_metric.games_lost += 1;
+			if(user_metric.most_cc_lost < bet){
+				user_metric.most_cc_lost = bet;
+			}
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			await user_metric.save();
 			await changeSanity(user_data,user_stats,interaction,prev_balance,sanityDrain);
 			return;
 		}
@@ -412,6 +425,16 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += bet;
 			await user_data.save();
+			user_metric.cc_gambled_won += bet;
+			user_metric.cc_total_gained += bet;
+			user_metric.games_won += 1;
+			if(user_metric.most_cc_won < bet){
+				user_metric.most_cc_won = bet;
+			}
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			await user_metric.save();
 			await giveLevels(user_stats, Math.floor(bet/2), interaction);
 			user_stats.save();
 			await give_lootbox(user_data, interaction);

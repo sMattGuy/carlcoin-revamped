@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, Events, StringSelectMenuBuilder, ComponentType, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics } = require('../../helper.js');
 const { Items } = require('../../dbObjects.js');
 
 module.exports = {
@@ -12,6 +12,7 @@ module.exports = {
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
 		let user_items = await user_data.getItems(user_data);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		let validItems = false;
 		//generate rows for items
@@ -89,6 +90,9 @@ module.exports = {
 				}
 				user_stats.save();
 			}
+			user_metric.consumables_used += 1;
+			await user_metric.save();
+			
 			user_items.amount -= 1;
 			user_items.save();
 			const bought = new EmbedBuilder()

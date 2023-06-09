@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { get_user, get_user_stats } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics } = require('../../helper.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -34,9 +34,21 @@ module.exports = {
 		//send over money
 		payee_data.balance += amount;
 		user_data.balance -= amount;
+		//get metrics
+		let user_metric = await get_user_metrics(interaction.user.id);
+		let payee_metric = await get_user_metrics(userToPay.id);
+		user_metric.cc_payed += amount;
+		payee_metric.cc_received += amount;
+		user_metric.cc_total_lost += amount;
+		payee_metric.cc_total_gained += amount;
+		if(payee_metric.highest_cc_balance < payee_data.balance){
+			payee_metric.highest_cc_balance = payee_data.balance;
+		}
 		
 		user_data.save();
 		payee_data.save();
+		user_metric.save();
+		payee_metric.save();
 		
 		const payEmbed = new EmbedBuilder()
 			.setColor(0xf5bf62)

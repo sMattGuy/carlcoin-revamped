@@ -1,5 +1,5 @@
 const { ButtonStyle, SlashCommandBuilder, codeBlock, ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, changeSanity } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, changeSanity } = require('../../helper.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -39,9 +39,11 @@ module.exports = {
 		//get user and challenger
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		let enemy_data = await get_user(opponentID);
 		let enemy_stats = await get_user_stats(opponentID);
+		let enemy_metric = await get_user_metrics(opponentID);
 		
 		if(user_data.balance < bet_amount){
 			await interaction.reply({content: 'You don\'t have enough coins!', ephemeral:true});
@@ -201,11 +203,11 @@ module.exports = {
 
 										if(RoundAttacker == challenger){
 											await interaction.editReply({content:`${challengerName} has defeated ${opponentName}!`});
-											update_users(user_data, user_stats, enemy_data, enemy_stats);
+											update_users(user_data, user_stats, user_metric, enemy_data, enemy_stats, enemy_metric);
 										}
 										else{
 											await interaction.editReply({content:`${opponentName} has defeated ${challengerName}!`});
-											update_users(enemy_data, enemy_stats, user_data, user_stats);
+											update_users(enemy_data, enemy_stats, enemy_metric, user_data, user_stats, user_metric);
 										}
 										return;
 									}
@@ -217,11 +219,11 @@ module.exports = {
 										await interaction.editReply(`Opponent didn't respond in time!`);
 										if(RoundAttacker == challenger){
 											//opponent didnt respond
-											update_users(user_data, user_stats, enemy_data, enemy_stats);
+											update_users(user_data, user_stats, user_metric, enemy_data, enemy_stats, enemy_metric);
 										}
 										else{
 											//challenger didnt respond
-											update_users(enemy_data, enemy_stats, user_data, user_stats);
+											update_users(enemy_data, enemy_stats, enemy_metric, user_data, user_stats, user_metric);
 										}
 									}
 								});
@@ -234,18 +236,37 @@ module.exports = {
 							challMsg.delete();
 							if(RoundAttacker == challenger){
 								//opponent didnt respond
-								update_users(user_data, user_stats, enemy_data, enemy_stats);
+								update_users(user_data, user_stats, user_metric, enemy_data, enemy_stats, enemy_metric);
 							}
 							else{
 								//challenger didnt respond
-								update_users(enemy_data, enemy_stats, user_data, user_stats);
+								update_users(enemy_data, enemy_stats, enemy_metric, user_data, user_stats, user_metric);
 							}
 						}
 					});
 				});
 			}
 		}
-		async function update_users(winner, winner_stats, loser, loser_stats){
+		async function update_users(winner, winner_stats, winner_metric, loser, loser_stats, loser_metric){
+			//update metrics
+			winner_metric.games_won += 1;
+			loser_metric.games_lost += 1;
+			winner_metric.battle_plays += 1;
+			loser_metric.battle_plays += 1;
+			winner_metric.cc_gambled += bet_amount;
+			loser_metric.cc_gambled += bet_amount;
+			winner_metric.cc_gambled_won += bet_amount;
+			winner_metric.cc_total_gained += bet_amount;
+			loser_metric.cc_gambled_lost += bet_amount;
+			loser_metric.cc_total_lost += bet_amount;
+			if(winner_metric.most_cc_won < bet_amount){
+				winner_metric.most_cc_won = bet_amount;
+			}
+			if(loser_metric.most_cc_lost < bet_amount){
+				loser_metric.most_cc_lost = bet_amount;
+			}
+			await winner_metric.save();
+			await loser_metric.save();
 			//update winner
 			let winner_prev_balance = winner.balance;
 			winner.balance += bet_amount;

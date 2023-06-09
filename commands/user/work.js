@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, generate_avatar } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, generate_avatar } = require('../../helper.js');
 const { Items, Upgrades } = require('../../dbObjects.js');
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,6 +10,7 @@ module.exports = {
 		let user = await get_user(interaction.user.id);
 		//check if user can work
 		if(user.last_worked + 21600000 <= Date.now()){
+			let user_metric = await get_user_metrics(interaction.user.id);
 			let user_stats = await get_user_stats(interaction.user.id);
 			let avatar = await generate_avatar(interaction.user.id);
 			let coin_increase = 1;
@@ -71,6 +72,8 @@ module.exports = {
 					.setDescription(`While you were mining you found a diamond! You got an additional ${diamondValue}CC!`)
 				await interaction.followUp({embeds:[diamondEmbed],files:[avatar]});
 				user.balance += diamondValue;
+				user_metric.cc_worked += diamondValue;
+				user_metric.cc_total_gained += diamondValue;
 			}
 			if(user_stats.sanity != 0){
 				let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*10;
@@ -81,7 +84,13 @@ module.exports = {
 					user_stats.sanity = newSanity;
 				}
 			}
-			
+			//metrics
+			user_metric.cc_worked += best;
+			user_metric.cc_total_gained += best;
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			await user_metric.save();
 			await giveLevels(user_stats, experience_gain, interaction);
 			user.save();
 			user_stats.save();

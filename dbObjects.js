@@ -14,6 +14,7 @@ const Users = require('./models/Users.js')(sequelize, Sequelize.DataTypes);
 const User_Items = require('./models/User_Items.js')(sequelize, Sequelize.DataTypes);
 const User_Buildings = require('./models/User_Buildings.js')(sequelize, Sequelize.DataTypes);
 const User_Stats = require('./models/User_Stats.js')(sequelize, Sequelize.DataTypes);
+const User_Metrics = require('./models/User_Metrics.js')(sequelize, Sequelize.DataTypes);
 const User_Upgrades = require('./models/User_Upgrades.js')(sequelize, Sequelize.DataTypes);
 const User_Cosmetics = require('./models/User_Cosmetics.js')(sequelize, Sequelize.DataTypes);
 const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes);
@@ -243,4 +244,4 @@ Reflect.defineProperty(Users.prototype, 'killUser', {
 		user_stats.save();
 	}
 });
-module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades, User_Cosmetics, Cosmetic, Avatar };
+module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades, User_Cosmetics, Cosmetic, Avatar, User_Metrics };

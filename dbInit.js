@@ -15,6 +15,7 @@ require('./models/Users.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Items.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Buildings.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Stats.js')(sequelize, Sequelize.DataTypes);
+require('./models/User_Metrics.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Upgrades.js')(sequelize, Sequelize.DataTypes);
 require('./models/Avatar.js')(sequelize, Sequelize.DataTypes);
 require('./models/User_Cosmetics.js')(sequelize, Sequelize.DataTypes);

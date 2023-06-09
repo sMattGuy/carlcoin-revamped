@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const { Users, User_Stats, Avatar, Cosmetic } = require('./dbObjects.js');
+const { Users, User_Stats, User_Metrics, Avatar, Cosmetic } = require('./dbObjects.js');
 const Canvas = require('@napi-rs/canvas');
 
 async function get_user(userID){
@@ -12,7 +12,6 @@ async function get_user(userID){
 	}
 	return user;
 }
-
 async function get_user_stats(userID){
 	//returns the user if it can, otherwise creates a brand new user for the given ID
 	let user_stats = await User_Stats.findOne({where: {user_id: userID}});
@@ -21,6 +20,15 @@ async function get_user_stats(userID){
 		user_stats = await User_Stats.create({user_id: userID});
 	}
 	return user_stats;
+}
+async function get_user_metrics(userID){
+	//returns the user if it can, otherwise creates a brand new user for the given ID
+	let user_metrics = await User_Metrics.findOne({where: {user_id: userID}});
+	if(!user_metrics){
+		//make new user if couldnt be found
+		user_metrics = await User_Metrics.create({user_id: userID});
+	}
+	return user_metrics;
 }
 
 async function get_user_avatar(userID){
@@ -100,8 +108,13 @@ async function generate_avatar(userID){
 }
 
 async function giveLevels(user_stats, experience_gain, interaction){
+	let user_metric = await get_user_metrics(user_stats.user_id);
+	user_metric.experience_earned += experience_gain;
 	if(await user_stats.giveXP(experience_gain, user_stats)){
 		//user has leveled up, alert them and display new stats
+		if(user_metric.highest_level < user_stats.level){
+			user_metric.highest_level = user_stats.level;
+		}
 		const levelUpEmbed = new EmbedBuilder()
 			.setColor(0xf5bf62)
 			.setTitle('Level Up!')
@@ -117,6 +130,7 @@ async function giveLevels(user_stats, experience_gain, interaction){
 			);
 		await interaction.followUp({embeds:[levelUpEmbed]});
 	}
+	await user_metric.save();
 }
 
 async function killUser(user_data, user_stats, interaction){
@@ -136,6 +150,12 @@ async function killUser(user_data, user_stats, interaction){
 	}
 	else{
 		//kill user
+		let user_metric = await get_user_metrics(user_data.user_id);
+		user_metric.cc_total_lost += user_data.balance;
+		user_metric.cc_lost_death += user_data.balance;
+		user_metric.deaths += 1;
+		
+		user_metric.save();
 		user_data.killUser(user_data);
 		const deathEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
@@ -213,7 +233,9 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 }
 
 async function give_lootbox(user_data, interaction){
+	let user_metric = await get_user_metrics(user_data.user_id);
 	if(user_data.last_lootbox + 64800000 <= Date.now()){
+		user_metric.lootboxes_earned += 1;
 		//generate and give lootbox
 		user_data.last_lootbox = Date.now();
 		/*
@@ -300,6 +322,11 @@ async function give_lootbox(user_data, interaction){
 			let coinreward = 10 * user_cosmetic.cosmetic.rarity;
 			user_data.balance += coinreward;
 			user_data.last_lootbox -= 32400000;
+			//metrics
+			user_metric.cc_total_gained += coinreward;
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
 			const cosmeticEmbed = new EmbedBuilder()
 				.setColor(0x2eb7f6)
 				.setTitle('You got a duplicate!')
@@ -307,9 +334,10 @@ async function give_lootbox(user_data, interaction){
 			interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true});
 		}
 		user_data.save();
+		user_metric.save();
 	}
 	else{
 		//not their time, ignore it
 	}
 }
-module.exports = {get_user, get_user_stats, giveLevels, killUser, changeSanity, generate_avatar, get_user_avatar, give_lootbox}
+module.exports = {get_user, get_user_stats, get_user_metrics, giveLevels, killUser, changeSanity, generate_avatar, get_user_avatar, give_lootbox}

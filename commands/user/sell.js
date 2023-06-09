@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics } = require('../../helper.js');
 const { Buildings } = require('../../dbObjects.js');
 
 module.exports = {
@@ -11,6 +11,7 @@ module.exports = {
 		
 		let user_data = await get_user(interaction.user.id);
 		let user_buildings = await user_data.getBuildings(user_data);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		let validBuildings = false;
 		//generate rows for items
@@ -43,7 +44,6 @@ module.exports = {
 		let message = await interaction.fetchReply();
 		const collector = message.createMessageComponentCollector({filter, time: 60000});
 		collector.on('collect', async menuInteraction => {
-			//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 			await interaction.editReply({ content: 'Validating Sell!',embeds:[], components: [], ephemeral:true });
 			const selected = menuInteraction.values[0];
 			if(selected == 'cancel'){
@@ -71,6 +71,13 @@ module.exports = {
 			user_data.balance += Math.floor(selectedBuilding.cost*0.65);
 			user_buildings.amount -= 1;
 			user_buildings.save();
+			//metrics
+			user_metric.buildings_sold += 1;
+			user_metric.cc_total_gained += Math.floor(selectedBuilding.cost*0.65);
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			user_metric.save();
 			user_data.save();
 			const bought = new EmbedBuilder()
 				.setColor(0xf5bf62)

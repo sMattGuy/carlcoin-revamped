@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
 const { Hand } = require('pokersolver');
 
 const card_icons = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
@@ -33,6 +33,7 @@ module.exports = {
 		
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		let total_possible_bet = ante_bet + ante_bet + pair_plus_bet + six_card_bet;
 		if(user_data.balance < total_possible_bet){
@@ -92,23 +93,6 @@ module.exports = {
 				);
 				
 				const boardEmbed = new EmbedBuilder();
-				//sanity check
-				/*
-				if(user_stats.sanity <= -50){
-					//debuff user for being crazy
-					boardEmbed
-						.setColor(0xf5bf62)
-						.setTitle(`Current Table.`)
-						.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
-						.addFields(
-							{name: `Dealer`, value: `??, ??, ??`},
-							{name: `You (??)`, value: `??, ??, ??`},
-							{name: `Ante Bonus Payout`, value: `??`, inline: true},
-							{name: `Pair Plus Bonus Payout`, value: `??`, inline: true},
-							{name: `Six Card Bonus Payout`, value: `??`, inline: true},
-						);
-				}
-				*/
 				//int check else
 				if(user_stats.intel != 0 && Math.random() + (user_stats.intel * 0.01) > .90){
 					int_check_success = true;
@@ -308,6 +292,8 @@ module.exports = {
 		}
 		//game ending helpers
 		async function endGame(playing){
+			user_metric.cc_gambled += betAmount;
+			user_metric.threecard_plays += 1;
 			//decides if win or loss
 			if(playing){
 				let hand_results = Hand.winners([player_hand, dealer_hand]);
@@ -364,8 +350,23 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
+			user_metric.games_won += 1;
 			if(totalWinnings < 0){
+				user_metric.cc_total_lost += -totalWinnings;
+				user_metric.cc_gambled_lost += -totalWinnings;
+				if(user_metric.most_cc_lost < -totalWinnings){
+					user_metric.most_cc_lost = -totalWinnings;
+				}
+				await user_metric.save();
 				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			}
+			else{
+				user_metric.cc_total_gained += totalWinnings;
+				user_metric.cc_gambled_won += totalWinnings;
+				if(user_metric.most_cc_won < totalWinnings){
+					user_metric.most_cc_won = totalWinnings;
+				}
+				await user_metric.save();
 			}
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
@@ -399,8 +400,23 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
+			user_metric.games_lost += 1;
 			if(totalWinnings < 0){
+				user_metric.cc_total_lost += -totalWinnings;
+				user_metric.cc_gambled_lost += -totalWinnings;
+				if(user_metric.most_cc_lost < -totalWinnings){
+					user_metric.most_cc_lost = -totalWinnings;
+				}
+				await user_metric.save();
 				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			}
+			else{
+				user_metric.cc_total_gained += totalWinnings;
+				user_metric.cc_gambled_won += totalWinnings;
+				if(user_metric.most_cc_won < totalWinnings){
+					user_metric.most_cc_won = totalWinnings;
+				}
+				await user_metric.save();
 			}
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
@@ -436,7 +452,21 @@ module.exports = {
 			user_data.balance += totalWinnings;
 			await user_data.save();
 			if(totalWinnings < 0){
+				user_metric.cc_total_lost += -totalWinnings;
+				user_metric.cc_gambled_lost += -totalWinnings;
+				if(user_metric.most_cc_lost < -totalWinnings){
+					user_metric.most_cc_lost = -totalWinnings;
+				}
+				await user_metric.save();
 				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			}
+			else{
+				user_metric.cc_total_gained += totalWinnings;
+				user_metric.cc_gambled_won += totalWinnings;
+				if(user_metric.most_cc_won < totalWinnings){
+					user_metric.most_cc_won = totalWinnings;
+				}
+				await user_metric.save();
 			}
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
@@ -497,8 +527,23 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
+			user_metric.games_lost += 1;
 			if(totalWinnings < 0){
+				user_metric.cc_total_lost += -totalWinnings;
+				user_metric.cc_gambled_lost += -totalWinnings;
+				if(user_metric.most_cc_lost < -totalWinnings){
+					user_metric.most_cc_lost = -totalWinnings;
+				}
+				await user_metric.save();
 				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			}
+			else{
+				user_metric.cc_total_gained += totalWinnings;
+				user_metric.cc_gambled_won += totalWinnings;
+				if(user_metric.most_cc_won < totalWinnings){
+					user_metric.most_cc_won = totalWinnings;
+				}
+				await user_metric.save();
 			}
 			return;
 		}
@@ -531,8 +576,23 @@ module.exports = {
 			let prev_balance = user_data.balance;
 			user_data.balance += totalWinnings;
 			await user_data.save();
+			user_metric.games_won += 1;
 			if(totalWinnings < 0){
+				user_metric.cc_total_lost += -totalWinnings;
+				user_metric.cc_gambled_lost += -totalWinnings;
+				if(user_metric.most_cc_lost < -totalWinnings){
+					user_metric.most_cc_lost = -totalWinnings;
+				}
+				await user_metric.save();
 				await changeSanity(user_data,user_stats,interaction,prev_balance,totalWinnings);
+			}
+			else{
+				user_metric.cc_total_gained += totalWinnings;
+				user_metric.cc_gambled_won += totalWinnings;
+				if(user_metric.most_cc_won < totalWinnings){
+					user_metric.most_cc_won = totalWinnings;
+				}
+				await user_metric.save();
 			}
 			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();

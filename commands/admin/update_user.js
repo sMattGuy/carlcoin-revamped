@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics } = require('../../helper.js');
 const { Buildings, Items, Upgrades, Cosmetic } = require('../../dbObjects.js');
 
 module.exports = {
@@ -65,8 +65,11 @@ module.exports = {
 				//if(!menuInteraction.isStringSelectMenu() || menuInteraction.user.id != interaction.user.id || menuInteraction.message.interaction.id != interaction.id ) return;
 				const selected = menuInteraction.values[0];
 				let user_data = await get_user(user.id);
+				let user_metric = await get_user_metrics(user.id);
 				if(selected == 'balance'){
+					let net_balance = amount - user_data.balance;
 					user_data.balance = amount;
+					user_metric.cc_bestowed = net_balance;
 				}
 				else if(selected == 'prestigeBalance'){
 					user_data.prestigeBalance = amount;
@@ -81,6 +84,7 @@ module.exports = {
 					user_data.last_lootbox = amount;
 				}
 				user_data.save();
+				user_metric.save();
 				await interaction.editReply({content:'Updated!',components:[],ephemeral:true});
 				return;
 			});

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
 
 const blackjackCards = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
 
@@ -19,6 +19,7 @@ module.exports = {
 		
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
+		let user_metric = await get_user_metrics(interaction.user.id);
 		
 		if(user_data.balance < betAmount){
 			await interaction.reply({content: 'You don\'t have enough coins!', ephemeral:true});
@@ -58,11 +59,6 @@ module.exports = {
 			}
 			else{
 				let user_ins_cards = getPrettyCards(playerCards);
-				/*
-				if(user_stats.sanity <= -50){
-					user_ins_cards = `??, ??`;
-				}
-				*/
 				const row = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
@@ -184,20 +180,6 @@ module.exports = {
 				let playerValue = getCardValue(playerCards);
 				
 				const boardEmbed = new EmbedBuilder();
-				//sanity check
-				/*
-				if(user_stats.sanity <= -50){
-					//debuff user for being crazy
-					boardEmbed
-						.setColor(0xf5bf62)
-						.setTitle(`Current Table.`)
-						.setDescription(`Something doesn't feel right... You can't comprehend your cards!`)
-						.addFields(
-							{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-							{name: `You (??)`, value: `??, ??`},
-						);
-				}
-				*/
 				//int check else
 				let intChance = 0.90 - (user_stats.intel * 0.01);
 				if(intChance <= 0.8){
@@ -306,14 +288,6 @@ module.exports = {
 								{name: `You (${playerValue})`, value: `${getPrettyCards(playerCards)}`},
 							);
 						}
-						/*
-						else if(user_stats.sanity <= -50){
-							hitEmbed.addFields(
-								{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
-								{name: `You (??)`, value: `${insaneCards}`},
-							);
-						}
-						*/
 						else{
 							hitEmbed.addFields(
 								{name: `Dealer (${dealerValue})`, value: `${blackjackCards[dealerCards[0]]}, ??`},
@@ -376,6 +350,8 @@ module.exports = {
 			}
 		}
 		async function endGame(){
+			user_metric.cc_gambled += betAmount;
+			user_metric.blackjack_plays += 1;
 			playingGame = true;
 			let playerCardValue = getCardValue(playerCards);
 			let dealerCardValue = getCardValue(dealerCards);
@@ -509,6 +485,16 @@ module.exports = {
 			}
 			let prev_balance = user_data.balance;
 			user_data.balance -= betAmount;
+			user_metric.cc_gambled_lost += betAmount;
+			user_metric.cc_total_lost += betAmount;
+			user_metric.games_lost += 1;
+			if(user_metric.most_cc_lost < betAmount){
+				user_metric.most_cc_lost = betAmount;
+			}
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			await user_metric.save();
 			await user_data.save();
 			await changeSanity(user_data,user_stats,interaction,prev_balance,-betAmount);
 			return;
@@ -537,6 +523,16 @@ module.exports = {
 			await interaction.editReply({embeds:[winEmbed],components:[]});
 			let prev_balance = user_data.balance;
 			user_data.balance += betAmount;
+			user_metric.cc_gambled_won += betAmount;
+			user_metric.cc_total_gained += betAmount;
+			user_metric.games_won += 1;
+			if(user_metric.most_cc_won < betAmount){
+				user_metric.most_cc_won = betAmount;
+			}
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			await user_metric.save();
 			await user_data.save();
 			//await changeSanity(user_data,user_stats,interaction,prev_balance,betAmount);
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
@@ -561,7 +557,11 @@ module.exports = {
 				);
 			await interaction.editReply({embeds:[winEmbed],components:[]});
 			let newSanity = betAmount + insuranceAmount;
-			//await changeSanity(user_data,user_stats,interaction,user_data.balance,newSanity);
+			user_metric.games_won += 1;
+			if(user_metric.highest_cc_balance < user_data.balance){
+				user_metric.highest_cc_balance = user_data.balance;
+			}
+			await user_metric.save();
 			await giveLevels(user_stats, Math.floor(betAmount/2), interaction);
 			await user_stats.save();
 			await give_lootbox(user_data, interaction);
