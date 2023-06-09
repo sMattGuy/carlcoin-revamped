@@ -87,8 +87,8 @@ module.exports = {
 			//metrics
 			user_metric.cc_worked += best;
 			user_metric.cc_total_gained += best;
-			if(user_metric.highest_cc_balance < user_data.balance){
-				user_metric.highest_cc_balance = user_data.balance;
+			if(user_metric.highest_cc_balance < user.balance){
+				user_metric.highest_cc_balance = user.balance;
 			}
 			await user_metric.save();
 			await giveLevels(user_stats, experience_gain, interaction);
