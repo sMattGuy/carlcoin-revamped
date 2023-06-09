@@ -292,11 +292,12 @@ module.exports = {
 		}
 		//game ending helpers
 		async function endGame(playing){
-			user_metric.cc_gambled += betAmount;
 			user_metric.threecard_plays += 1;
+			user_metric.cc_gambled += ante_bet + pair_plus_bet + six_card_bet;
 			//decides if win or loss
 			if(playing){
 				let hand_results = Hand.winners([player_hand, dealer_hand]);
+				user_metric.cc_gambled += ante_bet;
 				if(dealer_hand.rank == 1 && dealer_hand.cards[0].rank < 11){
 					//dealer hand doesnt qualify
 					noQualify();
