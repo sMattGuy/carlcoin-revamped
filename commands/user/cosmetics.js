@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, codeBlock, ActionRowBuilder, StringSelectMenuBuilder, InteractionCollector } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, codeBlock, ActionRowBuilder, StringSelectMenuBuilder, ButtonStyle, ButtonBuilder, InteractionCollector } = require('discord.js');
 const { get_user, get_user_avatar, generate_avatar } = require('../../helper.js');
 const { Cosmetic } = require('../../dbObjects.js');
 
@@ -16,11 +16,6 @@ module.exports = {
 			subcommand
 				.setName('equip')
 				.setDescription('Lets you equip a cosmetic!')
-				.addStringOption(option => 
-					option
-						.setName('name')
-						.setDescription('The cosmetics name, must be exactly case sensitive correct!')
-						.setRequired(true))
 				.addIntegerOption(option => 
 					option
 						.setName('slotnum')
@@ -117,13 +112,14 @@ module.exports = {
 				.setTitle(`Which Slot?`)
 				.setDescription(`Select which slot you want to change!`)
 		
-			await interaction.editReply({embeds:[boardEmbed],components:[row],ephemeral:true});
+			await interaction.reply({embeds:[boardEmbed],components:[row],ephemeral:true});
 			let filter = i => i.user.id == interaction.user.id && i.isButton();
 			let message = await interaction.fetchReply();
 			let cosmetic_butt_collector = message.createMessageComponentCollector({time: 60000, filter});
 			cosmetic_butt_collector.on('collect', async i => {
+				await i.update({components:[]});
 				await cosmetic_butt_collector.stop();
-				let cosmetic_number = parseInt(i.i.customId);
+				let cosmetic_number = parseInt(i.customId);
 				//start building the cosmetic menu
 				let user_cosmetic = await user_data.getCosmetics(user_data);
 				let hasCosmetic = false;
@@ -152,7 +148,7 @@ module.exports = {
 					.setColor(0xf5bf62)
 					.setTitle('Select what to equip!')
 					.setDescription(`Use the menu below to make a choice!`)
-				await interaction.reply({embeds:[selectionEmbed],components:[selectmenurow],ephemeral:true});
+				await interaction.editReply({embeds:[selectionEmbed],components:[selectmenurow],ephemeral:true});
 				
 				//wait for reply
 				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
