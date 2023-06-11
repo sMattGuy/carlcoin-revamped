@@ -42,7 +42,6 @@ Reflect.defineProperty(Users.prototype, 'getCosmetic', {
 		const user_cosmetic = await User_Cosmetics.findOne({
 			where: {user_id: user.user_id, cosmetic_id:cosmetic.id},
 			include: ['cosmetic'],
-			order: ['type','DESC'],
 		});
 		if(user_cosmetic){
 			return user_cosmetic;
@@ -55,6 +54,7 @@ Reflect.defineProperty(Users.prototype, 'getCosmetics', {
 		return User_Cosmetics.findAll({
 			where: {user_id: user.user_id},
 			include: ['cosmetic'],
+			order: [['cosmetic','type','desc']],
 		});
 	}
 });
