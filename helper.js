@@ -167,8 +167,16 @@ async function killUser(user_data, user_stats, interaction){
 
 async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	let sanity = bet;
-	if(user_stats.sanity == 0){
-		user_stats.sanity = -1;
+	//add users property to their current balance
+	let user_buildings = await user_data.getBuildings(user_data);
+	let building_value = 0;
+	for(let i=0;i<user_buildings.length;i++){
+		building_value += user_buildings[i].building.cost * user_buildings[i].amount;
+	}
+	console.log(`Building value: ${building_value}`);
+	balance += building_value;
+	if(user_stats.sanity > 0){
+		user_stats.sanity = 0;
 	}
 	if(balance > 100){
 		//adjust to percentage of bet
