@@ -46,7 +46,11 @@ module.exports = {
 			for(const build of user_buildings){
 				dailyPayout += build.building.payout * build.amount;
 			}
-			
+			let building_value = 0;
+			for(let i=0;i<user_buildings.length;i++){
+				building_value += user_buildings[i].building.cost * user_buildings[i].amount;
+			}
+
 			let lootboxAvailable = '';
 			if(user_data.last_lootbox + 64800000 <= Date.now()){
 				lootboxAvailable = `Yes`;
@@ -67,6 +71,7 @@ module.exports = {
 				.addFields(
 					{name: 'Balance', value: `${user_data.balance}`, inline: true},
 					{name: 'Prestige Balance', value: `${user_data.prestigeBalance}`, inline: true},
+					{name: 'Net Worth', value: `${user_data.balance + building_value}`, inline: true},
 					{name: 'Current Life', value: `${user_data.life}`, inline: true},
 					{name: 'Can Work?', value: `${canWork}`, inline: true},
 					{name: 'Loot Box?', value: `${lootboxAvailable}`, inline: true},
