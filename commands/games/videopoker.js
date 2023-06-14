@@ -58,23 +58,23 @@ module.exports = {
 		//create buttons
 		let card1Button = new ButtonBuilder()
 			.setCustomId('card1')
-			.setLabel('Held')
+			.setLabel('H')
 			.setStyle(ButtonStyle.Primary)
 		let card2Button = new ButtonBuilder()
 			.setCustomId('card2')
-			.setLabel('Held')
+			.setLabel('H')
 			.setStyle(ButtonStyle.Primary)
 		let card3Button = new ButtonBuilder()
 			.setCustomId('card3')
-			.setLabel('Held')
+			.setLabel('H')
 			.setStyle(ButtonStyle.Primary)
 		let card4Button = new ButtonBuilder()
 			.setCustomId('card4')
-			.setLabel('Held')
+			.setLabel('H')
 			.setStyle(ButtonStyle.Primary)
 		let card5Button = new ButtonBuilder()
 			.setCustomId('card5')
-			.setLabel('Held')
+			.setLabel('H')
 			.setStyle(ButtonStyle.Primary)
 		let sendHandButton = new ButtonBuilder()
 			.setCustomId('sendhand')
@@ -174,11 +174,11 @@ module.exports = {
 				selectedCardValue = cardsHeld[4];
 			}
 			if(selectedCardValue == 1){
-				selectedCard.setLabel('Discarded');
+				selectedCard.setLabel('D');
 				selectedCard.setStyle(ButtonStyle.Secondary);
 			}
 			else{
-				selectedCard.setLabel('Held');
+				selectedCard.setLabel('H');
 				selectedCard.setStyle(ButtonStyle.Primary);
 			}
 		}
