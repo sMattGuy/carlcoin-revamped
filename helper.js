@@ -320,8 +320,8 @@ async function give_lootbox(user_data, interaction){
 			const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'cosmetic.png'});
 			const cosmeticEmbed = new EmbedBuilder()
 				.setColor(0x2eb7f6)
-				.setTitle('You got a new cosmetic!')
-				.setDescription(`You unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
+				.setTitle(`${interaction.user.username} got a new cosmetic!`)
+				.setDescription(`${interaction.user.username} unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
 				.setImage('attachment://cosmetic.png');
 			interaction.followUp({embeds:[cosmeticEmbed],files:[attachment]});
 		}
