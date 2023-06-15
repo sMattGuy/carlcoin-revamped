@@ -107,8 +107,14 @@ module.exports = {
 				let users_items = await user_data.getItem(user_data, items[i]);
 				if(users_items){
 					cost += Math.floor(items[i].rank * (items[i].cost/2) * Math.pow(users_items.amount,2));
-					if(items[i].name == 'Energy Drink' || items[i].name == 'Sanity Pill'){
-						cost += (user_stats.level * 3);
+					if(items[i].name == 'Energy Drink'){
+						cost += Math.pow(user_stats.level, 1.5;
+					}
+					else if(items[i].name == 'Sanity Pill'){
+						cost += Math.pow(user_stats.level, 1.7);
+					}
+					else if(items[i].name == 'Lootbox Pill'){
+						cost += Math.pow(user_stats.level, 1.3);
 					}
 				}
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
@@ -143,8 +149,14 @@ module.exports = {
 				let users_items = await user_data.getItem(user_data, selectedItem);
 				if(users_items){
 					cost += Math.floor(selectedItem.rank * (selectedItem.cost/2) * Math.pow(users_items.amount,2));
-					if(selectedItem.name == 'Energy Drink' || selectedItem.name == 'Sanity Pill'){
-						cost += (user_stats.level * 3);
+					if(selectedItem.name == 'Energy Drink'){
+						cost += Math.pow(user_stats.level, 1.5;
+					}
+					else if(selectedItem.name == 'Sanity Pill'){
+						cost += Math.pow(user_stats.level, 1.7);
+					}
+					else if(selectedItem.name == 'Lootbox Pill'){
+						cost += Math.pow(user_stats.level, 1.3);
 					}
 				}
 				//check if user can afford it
@@ -406,7 +418,7 @@ module.exports = {
 						const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'cosmetic.png'});
 						const cosmeticEmbed = new EmbedBuilder()
 							.setColor(0x2eb7f6)
-							.setTitle(`${interaction.user.username} got a new cosmetic!`)
+							.setTitle(`${interaction.user.username} bought a new cosmetic!`)
 							.setDescription(`${interaction.user.username} unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
 							.setImage('attachment://cosmetic.png');
 						interaction.followUp({embeds:[cosmeticEmbed],files:[attachment]});

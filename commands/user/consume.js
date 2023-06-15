@@ -90,6 +90,11 @@ module.exports = {
 				}
 				user_stats.save();
 			}
+			else if(user_items.item.name == 'Lootbox Pill'){
+				//lootbox pill
+				user_data.last_lootbox -= 21600000;
+				user_data.save();
+			}
 			user_metric.consumables_used += 1;
 			await user_metric.save();
 			
