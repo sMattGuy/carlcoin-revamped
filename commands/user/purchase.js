@@ -108,7 +108,7 @@ module.exports = {
 				if(users_items){
 					cost += Math.floor(items[i].rank * (items[i].cost/2) * Math.pow(users_items.amount,2));
 					if(items[i].name == 'Energy Drink'){
-						cost += Math.pow(user_stats.level, 1.5;
+						cost += Math.pow(user_stats.level, 1.5);
 					}
 					else if(items[i].name == 'Sanity Pill'){
 						cost += Math.pow(user_stats.level, 1.7);
@@ -150,7 +150,7 @@ module.exports = {
 				if(users_items){
 					cost += Math.floor(selectedItem.rank * (selectedItem.cost/2) * Math.pow(users_items.amount,2));
 					if(selectedItem.name == 'Energy Drink'){
-						cost += Math.pow(user_stats.level, 1.5;
+						cost += Math.pow(user_stats.level, 1.5);
 					}
 					else if(selectedItem.name == 'Sanity Pill'){
 						cost += Math.pow(user_stats.level, 1.7);
