@@ -220,6 +220,8 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	}
 	//sanity past -80, warn deaths door
 	else if(user_stats.sanity <= -80 && prev_sanity > -80){
+		user_data.save();
+		user_stats.save();
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`You're at Death's Door!`)
@@ -228,6 +230,8 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	}
 	//sanity past -50, alert insane
 	else if(user_stats.sanity <= -50 && prev_sanity > -50){
+		user_data.save();
+		user_stats.save();
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`Something doesn't feel right...`)

@@ -10,8 +10,10 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes);
 
 const inserts = [
+	/*
 	Cosmetic.upsert({ name: 'Bird Brain', rarity: 1, type: 3, file:'bird_thoughts.png' }),
 	Cosmetic.upsert({ name: 'Chowder Hat', rarity: 3, type: 3, file:'chowder_hat.png' }),
+	*/
 ];
 Promise.all(inserts);
 console.log('Database synced');
