@@ -108,13 +108,13 @@ module.exports = {
 				if(users_items){
 					cost += Math.floor(items[i].rank * (items[i].cost/2) * Math.pow(users_items.amount,2));
 					if(items[i].name == 'Energy Drink'){
-						cost += Math.pow(user_stats.level, 1.5);
+						cost += Math.ceil(Math.pow(user_stats.level, 1.5));
 					}
 					else if(items[i].name == 'Sanity Pill'){
-						cost += Math.pow(user_stats.level, 1.7);
+						cost += Math.ceil(Math.pow(user_stats.level, 1.7));
 					}
 					else if(items[i].name == 'Lootbox Pill'){
-						cost += Math.pow(user_stats.level, 1.3);
+						cost += Math.ceil(Math.pow(user_stats.level, 1.3));
 					}
 				}
 				selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
@@ -150,13 +150,13 @@ module.exports = {
 				if(users_items){
 					cost += Math.floor(selectedItem.rank * (selectedItem.cost/2) * Math.pow(users_items.amount,2));
 					if(selectedItem.name == 'Energy Drink'){
-						cost += Math.pow(user_stats.level, 1.5);
+						cost += Math.ceil(Math.pow(user_stats.level, 1.5));
 					}
 					else if(selectedItem.name == 'Sanity Pill'){
-						cost += Math.pow(user_stats.level, 1.7);
+						cost += Math.ceil(Math.pow(user_stats.level, 1.7));
 					}
 					else if(selectedItem.name == 'Lootbox Pill'){
-						cost += Math.pow(user_stats.level, 1.3);
+						cost += Math.ceil(Math.pow(user_stats.level, 1.3));
 					}
 				}
 				//check if user can afford it
