@@ -352,7 +352,7 @@ async function give_lootbox(user_data, interaction){
 				.setColor(0x2eb7f6)
 				.setTitle('You got a duplicate!')
 				.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead! Don't worry though! Next time you're ${user_data.dup_count * 0.1}% to get an Ultra Rare, ${user_data.dup_count * 0.5}% to get a Super Rare, and ${user_data.dup_count}% to get a Rare!`)
-			interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true});
+			interaction.followUp({embeds:[cosmeticEmbed]});
 		}
 		user_data.save();
 		user_metric.save();
