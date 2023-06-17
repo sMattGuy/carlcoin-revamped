@@ -89,7 +89,7 @@ module.exports = {
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
 						.setTitle(`You bought 1 ${selectedBuilding.name}!`)
-						.setDescription(`You now own have ${user_data.balance}CC!`);
+						.setDescription(`You now have ${user_data.balance}CC!`);
 					await interaction.followUp({embeds:[bought], ephemeral:true});
 				}
 			});
@@ -199,7 +199,7 @@ module.exports = {
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
 						.setTitle(`You bought 1 ${selectedItem.name}!`)
-						.setDescription(`You now own have ${user_data.balance}CC!`);
+						.setDescription(`You now have ${user_data.balance}CC!`);
 					await interaction.followUp({embeds:[bought], ephemeral:true});
 				}
 			});
@@ -316,7 +316,7 @@ module.exports = {
 					const bought = new EmbedBuilder()
 						.setColor(0xf5bf62)
 						.setTitle(`You bought a ${lootbox_name}!`)
-						.setDescription(`You now own have ${user_data.balance}CC!`);
+						.setDescription(`You now have ${user_data.balance}CC!`);
 					await interaction.followUp({embeds:[bought], ephemeral:true});
 				}
 			});
