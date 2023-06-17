@@ -324,124 +324,129 @@ module.exports = {
 				await interaction.editReply({components:[],ephemeral:true});
 			});
 			async function mod_give_lootbox(type, rarechance, superrarechance){
-				if(user_data.last_lootbox + 64800000 <= Date.now()){
-					user_metric.lootboxes_earned += 1;
-					//generate and give lootbox
-					user_data.last_lootbox = Date.now();
-					/*
-						rarity
-						1	common
-						2	rare
-						3	super rare
-						4	ultra rare
-					*/
-					const rarity_levels = ['Common', 'Rare', 'Super Rare', 'Ultra Rare']
-					let rarity_roll = Math.random();
-					let cosmetic_get = '';
-					let rarity_level_img = 'common.png';
-					if(rarity_roll < 0.005){
-						//ultra rare
-						let where = {rarity: 4}
-						if(type != ''){
-							where = {rarity: 4, type};
-						}
-						cosmetic_get = await Cosmetic.findAll({where});
-						rarity_level_img = 'ultra_rare.png';
+				user_metric.lootboxes_earned += 1;
+				//generate and give lootbox
+				user_data.last_lootbox = Date.now();
+				/*
+					rarity
+					1	common
+					2	rare
+					3	super rare
+					4	ultra rare
+				*/
+				
+				let ultraIncrease = user_data.dup_count * 0.001;
+				let superIncrease = user_data.dup_count * 0.005;
+				let rareIncrease = user_data.dup_count * 0.01;
+	
+				const rarity_levels = ['Common', 'Rare', 'Super Rare', 'Ultra Rare']
+				let rarity_roll = Math.random();
+				let cosmetic_get = '';
+				let rarity_level_img = 'common.png';
+				if(rarity_roll < 0.005 + ultraIncrease){
+					//ultra rare
+					let where = {rarity: 4}
+					if(type != ''){
+						where = {rarity: 4, type};
 					}
-					else if(rarity_roll < superrarechance){
-						//super rare
-						let where = {rarity: 3}
-						if(type != ''){
-							where = {rarity: 3, type};
-						}
-						cosmetic_get = await Cosmetic.findAll({where});
-						rarity_level_img = 'super_rare.png';
-					}
-					else if(rarity_roll < rarechance){
-						//rare
-						let where = {rarity: 2}
-						if(type != ''){
-							where = {rarity: 2, type};
-						}
-						cosmetic_get = await Cosmetic.findAll({where});
-						rarity_level_img = 'rare.png';
-					}
-					else{
-						//common
-						let where = {rarity: 1}
-						if(type != ''){
-							where = {rarity: 1, type};
-						}
-						cosmetic_get = await Cosmetic.findAll({where});
-					}
-					let random_selection = Math.floor(Math.random() * cosmetic_get.length);
-					let selected_cosmetic = cosmetic_get[random_selection];
-					//check if user has cosmetic
-					let user_cosmetic = await user_data.getCosmetic(user_data, selected_cosmetic);
-					if(user_cosmetic.amount == 0){
-						//new cosmetic for them
-						user_cosmetic.amount = 1;
-						user_cosmetic.save();
-						//apply new cosmetic if slot is not in use
-						let user_avatar = await get_user_avatar(user_data.user_id);
-						if(selected_cosmetic.type == 0 && user_avatar.background == -1){
-							user_avatar.background = selected_cosmetic.id;
-						}
-						else if(selected_cosmetic.type == 1 && user_avatar.body == -1){
-							user_avatar.body = selected_cosmetic.id;
-						}
-						else if(selected_cosmetic.type == 2 && user_avatar.glasses == -1){
-							user_avatar.glasses = selected_cosmetic.id;
-						}
-						else if(selected_cosmetic.type == 2 && user_avatar.glasses2 == -1){
-							user_avatar.glasses2 = selected_cosmetic.id;
-						}
-						else if(selected_cosmetic.type == 3 && user_avatar.hat == -1){
-							user_avatar.hat = selected_cosmetic.id;
-						}
-						else if(selected_cosmetic.type == 4 && user_avatar.special == -1){
-							user_avatar.special = selected_cosmetic.id;
-						}
-						else if(selected_cosmetic.type == 4 && user_avatar.special2 == -1){
-							user_avatar.special2 = selected_cosmetic.id;
-						}
-						user_avatar.save();
-						const canvas = Canvas.createCanvas(500,500);
-						const context = canvas.getContext('2d');
-						//draw item
-						const cos_image = await Canvas.loadImage(`./images/cosmetics/${selected_cosmetic.file}`);
-						context.drawImage(cos_image,canvas.width/2 - cos_image.width/2, canvas.height/2 - cos_image.height/2);
-						//draw rarity
-						const rarity_image = await Canvas.loadImage(`./images/cosmetics/${rarity_level_img}`);
-						context.drawImage(rarity_image,0,0);
-						//build attachment
-						const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'cosmetic.png'});
-						const cosmeticEmbed = new EmbedBuilder()
-							.setColor(0x2eb7f6)
-							.setTitle(`${interaction.user.username} bought a new cosmetic!`)
-							.setDescription(`${interaction.user.username} unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
-							.setImage('attachment://cosmetic.png');
-						interaction.followUp({embeds:[cosmeticEmbed],files:[attachment]});
-					}
-					else{
-						//already have, reward with coin
-						let coinreward = 10 * user_cosmetic.cosmetic.rarity;
-						user_data.balance += coinreward;
-						user_data.last_lootbox -= 32400000;
-						//metrics
-						user_metric.cc_total_gained += coinreward;
-						if(user_metric.highest_cc_balance < user_data.balance){
-							user_metric.highest_cc_balance = user_data.balance;
-						}
-						const cosmeticEmbed = new EmbedBuilder()
-							.setColor(0x2eb7f6)
-							.setTitle('You got a duplicate!')
-							.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead!`)
-						interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true});
-					}
-					user_data.save();
-					user_metric.save();
+					cosmetic_get = await Cosmetic.findAll({where});
+					rarity_level_img = 'ultra_rare.png';
 				}
+				else if(rarity_roll < superrarechance + superIncrease){
+					//super rare
+					let where = {rarity: 3}
+					if(type != ''){
+						where = {rarity: 3, type};
+					}
+					cosmetic_get = await Cosmetic.findAll({where});
+					rarity_level_img = 'super_rare.png';
+				}
+				else if(rarity_roll < rarechance + rareIncrease){
+					//rare
+					let where = {rarity: 2}
+					if(type != ''){
+						where = {rarity: 2, type};
+					}
+					cosmetic_get = await Cosmetic.findAll({where});
+					rarity_level_img = 'rare.png';
+				}
+				else{
+					//common
+					let where = {rarity: 1}
+					if(type != ''){
+						where = {rarity: 1, type};
+					}
+					cosmetic_get = await Cosmetic.findAll({where});
+				}
+				let random_selection = Math.floor(Math.random() * cosmetic_get.length);
+				let selected_cosmetic = cosmetic_get[random_selection];
+				//check if user has cosmetic
+				let user_cosmetic = await user_data.getCosmetic(user_data, selected_cosmetic);
+				if(user_cosmetic.amount == 0){
+					user_data.dup_count = 0;
+					//new cosmetic for them
+					user_cosmetic.amount = 1;
+					user_cosmetic.save();
+					//apply new cosmetic if slot is not in use
+					let user_avatar = await get_user_avatar(user_data.user_id);
+					if(selected_cosmetic.type == 0 && user_avatar.background == -1){
+						user_avatar.background = selected_cosmetic.id;
+					}
+					else if(selected_cosmetic.type == 1 && user_avatar.body == -1){
+						user_avatar.body = selected_cosmetic.id;
+					}
+					else if(selected_cosmetic.type == 2 && user_avatar.glasses == -1){
+						user_avatar.glasses = selected_cosmetic.id;
+					}
+					else if(selected_cosmetic.type == 2 && user_avatar.glasses2 == -1){
+						user_avatar.glasses2 = selected_cosmetic.id;
+					}
+					else if(selected_cosmetic.type == 3 && user_avatar.hat == -1){
+						user_avatar.hat = selected_cosmetic.id;
+					}
+					else if(selected_cosmetic.type == 4 && user_avatar.special == -1){
+						user_avatar.special = selected_cosmetic.id;
+					}
+					else if(selected_cosmetic.type == 4 && user_avatar.special2 == -1){
+						user_avatar.special2 = selected_cosmetic.id;
+					}
+					user_avatar.save();
+					const canvas = Canvas.createCanvas(500,500);
+					const context = canvas.getContext('2d');
+					//draw item
+					const cos_image = await Canvas.loadImage(`./images/cosmetics/${selected_cosmetic.file}`);
+					context.drawImage(cos_image,canvas.width/2 - cos_image.width/2, canvas.height/2 - cos_image.height/2);
+					//draw rarity
+					const rarity_image = await Canvas.loadImage(`./images/cosmetics/${rarity_level_img}`);
+					context.drawImage(rarity_image,0,0);
+					//build attachment
+					const attachment = new AttachmentBuilder(await canvas.encode('png'),{name:'cosmetic.png'});
+					const cosmeticEmbed = new EmbedBuilder()
+						.setColor(0x2eb7f6)
+						.setTitle(`${interaction.user.username} bought a new cosmetic!`)
+						.setDescription(`${interaction.user.username} unboxed the ${selected_cosmetic.name}, a ${rarity_levels[selected_cosmetic.rarity - 1]} item!`)
+						.setImage('attachment://cosmetic.png');
+					interaction.followUp({embeds:[cosmeticEmbed],files:[attachment]});
+				}
+				else{
+					user_data.dup_count += 1;
+					//already have, reward with coin
+					let coinreward = 10 * user_cosmetic.cosmetic.rarity;
+					user_data.balance += coinreward;
+					user_data.last_lootbox -= 32400000;
+					//metrics
+					user_metric.cc_total_gained += coinreward;
+					if(user_metric.highest_cc_balance < user_data.balance){
+						user_metric.highest_cc_balance = user_data.balance;
+					}
+					const cosmeticEmbed = new EmbedBuilder()
+						.setColor(0x2eb7f6)
+						.setTitle('You got a duplicate!')
+						.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead! Don't worry though! Next time you're ${user_data.dup_count * 0.1}% to get an Ultra Rare, ${user_data.dup_count * 0.5}% to get a Super Rare, and ${user_data.dup_count}% to get a Rare!`)
+					interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true});
+				}
+				user_data.save();
+				user_metric.save();
 			}
 		}
 	},

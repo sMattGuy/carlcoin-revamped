@@ -261,17 +261,22 @@ async function give_lootbox(user_data, interaction){
 		let rarity = Math.random();
 		let cosmetic_get = '';
 		let rarity_level_img = 'common.png';
-		if(rarity < 0.005){
+		
+		let ultraIncrease = user_data.dup_count * 0.001;
+		let superIncrease = user_data.dup_count * 0.005;
+		let rareIncrease = user_data.dup_count * 0.01;
+		
+		if(rarity < 0.005 + ultraIncrease){
 			//ultra rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 4}});
 			rarity_level_img = 'ultra_rare.png';
 		}
-		else if(rarity < 0.05){
+		else if(rarity < 0.05 + superIncrease){
 			//super rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 3}});
 			rarity_level_img = 'super_rare.png';
 		}
-		else if(rarity < 0.2){
+		else if(rarity < 0.2 + rareIncrease){
 			//rare
 			cosmetic_get = await Cosmetic.findAll({where:{rarity: 2}});
 			rarity_level_img = 'rare.png';
@@ -285,6 +290,8 @@ async function give_lootbox(user_data, interaction){
 		//check if user has cosmetic
 		let user_cosmetic = await user_data.getCosmetic(user_data, selected_cosmetic);
 		if(user_cosmetic.amount == 0){
+			//reset dup counter
+			user_data.dup_count = 0;
 			//new cosmetic for them
 			user_cosmetic.amount = 1;
 			user_cosmetic.save();
@@ -330,6 +337,8 @@ async function give_lootbox(user_data, interaction){
 			interaction.followUp({embeds:[cosmeticEmbed],files:[attachment]});
 		}
 		else{
+			//increase dup counter
+			user_data.dup_count += 1;
 			//already have, reward with coin
 			let coinreward = 10 * user_cosmetic.cosmetic.rarity;
 			user_data.balance += coinreward;
@@ -342,7 +351,7 @@ async function give_lootbox(user_data, interaction){
 			const cosmeticEmbed = new EmbedBuilder()
 				.setColor(0x2eb7f6)
 				.setTitle('You got a duplicate!')
-				.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead!`)
+				.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead! Don't worry though! Next time you're ${user_data.dup_count * 0.1}% to get an Ultra Rare, ${user_data.dup_count * 0.5}% to get a Super Rare, and ${user_data.dup_count}% to get a Rare!`)
 			interaction.followUp({embeds:[cosmeticEmbed],ephemeral:true});
 		}
 		user_data.save();
