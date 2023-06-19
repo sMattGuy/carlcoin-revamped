@@ -11,8 +11,10 @@ const Cosmetic = require('./models/Cosmetics.js')(sequelize, Sequelize.DataTypes
 
 const inserts = [
 	/*
-	Cosmetic.upsert({ name: 'Bird Brain', rarity: 1, type: 3, file:'bird_thoughts.png' }),
-	Cosmetic.upsert({ name: 'Chowder Hat', rarity: 3, type: 3, file:'chowder_hat.png' }),
+	Cosmetic.upsert({ name: 'Bustling Fungus', rarity: 3, type: 4, file:'bustling_fungus.png' }),
+	Cosmetic.upsert({ name: 'Great Sword', rarity: 2, type: 4, file:'great_sword.png' }),
+	Cosmetic.upsert({ name: 'Knight Armor', rarity: 1, type: 1, file:'knight_armor.png' }),
+	Cosmetic.upsert({ name: 'Knight Helmet', rarity: 1, type: 3, file:'knight_helmet.png' }),
 	*/
 ];
 Promise.all(inserts);
