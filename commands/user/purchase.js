@@ -442,7 +442,7 @@ module.exports = {
 					const cosmeticEmbed = new EmbedBuilder()
 						.setColor(0x2eb7f6)
 						.setTitle('You got a duplicate!')
-						.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead! Don't worry though! Next time you're ${user_data.dup_count * 0.1}% more likely to get an Ultra Rare, ${user_data.dup_count * 0.5}% more likely to get a Super Rare, and ${user_data.dup_count}% more likely to get a Rare!`)
+						.setDescription(`Since you already own the ${selected_cosmetic.name}, You get ${coinreward}CC instead! Don't worry though! Next time you're ${parseFloat(user_data.dup_count * 0.1).toFixed(2)}% more likely to get an Ultra Rare, ${parseFloat(user_data.dup_count * 0.5).toFixed(2)}% more likely to get a Super Rare, and ${user_data.dup_count}% more likely to get a Rare!`)
 					interaction.followUp({embeds:[cosmeticEmbed]});
 				}
 				user_data.save();
