@@ -154,14 +154,15 @@ async function killUser(user_data, user_stats, interaction){
 		user_metric.cc_total_lost += user_data.balance;
 		user_metric.cc_lost_death += user_data.balance;
 		user_metric.deaths += 1;
-		
+		const death_attach = new AttachmentBuilder('./images/death.png', {name:'death.png'})
 		user_metric.save();
 		user_data.killUser(user_data);
 		const deathEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
+			.setThumbnail('attachment://death.png')
 			.setTitle(`You have died!`)
 			.setDescription(`Your mental health has dipped too low. You wander into the abyss and never return... You've lost everything!`);
-		await interaction.followUp({embeds:[deathEmbed]});
+		await interaction.followUp({embeds:[deathEmbed],files:[death_attach]});
 	}
 }
 
