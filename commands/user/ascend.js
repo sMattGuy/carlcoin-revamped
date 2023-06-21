@@ -72,7 +72,7 @@ module.exports = {
 					const upgradeCollector = message.createMessageComponentCollector({filter:upFilter, time: 60000});
 					upgradeCollector.on('collect', async menuInteraction => {
 						upgradeCollector.stop();
-						await interaction.editReply({ content: 'Validating purchase!', components: [], ephemeral:true });
+						await menuInteraction.update({ content: 'Validating purchase!', components: [], ephemeral:true });
 						const selected = menuInteraction.values[0];
 						if(selected == 'end'){
 							const cancelEmbed = new EmbedBuilder()
