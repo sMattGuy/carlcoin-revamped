@@ -435,7 +435,7 @@ module.exports = {
 				user_metric.highest_cc_balance = user_data.balance;
 			}
 			await user_metric.save();
-			await giveLevels(user_stats, Math.floor(bet/2), interaction);
+			await giveLevels(user_stats, Math.floor(bet/4), interaction);
 			user_stats.save();
 			await give_lootbox(user_data, interaction);
 			return;

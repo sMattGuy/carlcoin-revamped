@@ -368,8 +368,8 @@ module.exports = {
 					user_metric.most_cc_won = totalWinnings;
 				}
 				await user_metric.save();
+				await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			}
-			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
 		}
@@ -418,8 +418,8 @@ module.exports = {
 					user_metric.most_cc_won = totalWinnings;
 				}
 				await user_metric.save();
+				await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			}
-			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
 		}
@@ -468,8 +468,8 @@ module.exports = {
 					user_metric.most_cc_won = totalWinnings;
 				}
 				await user_metric.save();
+				await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			}
-			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			return;
 		}
@@ -594,8 +594,8 @@ module.exports = {
 					user_metric.most_cc_won = totalWinnings;
 				}
 				await user_metric.save();
+				await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			}
-			await giveLevels(user_stats, Math.floor(totalWinnings/2), interaction);
 			user_stats.save();
 			await give_lootbox(user_data, interaction);
 			return;
