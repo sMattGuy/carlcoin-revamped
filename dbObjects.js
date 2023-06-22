@@ -52,7 +52,7 @@ Reflect.defineProperty(Users.prototype, 'getCosmetic', {
 Reflect.defineProperty(Users.prototype, 'getCosmetics', {
 	value: (user) => {
 		return User_Cosmetics.findAll({
-			where: {user_id: user.user_id},
+			where: {user_id: user.user_id, amount: 1},
 			include: ['cosmetic'],
 			order: [['cosmetic','type','desc']],
 		});
