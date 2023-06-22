@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, InteractionCollector } = require('discord.js');
-const { get_user, get_user_stats, get_user_metrics, giveLevels, changeSanity, give_lootbox, generate_avatar } = require('../../helper.js');
+const { get_user, get_user_stats, get_user_metrics, giveLevels, changeSanity, give_lootbox, generate_avatar, checkInstantDeath } = require('../../helper.js');
 const { Hand } = require('pokersolver');
 
 const card_icons = ['♠A','♠2','♠3','♠4','♠5','♠6','♠7','♠8','♠9','♠10','♠J','♠Q','♠K','♥A','♥2','♥3','♥4','♥5','♥6','♥7','♥8','♥9','♥10','♥J','♥Q','♥K','♦A','♦2','♦3','♦4','♦5','♦6','♦7','♦8','♦9','♦10','♦J','♦Q','♦K','♣A','♣2','♣3','♣4','♣5','♣6','♣7','♣8','♣9','♣10','♣J','♣Q','♣K'];
@@ -29,6 +29,13 @@ module.exports = {
 		}
 		
 		await interaction.deferReply();
+		
+		let risk_checker = await checkInstantDeath(user_data, user_stats, user_metric, user_data.balance, Math.ceil(bet * 1.5), interaction);
+		if(!risk_checker){
+			//player exited game out of fear and cowardice
+			return;
+		}
+		
 		let usedCards = [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
 		
 		let playerCards = [];

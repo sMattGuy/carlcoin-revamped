@@ -166,7 +166,81 @@ async function killUser(user_data, user_stats, interaction){
 	}
 }
 
-async function changeSanity(user_data, user_stats, interaction, balance, bet){
+async function checkInstantDeath(user_data, user_stats, user_metric, balance, bet, interaction){
+	return new Promise((resolve) => {
+		let playingGame = false;
+		let potential_sanity_lost = await getSanityAmount(user_data, user_stats, balance, -bet);
+		if(user_stats.sanity > -50 && user_stats.sanity + potential_sanity_lost <= -100){
+			const row = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('riskit')
+						.setLabel(`Risk It`)
+						.setStyle(ButtonStyle.Danger),
+					new ButtonBuilder()
+						.setCustomId('coward')
+						.setLabel('Forfeit Game')
+						.setStyle(ButtonStyle.Secondary),
+				);
+			const riskEmbed = new EmbedBuilder()
+				.setColor(0xff293b)
+				.setTitle(`This bet can kill you!`)
+				.setDescription(`Despite not being insane, losing this bet is guarenteed to kill you! The Dealer makes you an offer... "For ${Math.ceil(bet/2)}CC, I'll let you leave safely..." Do you accept the dealers offer and lose ${Math.ceil(bet/2)}CC?`)
+			await interaction.editReply({embeds:[riskEmbed],components:[row]});
+				
+			let filter = i => i.user.id == interaction.user.id && i.isButton();
+			let message = await interaction.fetchReply();
+			let risk_collector = message.createMessageComponentCollector({time: 45000, filter});
+			risk_collector.on('collect', async i => {
+				playingGame = true;
+				risk_collector.stop();
+				if(i.customId == 'riskit'){
+					await i.update({components:[]});
+					resolve(true);
+				}
+				else if(i.customId == 'coward'){
+					const cowardEmbed = new EmbedBuilder()
+						.setColor(0xf5bf62)
+						.setTitle(`You took the deal...`)
+						.setDescription(`A small price to pay to avoid death...`)
+					
+					bet = Math.ceil(bet/2);
+					
+					user_data.balance -= bet;
+					user_metric.cc_gambled_lost += bet;
+					user_metric.cc_total_lost += bet;
+					user_metric.games_lost += 1;
+					if(user_metric.most_cc_lost < bet){
+						user_metric.most_cc_lost = bet;
+					}
+					
+					await user_data.save();
+					await user_metric.save();
+					
+					await i.update({embeds:[cowardEmbed], components:[]});
+					resolve(false);
+				}
+				else{
+					//something strange happened
+					console.log('im not supposed to be here');
+					resolve(false);
+				}
+			});
+			risk_collector.on('end', async i=> {
+				await interaction.editReply({components:[]});
+				if(!playingGame){
+					playingGame = true;
+					resolve(true);
+				}
+			});
+		}
+		else{
+			resolve(true);
+		}
+	});
+}
+
+async function getSanityAmount(user_data, user_stats, balance, bet){
 	let sanity = bet;
 	//add users property to their current balance
 	let user_buildings = await user_data.getBuildings(user_data);
@@ -209,6 +283,12 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 		sanity *= -1;
 	}
 	console.log(`sanity drain: ${sanity}`);
+}
+
+async function changeSanity(user_data, user_stats, interaction, balance, bet){
+	console.log(`~~~~~ Updating sanity for ${interaction.user.username} ~~~~~`);
+	let sanity = getSanityAmount(user_data, user_stats, balance, bet);
+	console.log(`pre sanity: ${user_stats.sanity}`)
 	user_stats.sanity += sanity;
 	console.log(`post sanity: ${user_stats.sanity}`);
 	//sanity over 100, ceiling it
@@ -362,4 +442,4 @@ async function give_lootbox(user_data, interaction){
 		//not their time, ignore it
 	}
 }
-module.exports = {get_user, get_user_stats, get_user_metrics, giveLevels, killUser, changeSanity, generate_avatar, get_user_avatar, give_lootbox}
+module.exports = {get_user, get_user_stats, get_user_metrics, giveLevels, killUser, changeSanity, generate_avatar, get_user_avatar, give_lootbox, checkInstantDeath}
