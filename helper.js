@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { Users, User_Stats, User_Metrics, Avatar, Cosmetic } = require('./dbObjects.js');
 const Canvas = require('@napi-rs/canvas');
 
@@ -167,7 +167,7 @@ async function killUser(user_data, user_stats, interaction){
 }
 
 async function checkInstantDeath(user_data, user_stats, user_metric, balance, bet, interaction){
-	return new Promise((resolve) => {
+	return new Promise(async (resolve) => {
 		let playingGame = false;
 		let potential_sanity_lost = await getSanityAmount(user_data, user_stats, balance, -bet);
 		if(user_stats.sanity > -50 && user_stats.sanity + potential_sanity_lost <= -100){
@@ -283,12 +283,14 @@ async function getSanityAmount(user_data, user_stats, balance, bet){
 		sanity *= -1;
 	}
 	console.log(`sanity drain: ${sanity}`);
+	return sanity;
 }
 
 async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	console.log(`~~~~~ Updating sanity for ${interaction.user.username} ~~~~~`);
-	let sanity = getSanityAmount(user_data, user_stats, balance, bet);
-	console.log(`pre sanity: ${user_stats.sanity}`)
+	let sanity = await getSanityAmount(user_data, user_stats, balance, bet);
+	console.log(`pre sanity: ${user_stats.sanity}`);
+	console.log(`adding ${sanity}`);
 	user_stats.sanity += sanity;
 	console.log(`post sanity: ${user_stats.sanity}`);
 	//sanity over 100, ceiling it
