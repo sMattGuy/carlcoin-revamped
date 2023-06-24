@@ -296,6 +296,8 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	//sanity over 100, ceiling it
 	if(user_stats.sanity > 100){
 		user_stats.sanity = 100;
+		await user_data.save();
+		await user_stats.save();
 	}
 	//test user death and save data
 	if(user_stats.sanity < -100){
