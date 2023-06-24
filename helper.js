@@ -299,7 +299,9 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	}
 	//test user death and save data
 	if(user_stats.sanity < -100){
-		killUser(user_data, user_stats, interaction);
+		await killUser(user_data, user_stats, interaction);
+		await user_data.save();
+		await user_stats.save();
 	}
 	//sanity past -80, warn deaths door
 	else if(user_stats.sanity <= -80 && prev_sanity > -80){
@@ -309,7 +311,9 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 			.setColor(0xff293b)
 			.setTitle(`You're at Death's Door!`)
 			.setDescription(`One more bet and it could spell your doom! You REALLY should consider a Sanity Pill!`);
-			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+		await user_data.save();
+		await user_stats.save();
 	}
 	//sanity past -50, alert insane
 	else if(user_stats.sanity <= -50 && prev_sanity > -50){
@@ -319,7 +323,9 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 			.setColor(0xff293b)
 			.setTitle(`Something doesn't feel right...`)
 			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
-			await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+		await user_data.save();
+		await user_stats.save();
 	}
 	else{
 		await user_data.save();
