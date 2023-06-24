@@ -13,7 +13,9 @@ module.exports = {
 		let user_stats = await get_user_stats(interaction.user.id);
 		let user_items = await user_data.getItems(user_data);
 		let user_metric = await get_user_metrics(interaction.user.id);
-		
+	
+		await interaction.deferReply({ephemeral:true});
+
 		purchaseLoop();
 		async function purchaseLoop(){
 			let validItems = false;
@@ -32,7 +34,7 @@ module.exports = {
 					.setColor(0xeb3434)
 					.setTitle('No consumables!')
 					.setDescription(`You don't have any consumables`);
-				await interaction.reply({embeds:[cantEatEmbed], ephemeral:true});
+				await interaction.editReply({embeds:[cantEatEmbed], ephemeral:true});
 				return;
 			}
 			
@@ -41,7 +43,7 @@ module.exports = {
 				.setColor(0xf5bf62)
 				.setTitle('Select what to consume!')
 				.setDescription(`Use the menu below to make a choice!`)
-			await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
+			await interaction.editReply({embeds:[buyEmbed],components:[row],ephemeral:true});
 			
 			//wait for reply
 			let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();

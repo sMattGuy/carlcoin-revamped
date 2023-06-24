@@ -26,6 +26,8 @@ module.exports = {
 		let user_buildings = await user_data.getBuildings(user_data);
 		let user_metric = await get_user_metrics(interaction.user.id);
 		
+		await interaction.deferReply({ephemeral:true});
+
 		purchaseLoop();
 		async function purchaseLoop(){
 			if(menu_option == 'buildings'){
@@ -47,7 +49,7 @@ module.exports = {
 					.setColor(0xf5bf62)
 					.setTitle('Select what to purchase!')
 					.setDescription(`Use the menu below to make a purchase!`)
-				await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
+				await interaction.editReply({embeds:[buyEmbed],components:[row],ephemeral:true});
 				//wait for reply
 				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
 				let message = await interaction.fetchReply();
@@ -128,7 +130,7 @@ module.exports = {
 					.setColor(0xf5bf62)
 					.setTitle('Select what to purchase!')
 					.setDescription(`Use the menu below to make a purchase!`)
-				await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
+				await interaction.editReply({embeds:[buyEmbed],components:[row],ephemeral:true});
 				//wait for reply
 				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
 				let message = await interaction.fetchReply();
@@ -218,7 +220,7 @@ module.exports = {
 						.setColor(0xeb3434)
 						.setTitle(`Invalid Purchase!`)
 						.setDescription(`You cannot purchase a lootbox until your timer is up! Check your stats to see when your next Lootbox is available!`);
-					await interaction.reply({embeds:[cantBuyEmbed], ephemeral:true});
+					await interaction.editReply({embeds:[cantBuyEmbed], ephemeral:true});
 					return;
 				}
 				let selectMenu = new StringSelectMenuBuilder()
@@ -242,7 +244,7 @@ module.exports = {
 					.setColor(0xf5bf62)
 					.setTitle('Select what to purchase!')
 					.setDescription(`Use the menu below to make a purchase!`)
-				await interaction.reply({embeds:[buyEmbed],components:[row],ephemeral:true});
+				await interaction.editReply({embeds:[buyEmbed],components:[row],ephemeral:true});
 				//wait for reply
 				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
 				let message = await interaction.fetchReply();
