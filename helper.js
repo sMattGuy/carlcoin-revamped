@@ -248,7 +248,9 @@ async function getSanityAmount(user_data, user_stats, balance, bet){
 	for(let i=0;i<user_buildings.length;i++){
 		building_value += user_buildings[i].building.cost * user_buildings[i].amount;
 	}
-	console.log(`Building value: ${building_value}`);
+	
+	//console.log(`Building value: ${building_value}`);
+	
 	balance += building_value;
 	if(user_stats.sanity > 0){
 		user_stats.sanity = 0;
@@ -256,23 +258,30 @@ async function getSanityAmount(user_data, user_stats, balance, bet){
 	if(balance > 100){
 		//adjust to percentage of bet
 		let bet_ratio = bet / balance;
-		console.log(`ratio ${bet_ratio}`)
+		
+		//console.log(`ratio ${bet_ratio}`)
+		
 		let sign = Math.sign(bet_ratio);
 		bet_ratio *= 100;
 		bet_ratio = Math.pow(Math.abs(bet_ratio), 2.27);
 		bet_ratio /= 73;
 		bet_ratio = Math.ceil(bet_ratio);
 		bet_ratio *= sign
-		console.log(`ratio result ${bet_ratio}`)
+		
+		//console.log(`ratio result ${bet_ratio}`)
+		
 		//increase sanity based on current sanity
 		let san_sign = Math.sign(user_stats.sanity);
 		let sanity_modifier = Math.ceil(Math.pow(Math.abs(user_stats.sanity)/22,2));
-		console.log(`sanity mod: ${sanity_modifier}`);
+		
+		//console.log(`sanity mod: ${sanity_modifier}`);
+		
 		sanity_modifier *= san_sign;
-		console.log(`sanity mod post sign: ${sanity_modifier}`);
+		
+		//console.log(`sanity mod post sign: ${sanity_modifier}`);
+		
 		sanity = bet_ratio + sanity_modifier;
 	}
-	let prev_sanity = user_stats.sanity;
 	if(sanity > 0){
 		sanity += Math.ceil(Math.random()*5 + 5);
 	}
@@ -282,12 +291,15 @@ async function getSanityAmount(user_data, user_stats, balance, bet){
 	if(sanity > 0){
 		sanity *= -1;
 	}
-	console.log(`sanity drain: ${sanity}`);
+
+	//console.log(`sanity drain: ${sanity}`);
+	
 	return sanity;
 }
 
 async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	console.log(`~~~~~ Updating sanity for ${interaction.user.username} ~~~~~`);
+	let prev_sanity = user_stats.sanity;
 	let sanity = await getSanityAmount(user_data, user_stats, balance, bet);
 	console.log(`pre sanity: ${user_stats.sanity}`);
 	console.log(`adding ${sanity}`);
@@ -307,25 +319,21 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 	}
 	//sanity past -80, warn deaths door
 	else if(user_stats.sanity <= -80 && prev_sanity > -80){
-		await user_data.save();
-		await user_stats.save();
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`You're at Death's Door!`)
 			.setDescription(`One more bet and it could spell your doom! You REALLY should consider a Sanity Pill!`);
-		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+		await interaction.followUp({embeds:[insaneEmbed]});
 		await user_data.save();
 		await user_stats.save();
 	}
 	//sanity past -50, alert insane
 	else if(user_stats.sanity <= -50 && prev_sanity > -50){
-		await user_data.save();
-		await user_stats.save();
 		const insaneEmbed = new EmbedBuilder()
 			.setColor(0xff293b)
 			.setTitle(`Something doesn't feel right...`)
 			.setDescription(`You've gone insane! Either wait some time or take a Sanity Pill!`);
-		await interaction.followUp({embeds:[insaneEmbed],ephemeral:true});
+		await interaction.followUp({embeds:[insaneEmbed]});
 		await user_data.save();
 		await user_stats.save();
 	}
@@ -333,6 +341,8 @@ async function changeSanity(user_data, user_stats, interaction, balance, bet){
 		await user_data.save();
 		await user_stats.save();
 	}
+	await user_data.save();
+	await user_stats.save();
 }
 
 async function give_lootbox(user_data, interaction){
