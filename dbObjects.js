@@ -167,7 +167,9 @@ Reflect.defineProperty(User_Stats.prototype, 'giveXP', {
 			leveled = true;
 			//user has enough xp to level up
 			stats.level += 1;
-			stats.sanity = 0;
+			if(stats.level <= 100){
+				stats.sanity = 0;
+			}
 			stats.experience -= stats.next_level;
 			stats.next_level = Math.ceil(Math.pow(stats.level/0.51,1.77));
 			//str, def, evd, int, wis, con
