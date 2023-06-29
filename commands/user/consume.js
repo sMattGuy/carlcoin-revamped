@@ -11,13 +11,13 @@ module.exports = {
 		
 		let user_data = await get_user(interaction.user.id);
 		let user_stats = await get_user_stats(interaction.user.id);
-		let user_items = await user_data.getItems(user_data);
 		let user_metric = await get_user_metrics(interaction.user.id);
 	
 		await interaction.deferReply({ephemeral:true});
 
 		purchaseLoop();
 		async function purchaseLoop(){
+			let user_items = await user_data.getItems(user_data);
 			let validItems = false;
 			//generate rows for items
 			let selectMenu = new StringSelectMenuBuilder()
@@ -64,9 +64,10 @@ module.exports = {
 				user_data = await get_user(interaction.user.id);
 				user_stats = await get_user_stats(interaction.user.id);
 				let selectedItem = await Items.findOne({where: {id: selected}})
-				user_items = await user_data.getItem(user_data, selectedItem);
-				
-				if(user_items.amount <= 0){
+				let user_item = await user_data.getItem(user_data, selectedItem);
+				let used_something = false;
+
+				if(user_item.amount <= 0){
 					const cantEatEmbed = new EmbedBuilder()
 						.setColor(0xeb3434)
 						.setTitle('No consumables!')
@@ -74,14 +75,32 @@ module.exports = {
 					await interaction.followUp({embeds:[cantEatEmbed], ephemeral:true});
 				}
 			
-				if(user_items.item.name == 'Energy Drink'){
-					//energy drink
-					user_data.last_worked -= 7200000;
-					user_data.save();
+				if(user_item.item.name == 'Energy Drink'){
+					if(user_data.last_worked > Date.now()){
+						const cantEatEmbed = new EmbedBuilder()
+							.setColor(0xeb3434)
+							.setTitle(`You don't need it!`)
+							.setDescription(`You are already able to work!`);
+						await interaction.followUp({embeds:[cantEatEmbed], ephemeral:true});
+					}
+					else{
+						used_something = true;
+						//energy drink
+						user_data.last_worked -= 7200000;
+						user_data.save();
+					}
 				}
-				else if(user_items.item.name == 'Sanity Pill'){
+				else if(user_item.item.name == 'Sanity Pill'){
 					//sanity pill
-					if(user_stats.sanity != 0){
+					if(user_stats.sanity > -10){
+						const cantEatEmbed = new EmbedBuilder()
+							.setColor(0xeb3434)
+							.setTitle(`You don't need it!`)
+							.setDescription(`You are already sane!`);
+						await interaction.followUp({embeds:[cantEatEmbed], ephemeral:true});
+					}
+					else{
+						used_something = true;
 						let newSanity = user_stats.sanity + -(user_stats.sanity/Math.abs(user_stats.sanity))*25;
 						if (newSanity < 0 && user_stats.sanity >= 0 || newSanity >= 0 && user_stats.sanity < 0) {
 							user_stats.sanity = 0;
@@ -92,21 +111,33 @@ module.exports = {
 					}
 					user_stats.save();
 				}
-				else if(user_items.item.name == 'Lootbox Pill'){
-					//lootbox pill
-					user_data.last_lootbox -= 21600000;
-					user_data.save();
+				else if(user_item.item.name == 'Lootbox Pill'){
+					if(user_data.last_lootbox > Date.now()){
+						const cantEatEmbed = new EmbedBuilder()
+							.setColor(0xeb3434)
+							.setTitle(`You don't need it!`)
+							.setDescription(`Your lootbox is available!`);
+						await interaction.followUp({embeds:[cantEatEmbed], ephemeral:true});
+					}
+					else{
+						used_something = true;
+						//lootbox pill
+						user_data.last_lootbox -= 21600000;
+						user_data.save();
+					}
 				}
-				user_metric.consumables_used += 1;
-				await user_metric.save();
-				
-				user_items.amount -= 1;
-				user_items.save();
-				const bought = new EmbedBuilder()
-					.setColor(0xf5bf62)
-					.setTitle(`You consumed 1 ${user_items.item.name}!`)
-					.setDescription(`You now have ${user_items.amount}!`);
-				await interaction.followUp({embeds:[bought], ephemeral:true});
+				if(used_something){
+					user_metric.consumables_used += 1;
+					await user_metric.save();
+					
+					user_item.amount -= 1;
+					user_item.save();
+					const bought = new EmbedBuilder()
+						.setColor(0xf5bf62)
+						.setTitle(`You consumed 1 ${user_item.item.name}!`)
+						.setDescription(`You now have ${user_item.amount}!`);
+					await interaction.followUp({embeds:[bought], ephemeral:true});
+				}
 				purchaseLoop();
 			});
 			collector.on('end', collected => {
