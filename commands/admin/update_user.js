@@ -99,6 +99,7 @@ module.exports = {
 				.addOptions(
 					{label:'Experience',description:'Click me!',value:'experience',},
 					{label:'Level',description:'Click me!',value:'level',},
+					{label:'PLevel',description:'Click me!',value:'plevel',},
 					{label:'Next Level',description:'Click me!',value:'next_level',},
 					{label:'Luck',description:'Click me!',value:'luck',},
 					{label:'Strength',description:'Click me!',value:'strength',},
@@ -124,6 +125,9 @@ module.exports = {
 				}
 				else if(selected == 'level'){
 					user_stats.level = amount;
+				}
+				else if(selected == 'plevel'){
+					user_stats.plevel = amount;
 				}
 				else if(selected == 'next_level'){
 					user_stats.next_level = amount;

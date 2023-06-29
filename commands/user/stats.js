@@ -67,7 +67,7 @@ module.exports = {
 				.setColor(0xf5bf62)
 				.setTitle(`${user.username}'s General Stats`)
 				.setThumbnail('attachment://avatar.png')
-				.setDescription(`You are level ${user_stats.level}. Current XP ${user_stats.experience}/${user_stats.next_level}`)
+				.setDescription(`You are level ${user_stats.level} and Prestige ${user_stats.plevel}. Current XP ${user_stats.experience}/${user_stats.next_level}`)
 				.addFields(
 					{name: 'Balance', value: `${user_data.balance}`, inline: true},
 					{name: 'Prestige Balance', value: `${user_data.prestigeBalance}`, inline: true},

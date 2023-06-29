@@ -220,7 +220,7 @@ Reflect.defineProperty(Users.prototype, 'killUser', {
 			})
 		];
 		await Promise.all(removals);
-		user.save();
+		await user.save();
 		let user_stats = await User_Stats.findOne({where: {user_id: user.user_id}});
 		if(!user_stats){
 			//make new user if couldnt be found
@@ -232,19 +232,19 @@ Reflect.defineProperty(Users.prototype, 'killUser', {
 				user_stats.luck += 1 * currentUpgrade.amount;
 			}
 			else if(currentUpgrade.upgrade.name == 'Muscle Tonic'){
-				user_stats.strength += 3 * currentUpgrade.amount;
+				user_stats.strength += 10 * currentUpgrade.amount;
 			}
 			else if(currentUpgrade.upgrade.name == 'Speed Cola'){
-				user_stats.evade += 3 * currentUpgrade.amount;
+				user_stats.evade += 10 * currentUpgrade.amount;
 			}
 			else if(currentUpgrade.upgrade.name == 'Thick Skin'){
-				user_stats.defense += 3 * currentUpgrade.amount;
+				user_stats.defense += 10 * currentUpgrade.amount;
 			}
 			else if(currentUpgrade.upgrade.name == 'Calm Mind'){
-				user_stats.constitution += 3 * currentUpgrade.amount;
+				user_stats.constitution += 10 * currentUpgrade.amount;
 			}
 		}
-		user_stats.save();
+		await user_stats.save();
 	}
 });
 module.exports = { Buildings, Items, Upgrades, Users, User_Items, User_Buildings, User_Stats, User_Upgrades, User_Cosmetics, Cosmetic, Avatar, User_Metrics };

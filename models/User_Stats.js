@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: 1,
 			allowNull: false,
 		},
+		plevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+			allowNull: false,
+		},
 		next_level: {
 			type: DataTypes.INTEGER,
 			defaultValue: 10,
