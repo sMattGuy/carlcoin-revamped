@@ -194,7 +194,7 @@ module.exports = {
 								else if(selectedUpgrade.name == 'Calm Mind'){
 									user_stats.constitution = 10 * gotten_users_upgrades.amount;
 								}
-								user_metric.upgrades_purchased += 1;
+								user_metric.upgrades_purchased += purchaseAmount;
 								await user_stats.save();
 								const bought = new EmbedBuilder()
 									.setColor(0xf5bf62)

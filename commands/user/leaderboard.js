@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, codeBlock } = require('discord.js');
 const { Users } = require('../../dbObjects.js');
+const { get_user_stats } = require('../../helper.js');
+
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('leaderboard')
@@ -11,8 +13,10 @@ module.exports = {
 		for(let i=0;i<list.length;i++){
 			try{
 				const username = await interaction.guild.members.fetch(list[i].user_id).then(userf => {return userf.displayName});
+				let user_stats = await get_user_stats(list[i].user_id);
 				let user_buildings = await list[i].getBuildings(list[i]);
 				let currentValue = list[i].balance;
+				currentValue += user_stats.plevel * 100000;
 				for(let j=0;j<user_buildings.length;j++){
 					currentValue += user_buildings[j].building.cost * user_buildings[j].amount;
 				}

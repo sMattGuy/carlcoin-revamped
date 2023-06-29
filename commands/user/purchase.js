@@ -28,37 +28,87 @@ module.exports = {
 		
 		await interaction.deferReply({ephemeral:true});
 
+		let onebutton = new ButtonBuilder()
+			.setCustomId('oneitem')
+			.setLabel('1')
+			.setStyle(ButtonStyle.Primary)
+		let tenbutton = new ButtonBuilder()
+			.setCustomId('tenitem')
+			.setLabel('10')
+			.setStyle(ButtonStyle.Secondary)
+		let hundredbutton = new ButtonBuilder()
+			.setCustomId('hundreditem')
+			.setLabel('100')
+			.setStyle(ButtonStyle.Secondary)
+
+		const amountRow = new ActionRowBuilder()
+			.addComponents(onebutton,tenbutton,hundredbutton);
+		
+		let purchaseAmount = 1;
 		purchaseLoop();
 		async function purchaseLoop(){
 			if(menu_option == 'buildings'){
 				//generate rows for buildings
 				let buildings = await Buildings.findAll();
 				//house, apartment, mansion, skyscraper, city, country, satellite
-				let selectMenu = new StringSelectMenuBuilder()
-				selectMenu.setCustomId('select').setPlaceholder('Nothing Selected');
-				for(let i=0;i<buildings.length;i++){
-					let cost = buildings[i].cost
-					let users_building = await user_data.getBuilding(user_data, buildings[i]);
-					if(users_building)
-						cost += Math.floor(buildings[i].payout * Math.pow(users_building.amount, 2) * 2)
-					selectMenu.addOptions({label: `${buildings[i].name}`, description: `Costs ${cost}CC`, value: `${buildings[i].id}`})
+				async function buildSelectMenu(){ 
+					let selectMenu = new StringSelectMenuBuilder()
+					selectMenu.setCustomId('select').setPlaceholder('Nothing Selected');
+					for(let i=0;i<buildings.length;i++){
+						let cost = buildings[i].cost
+						let users_building = await user_data.getBuilding(user_data, buildings[i]);
+						if(users_building || purchaseAmount > 1){
+							for(let j=1;j<=purchaseAmount;j++){
+								cost += Math.floor(buildings[i].payout * Math.pow(users_building.amount + j, 2) * 2)
+							}
+						}
+						selectMenu.addOptions({label: `${buildings[i].name}`, description: `Costs ${cost}CC`, value: `${buildings[i].id}`})
+					}
+					selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
+					return new ActionRowBuilder().addComponents(selectMenu);
 				}
-				selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
-				const row = new ActionRowBuilder().addComponents(selectMenu);
+				const row = await buildSelectMenu();
 				const buyEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
 					.setTitle('Select what to purchase!')
 					.setDescription(`Use the menu below to make a purchase!`)
-				await interaction.editReply({embeds:[buyEmbed],components:[row],ephemeral:true});
+				await interaction.editReply({embeds:[buyEmbed],components:[row, amountRow],ephemeral:true});
 				//wait for reply
-				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && (i.isButton() || i.isStringSelectMenu());
 				let message = await interaction.fetchReply();
 				const collector = message.createMessageComponentCollector({filter, time: 60000});
 				collector.on('collect', async menuInteraction => {
 					collector.stop();
 					await menuInteraction.update({ content: 'Validating purchase!', components: [], ephemeral:true });
-					const selected = menuInteraction.values[0];
-					if(selected == 'cancel'){
+					let selected = '';
+					if(menuInteraction.isStringSelectMenu()){
+						selected = menuInteraction.values[0];
+					}
+					else{
+						selected = menuInteraction.customId;
+					}
+					if(selected == 'oneitem'){
+						purchaseAmount = 1;
+						onebutton.setStyle(ButtonStyle.Primary);
+						tenbutton.setStyle(ButtonStyle.Secondary);
+						hundredbutton.setStyle(ButtonStyle.Secondary);
+						purchaseLoop();
+					}
+					else if(selected == 'tenitem'){
+						purchaseAmount = 10;
+						onebutton.setStyle(ButtonStyle.Secondary);
+						tenbutton.setStyle(ButtonStyle.Primary);
+						hundredbutton.setStyle(ButtonStyle.Secondary);
+						purchaseLoop();
+					}
+					else if(selected == 'hundreditem'){
+						purchaseAmount = 100;
+						onebutton.setStyle(ButtonStyle.Secondary);
+						tenbutton.setStyle(ButtonStyle.Secondary);
+						hundredbutton.setStyle(ButtonStyle.Primary);
+						purchaseLoop();
+					}
+					else if(selected == 'cancel'){
 						const cancelEmbed = new EmbedBuilder()
 							.setColor(0xf5bf62)
 							.setTitle(`Thanks for shopping!`)
@@ -66,37 +116,44 @@ module.exports = {
 						await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
 						return;
 					}
-					//get building based on ID
-					let selectedBuilding = await Buildings.findOne({where:{id: selected}});
-					let cost = selectedBuilding.cost;
-					let users_building = await user_data.getBuilding(user_data, selectedBuilding);
-					if(users_building)
-						cost += Math.floor(selectedBuilding.payout * Math.pow(users_building.amount, 2) * 2);
-					//check if user can afford it
-					if(user_data.balance - cost < 0){
-						//cant afford
-						const cantBuyEmbed = new EmbedBuilder()
-							.setColor(0xeb3434)
-							.setTitle('You don\'t have enough CC!')
-							.setDescription(`You cannot afford this building! You need ${Math.abs(user_data.balance - cost)}CC!`);
-						await interaction.followUp({embeds:[cantBuyEmbed], ephemeral:true});
-					}
 					else{
-						//purchase
-						user_data = await get_user(interaction.user.id);
-						user_data.balance -= cost;
-						await user_data.addBuilding(user_data, selectedBuilding);
-						user_metric.buildings_purchased += 1;
-						user_metric.cc_total_lost += cost;
-						user_metric.save();
-						user_data.save();
-						const bought = new EmbedBuilder()
-							.setColor(0xf5bf62)
-							.setTitle(`You bought 1 ${selectedBuilding.name}!`)
-							.setDescription(`You now have ${user_data.balance}CC!`);
-						await interaction.followUp({embeds:[bought], ephemeral:true});
+						//get building based on ID
+						let selectedBuilding = await Buildings.findOne({where:{id: selected}});
+						let cost = selectedBuilding.cost;
+						let users_building = await user_data.getBuilding(user_data, selectedBuilding);
+						if(users_building || purchaseAmount > 1){
+							for(let i=1;i<=purchaseAmount;i++){
+								cost += Math.floor(selectedBuilding.payout * Math.pow(users_building.amount+i, 2) * 2);
+							}
+						}
+						//check if user can afford it
+						if(user_data.balance - cost < 0){
+							//cant afford
+							const cantBuyEmbed = new EmbedBuilder()
+								.setColor(0xeb3434)
+								.setTitle('You don\'t have enough CC!')
+								.setDescription(`You cannot afford this building! You need ${Math.abs(user_data.balance - cost)}CC!`);
+							await interaction.followUp({embeds:[cantBuyEmbed], ephemeral:true});
+						}
+						else{
+							//purchase
+							user_data = await get_user(interaction.user.id);
+							user_data.balance -= cost;
+							for(let i=0;i<purchaseAmount;i++){
+								await user_data.addBuilding(user_data, selectedBuilding);
+							}
+							user_metric.buildings_purchased += purchaseAmount;
+							user_metric.cc_total_lost += cost;
+							user_metric.save();
+							user_data.save();
+							const bought = new EmbedBuilder()
+								.setColor(0xf5bf62)
+								.setTitle(`You bought ${purchaseAmount} ${selectedBuilding.name}!`)
+								.setDescription(`You now have ${user_data.balance}CC!`);
+							await interaction.followUp({embeds:[bought], ephemeral:true});
+						}
+						purchaseLoop();
 					}
-					purchaseLoop();
 				});
 				collector.on('end', async () => {
 					await interaction.editReply({components:[],ephemeral:true});
@@ -105,41 +162,73 @@ module.exports = {
 			else if(menu_option == 'items'){
 				//generate rows for items
 				let items = await Items.findAll();
-				let selectMenu = new StringSelectMenuBuilder()
-				selectMenu.setCustomId('select').setPlaceholder('Nothing Selected');
-				for(let i=0;i<items.length;i++){
-					let cost = items[i].cost
-					let users_items = await user_data.getItem(user_data, items[i]);
-					if(users_items){
-						cost += Math.floor(items[i].rank * (items[i].cost/2) * Math.pow(users_items.amount,2));
-						if(items[i].name == 'Energy Drink'){
-							cost += Math.ceil(Math.pow(user_stats.level, 1.5));
+				async function buildSelectMenu(){
+					let selectMenu = new StringSelectMenuBuilder()
+					selectMenu.setCustomId('select').setPlaceholder('Nothing Selected');
+					for(let i=0;i<items.length;i++){
+						let cost = items[i].cost
+						let users_items = await user_data.getItem(user_data, items[i]);
+						if(users_items || purchaseAmount > 1){
+							for(let j=1;j<=purchaseAmount;j++){
+								cost += Math.floor(items[i].rank * (items[i].cost/2) * Math.pow(users_items.amount + j,2));
+								if(items[i].name == 'Energy Drink'){
+									cost += Math.ceil(Math.pow(user_stats.level, 1.5));
+								}
+								else if(items[i].name == 'Sanity Pill'){
+									cost += Math.ceil(Math.pow(user_stats.level, 1.7));
+								}
+								else if(items[i].name == 'Lootbox Pill'){
+									cost += Math.ceil(Math.pow(user_stats.level, 1.3));
+								}
+							}
 						}
-						else if(items[i].name == 'Sanity Pill'){
-							cost += Math.ceil(Math.pow(user_stats.level, 1.7));
-						}
-						else if(items[i].name == 'Lootbox Pill'){
-							cost += Math.ceil(Math.pow(user_stats.level, 1.3));
-						}
+						selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
 					}
-					selectMenu.addOptions({label: `${items[i].name}`, description: `Costs ${cost}CC`, value: `${items[i].id}`})
+					selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
+					return new ActionRowBuilder().addComponents(selectMenu);
 				}
-				selectMenu.addOptions({label: `Cancel`, description: `Cancels the transaction`, value: `cancel`});
-				const row = new ActionRowBuilder().addComponents(selectMenu);
+				const row = await buildSelectMenu();
 				const buyEmbed = new EmbedBuilder()
 					.setColor(0xf5bf62)
 					.setTitle('Select what to purchase!')
 					.setDescription(`Use the menu below to make a purchase!`)
-				await interaction.editReply({embeds:[buyEmbed],components:[row],ephemeral:true});
+				await interaction.editReply({embeds:[buyEmbed],components:[row, amountRow],ephemeral:true});
 				//wait for reply
-				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && i.isStringSelectMenu();
+				let filter = i => i.message.interaction.id == interaction.id && i.user.id == interaction.user.id && (i.isStringSelectMenu() || i.isButton());
 				let message = await interaction.fetchReply();
 				const collector = message.createMessageComponentCollector({filter, time: 60000});
 				collector.on('collect', async menuInteraction => {
 					collector.stop();
 					await menuInteraction.update({ content: 'Validating purchase!', components: [], ephemeral:true });
-					const selected = menuInteraction.values[0];
-					if(selected == 'cancel'){
+					let selected = '';
+					if(menuInteraction.isStringSelectMenu()){
+						selected = menuInteraction.values[0];
+					}
+					else{
+						selected = menuInteraction.customId;
+					}
+					if(selected == 'oneitem'){
+						purchaseAmount = 1;
+						onebutton.setStyle(ButtonStyle.Primary);
+						tenbutton.setStyle(ButtonStyle.Secondary);
+						hundredbutton.setStyle(ButtonStyle.Secondary);
+						purchaseLoop();
+					}
+					else if(selected == 'tenitem'){
+						purchaseAmount = 10;
+						onebutton.setStyle(ButtonStyle.Secondary);
+						tenbutton.setStyle(ButtonStyle.Primary);
+						hundredbutton.setStyle(ButtonStyle.Secondary);
+						purchaseLoop();
+					}
+					else if(selected == 'hundreditem'){
+						purchaseAmount = 100;
+						onebutton.setStyle(ButtonStyle.Secondary);
+						tenbutton.setStyle(ButtonStyle.Secondary);
+						hundredbutton.setStyle(ButtonStyle.Primary);
+						purchaseLoop();
+					}
+					else if(selected == 'cancel'){
 						const cancelEmbed = new EmbedBuilder()
 							.setColor(0xf5bf62)
 							.setTitle(`Thanks for shopping!`)
@@ -147,67 +236,73 @@ module.exports = {
 						await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
 						return;
 					}
-					//get building based on ID
-					let selectedItem = await Items.findOne({where:{id: selected}});
-					let cost = selectedItem.cost;
-					user_data = await get_user(interaction.user.id);
-					let users_items = await user_data.getItem(user_data, selectedItem);
-					if(users_items){
-						cost += Math.floor(selectedItem.rank * (selectedItem.cost/2) * Math.pow(users_items.amount,2));
-						if(selectedItem.name == 'Energy Drink'){
-							cost += Math.ceil(Math.pow(user_stats.level, 1.5));
-						}
-						else if(selectedItem.name == 'Sanity Pill'){
-							cost += Math.ceil(Math.pow(user_stats.level, 1.7));
-						}
-						else if(selectedItem.name == 'Lootbox Pill'){
-							cost += Math.ceil(Math.pow(user_stats.level, 1.3));
-						}
-					}
-					//check if user can afford it
-					if(user_data.balance - cost < 0){
-						//cant afford
-						const cantBuyEmbed = new EmbedBuilder()
-							.setColor(0xeb3434)
-							.setTitle('You don\'t have enough CC!')
-							.setDescription(`You cannot afford this item! You need ${Math.abs(user_data.balance - cost)}CC!`);
-						await interaction.followUp({embeds:[cantBuyEmbed], ephemeral:true});
-					}
 					else{
-						//purchase
-						user_data.balance -= cost;
-						await user_data.addItem(user_data, selectedItem);
-						await user_data.save();
-						users_items = await user_data.getItem(user_data, selectedItem);
-						if(selectedItem.name == 'Hard Hat'){
-							user_stats.defense += 2 * users_items.amount;
+						//get building based on ID
+						let selectedItem = await Items.findOne({where:{id: selected}});
+						let cost = selectedItem.cost;
+						user_data = await get_user(interaction.user.id);
+						let users_items = await user_data.getItem(user_data, selectedItem);
+						if(users_items || purchaseAmount > 1){
+							for(let i=1;i<=purchaseAmount;i++){
+								cost += Math.floor(selectedItem.rank * (selectedItem.cost/2) * Math.pow(users_items.amount+i,2));
+								if(selectedItem.name == 'Energy Drink'){
+									cost += Math.ceil(Math.pow(user_stats.level, 1.5));
+								}
+								else if(selectedItem.name == 'Sanity Pill'){
+									cost += Math.ceil(Math.pow(user_stats.level, 1.7));
+								}
+								else if(selectedItem.name == 'Lootbox Pill'){
+									cost += Math.ceil(Math.pow(user_stats.level, 1.3));
+								}
+							}
 						}
-						else if(selectedItem.name == 'Homerun Bat'){
-							user_stats.strength += 2 * users_items.amount;
+						//check if user can afford it
+						if(user_data.balance - cost < 0){
+							//cant afford
+							const cantBuyEmbed = new EmbedBuilder()
+								.setColor(0xeb3434)
+								.setTitle('You don\'t have enough CC!')
+								.setDescription(`You cannot afford this item! You need ${Math.abs(user_data.balance - cost)}CC!`);
+							await interaction.followUp({embeds:[cantBuyEmbed], ephemeral:true});
 						}
-						else if(selectedItem.name == 'Fog Machine'){
-							user_stats.evade += 2 * users_items.amount;
+						else{
+							//purchase
+							user_data.balance -= cost;
+							for(let i=0;i<purchaseAmount;i++){
+								await user_data.addItem(user_data, selectedItem);
+							}
+							await user_data.save();
+							users_items = await user_data.getItem(user_data, selectedItem);
+							if(selectedItem.name == 'Hard Hat'){
+								user_stats.defense += 2 * users_items.amount;
+							}
+							else if(selectedItem.name == 'Homerun Bat'){
+								user_stats.strength += 2 * users_items.amount;
+							}
+							else if(selectedItem.name == 'Fog Machine'){
+								user_stats.evade += 2 * users_items.amount;
+							}
+							else if(selectedItem.name == 'Nerd Glasses'){
+								user_stats.intel += 2 * users_items.amount;
+							}
+							else if(selectedItem.name == 'Ponder Orb'){
+								user_stats.wisdom += 2 * users_items.amount;
+							}
+							else if(selectedItem.name == 'Meditation Orb'){
+								user_stats.constitution += 2 * users_items.amount;
+							}
+							user_metric.items_purchased += purchaseAmount;
+							user_metric.cc_total_lost += cost;
+							user_metric.save();
+							user_stats.save();
+							const bought = new EmbedBuilder()
+								.setColor(0xf5bf62)
+								.setTitle(`You bought ${purchaseAmount} ${selectedItem.name}!`)
+								.setDescription(`You now have ${user_data.balance}CC!`);
+							await interaction.followUp({embeds:[bought], ephemeral:true});
 						}
-						else if(selectedItem.name == 'Nerd Glasses'){
-							user_stats.intel += 2 * users_items.amount;
-						}
-						else if(selectedItem.name == 'Ponder Orb'){
-							user_stats.wisdom += 2 * users_items.amount;
-						}
-						else if(selectedItem.name == 'Meditation Orb'){
-							user_stats.constitution += 2 * users_items.amount;
-						}
-						user_metric.items_purchased += 1;
-						user_metric.cc_total_lost += cost;
-						user_metric.save();
-						user_stats.save();
-						const bought = new EmbedBuilder()
-							.setColor(0xf5bf62)
-							.setTitle(`You bought 1 ${selectedItem.name}!`)
-							.setDescription(`You now have ${user_data.balance}CC!`);
-						await interaction.followUp({embeds:[bought], ephemeral:true});
+						purchaseLoop();
 					}
-					purchaseLoop();
 				});
 				collector.on('end', async () => {
 					await interaction.editReply({components:[],ephemeral:true});
