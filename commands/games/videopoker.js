@@ -226,7 +226,7 @@ module.exports = {
 				let tempHand = getHandResults(tempArray, 'standard');
 				if(tempHand.rank > currentHand.rank){
 					//new hand is better just overwrite it
-					cardArray = tempArray;
+					cardArray = [...tempArray];
 				}
 				else{
 					//old hand was better reverse used cards
@@ -293,51 +293,33 @@ module.exports = {
 			let hand = Hand.solve(codedArray, game);
 			return hand;
 		}
-		
+		function replaceCard(cardPos,cardArray){
+			let newCard = (Math.floor(Math.random() * 52));
+			while(usedCards[newCard]){
+				newCard = (Math.floor(Math.random() * 52));
+			}
+			usedCards[newCard] = true;
+			cardArray[cardPos] = newCard;
+		}
 		//game ending helpers
 		async function endGame(){
 			user_metric.videopoker_plays += 1;
 			user_metric.cc_gambled += bet;
 			//discard cards and draw new ones in its place
 			if(cardsHeld[0] == 1){
-				let newCard = (Math.floor(Math.random() * 52));
-				while(usedCards[newCard]){
-					newCard = (Math.floor(Math.random() * 52));
-				}
-				usedCards[newCard] = true;
-				playerCards[0] = newCard;
+				replaceCard(0, playerCards);
 			}
 			if(cardsHeld[1] == 1){
-				let newCard = (Math.floor(Math.random() * 52));
-				while(usedCards[newCard]){
-					newCard = (Math.floor(Math.random() * 52));
-				}
-				usedCards[newCard] = true;
-				playerCards[1] = newCard;
+				replaceCard(1, playerCards);
 			}
 			if(cardsHeld[2] == 1){
-				let newCard = (Math.floor(Math.random() * 52));
-				while(usedCards[newCard]){
-					newCard = (Math.floor(Math.random() * 52));
-				}
-				usedCards[newCard] = true;
-				playerCards[2] = newCard;
+				replaceCard(2, playerCards);
 			}
 			if(cardsHeld[3] == 1){
-				let newCard = (Math.floor(Math.random() * 52));
-				while(usedCards[newCard]){
-					newCard = (Math.floor(Math.random() * 52));
-				}
-				usedCards[newCard] = true;
-				playerCards[3] = newCard;
+				replaceCard(3, playerCards);
 			}
 			if(cardsHeld[4] == 1){
-				let newCard = (Math.floor(Math.random() * 52));
-				while(usedCards[newCard]){
-					newCard = (Math.floor(Math.random() * 52));
-				}
-				usedCards[newCard] = true;
-				playerCards[4] = newCard;
+				replaceCard(4, playerCards);
 			}
 			player_hand = getHandResults(playerCards, 'standard', false);
 			//win on pair of jacks or better
