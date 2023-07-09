@@ -196,6 +196,9 @@ module.exports = {
 								else if(selectedUpgrade.name == 'Calm Mind'){
 									user_stats.constitution = 10 * gotten_users_upgrades.amount;
 								}
+								else{
+									console.log('im in ascend at the update stats section but i shouldnt be here');
+								}
 								user_metric.upgrades_purchased += purchaseAmount;
 								await user_stats.save();
 								const bought = new EmbedBuilder()
