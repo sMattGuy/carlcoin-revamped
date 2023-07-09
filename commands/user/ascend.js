@@ -148,7 +148,9 @@ module.exports = {
 								.setTitle(`Good luck out there!`)
 								.setDescription(`See you next time!`);
 							await interaction.followUp({embeds:[cancelEmbed], ephemeral:true});
-							user_metric.save();
+							await user_data.save();
+							await user_stats.save();
+							await user_metric.save();
 							return;
 						}
 						else{
@@ -180,7 +182,7 @@ module.exports = {
 								await user_data.save();
 								let gotten_users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 								if(selectedUpgrade.name == '57 Leaf Clover'){
-									user_stats.luck += 1;
+									user_stats.luck = 1 * gotten_user_upgrades.amount;
 								}
 								else if(selectedUpgrade.name == 'Muscle Tonic'){
 									user_stats.strength = 10 * gotten_users_upgrades.amount;
@@ -203,6 +205,8 @@ module.exports = {
 								await interaction.followUp({embeds:[bought], ephemeral:true});
 							}
 							await user_metric.save();
+							await user_data.save();
+							await user_stats.save();
 							purchaseLoop();
 						}
 					});
