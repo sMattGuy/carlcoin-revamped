@@ -207,13 +207,12 @@ module.exports = {
 			cardArray.push(newCard);
 		}
 		function rollLuckyHand(cardArray, luck){
+			usedCards[cardArray[0]] = false;
+			usedCards[cardArray[1]] = false;
+			usedCards[cardArray[2]] = false;
+			usedCards[cardArray[3]] = false;
+			usedCards[cardArray[4]] = false;
 			for(i=0;i<luck;i++){
-				//temp allow getting cards in hand ie puts cards back in deck
-				usedCards[cardArray[0]] = false;
-				usedCards[cardArray[1]] = false;
-				usedCards[cardArray[2]] = false;
-				usedCards[cardArray[3]] = false;
-				usedCards[cardArray[4]] = false;
 				//get 5 new cards, sets cards as used
 				let tempArray = [];
 				drawCard(tempArray);
@@ -228,20 +227,17 @@ module.exports = {
 					//new hand is better just overwrite it
 					cardArray = [...tempArray];
 				}
-				else{
-					//old hand was better reverse used cards
-					usedCards[tempArray[0]] = false;
-					usedCards[tempArray[1]] = false;
-					usedCards[tempArray[2]] = false;
-					usedCards[tempArray[3]] = false;
-					usedCards[tempArray[4]] = false;
-					usedCards[cardArray[0]] = true;
-					usedCards[cardArray[1]] = true;
-					usedCards[cardArray[2]] = true;
-					usedCards[cardArray[3]] = true;
-					usedCards[cardArray[4]] = true;
-				}
+				usedCards[tempArray[0]] = false;
+				usedCards[tempArray[1]] = false;
+				usedCards[tempArray[2]] = false;
+				usedCards[tempArray[3]] = false;
+				usedCards[tempArray[4]] = false;
 			}
+			usedCards[cardArray[0]] = true;
+			usedCards[cardArray[1]] = true;
+			usedCards[cardArray[2]] = true;
+			usedCards[cardArray[3]] = true;
+			usedCards[cardArray[4]] = true;
 		}
 		function getPayoutModifier(hand){
 			/*
