@@ -58,7 +58,7 @@ module.exports = {
 		drawCard(playerCards);
 		//special luck function
 		if(luck_chance){
-			rollLuckyHand(playerCards, user_stats.luck);
+			playerCards = rollLuckyHand(playerCards, user_stats.luck);
 		}
 		let player_hand = getHandResults(playerCards, 'standard', false);
 		
@@ -238,6 +238,7 @@ module.exports = {
 			usedCards[cardArray[2]] = true;
 			usedCards[cardArray[3]] = true;
 			usedCards[cardArray[4]] = true;
+			return cardArray;
 		}
 		function getPayoutModifier(hand){
 			/*
