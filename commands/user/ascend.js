@@ -76,6 +76,7 @@ module.exports = {
 				user_metric.pc_earned += prestigeGain;
 				user_metric.cc_total_lost += user_data.balance;
 				await user_data.killUser(user_data);
+				user_data = await get_user(interaction.user.id);
 				user_stats = await get_user_stats(interaction.user.id);
 				user_data.prestigeBalance += prestigeGain;
 				user_stats.plevel += prestigeLevel;
@@ -154,6 +155,8 @@ module.exports = {
 							return;
 						}
 						else{
+							user_data = await get_user(interaction.user.id);
+							user_stats = await get_user_stats(interaction.user.id);
 							//get selected upgrade
 							let selectedUpgrade = await Upgrades.findOne({where:{id: selected}});
 							let cost = selectedUpgrade.cost;
@@ -174,7 +177,6 @@ module.exports = {
 							}
 							else{
 								//purchase
-								user_data = await get_user(interaction.user.id);
 								user_data.prestigeBalance -= cost;
 								for(let i=0;i<purchaseAmount;i++){
 									await user_data.addUpgrade(user_data, selectedUpgrade);
@@ -182,7 +184,7 @@ module.exports = {
 								await user_data.save();
 								let gotten_users_upgrades = await user_data.getUpgrade(user_data, selectedUpgrade);
 								if(selectedUpgrade.name == '57 Leaf Clover'){
-									user_stats.luck = 1 * gotten_user_upgrades.amount;
+									user_stats.luck = 1 * gotten_users_upgrades.amount;
 								}
 								else if(selectedUpgrade.name == 'Muscle Tonic'){
 									user_stats.strength = 10 * gotten_users_upgrades.amount;
