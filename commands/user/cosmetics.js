@@ -125,10 +125,13 @@ module.exports = {
 				let hasCosmetic = false;
 				let selectMenu = new StringSelectMenuBuilder()
 				selectMenu.setCustomId('select').setPlaceholder('Nothing Selected');
+				let menu_size = 0;
 				for(let i=0;i<user_cosmetic.length;i++){
 					if(cosmetic_number == user_cosmetic[i].cosmetic.type){
 						hasCosmetic = true;
 						selectMenu.addOptions({label: `${user_cosmetic[i].cosmetic.name}`, description: `Select to equip!`, value: `${i}`});
+						menu_size++;
+						if(menu_size == 24) break;
 					}
 				}
 				//check if empty

@@ -54,7 +54,7 @@ Reflect.defineProperty(Users.prototype, 'getCosmetics', {
 		return User_Cosmetics.findAll({
 			where: {user_id: user.user_id, amount: 1},
 			include: ['cosmetic'],
-			order: [['cosmetic','type','desc']],
+			order: [['cosmetic','rarity','desc']],
 		});
 	}
 });
