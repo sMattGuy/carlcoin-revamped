@@ -81,6 +81,7 @@ module.exports = {
 				user_data.prestigeBalance += prestigeGain;
 				user_stats.plevel += prestigeLevel;
 				await user_data.save();
+        await user_stats.save();
 				let upgrades = await Upgrades.findAll();
 				let purchaseAmount = 1;
 
